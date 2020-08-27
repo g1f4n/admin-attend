@@ -56,7 +56,7 @@ class Profile extends React.Component {
 		const User = new Parse.User();
 		const query = new Parse.Query(User);
 
-		query.notContainedIn('roles', [ 'admin', 'leader' ]);
+		query.notContainedIn('roles', [ 'admin', 'leader', 'Admin', 'Leader' ]);
 
 		query
 			.find({ useMasterKey: true })
@@ -109,16 +109,6 @@ class Profile extends React.Component {
 													'-'
 												)}
 											</div>
-											<Link to={`/admin/view-history/${staff.id}`}>
-												<Button
-													outline
-													color="primary"
-													size="sm"
-													className=""
-												>
-													<i className="ni ni-spaceship" /> View History
-												</Button>
-											</Link>
 										</div>
 									</CardBody>
 								</Card>

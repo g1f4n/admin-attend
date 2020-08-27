@@ -181,6 +181,8 @@ class SelfRegistration extends React.Component {
 		const SelfRegist = Parse.Object.extend('SelfRegist');
 		const query = new Parse.Query(SelfRegist);
 
+		query.equalTo('status', 3);
+
 		query
 			.find()
 			.then((x) => {
@@ -293,13 +295,23 @@ class SelfRegistration extends React.Component {
 
 		var service_id = 'default_service';
 		var template_id = 'template_N8cRQk3D';
-		emailjs.send(service_id, template_id, template_params).then(() => {
-			this.setState({
-				[state]: false,
-				loadingModal: false
+		emailjs
+			.send(service_id, template_id, template_params)
+			.then(() => {
+				this.setState({
+					[state]: false,
+					loadingModal: false
+				});
+				alert(`Berhasil ${state === 'addMode' ? 'registrasi' : 'reject'}`);
+				console.log('sukses');
+				window.location.reload(false);
+				return;
+			})
+			.catch((err) => {
+				alert('Something went wrong, please try again');
+				console.log(err);
+				window.location.reload(false);
 			});
-			console.log('sukses');
-		});
 	};
 
 	handleReject = (e) => {
@@ -359,7 +371,7 @@ class SelfRegistration extends React.Component {
 		});
 		user.set('fullname', name);
 		user.set('email', email);
-		user.set('username', username);
+		user.set('username', nik.toUpperCase());
 		user.set('password', password);
 		user.set('passwordClone', password);
 		user.set('nik', nik.toUpperCase());
@@ -402,7 +414,7 @@ class SelfRegistration extends React.Component {
 			.catch((err) => {
 				this.setState({ addMode: false, loadingModal: false });
 				console.log(err.message);
-				//alert(err.message);
+				alert(err.message);
 			});
 	};
 
@@ -428,6 +440,7 @@ class SelfRegistration extends React.Component {
 			username,
 			statusReco,
 			imei,
+			nik,
 			daftarLevel,
 			daftarPosisi,
 			daftarTipe,
@@ -603,7 +616,7 @@ class SelfRegistration extends React.Component {
 					handleHide={() => this.toggle('detailMode')}
 					title="Details"
 					body={
-						<Form onSubmit={(e) => e.preventDefault()} autoComplete="off">
+						<Form onSubmit={(e) => e.preventDefault()}>
 							{fotoWajah !== '' ? (
 								<FormGroup>
 									<Label>Foto Wajah</Label>
@@ -653,11 +666,10 @@ class SelfRegistration extends React.Component {
 									autoCapitalize="true"
 									autoComplete="false"
 									required={true}
-									value={username}
+									value={nik}
 									type="text"
 									placeholder="Masukkan NIK"
-									onChange={(e) =>
-										this.setState({ nik: e.target.value.toUpperCase() })}
+									onChange={(e) => this.setState({ nik: e.target.value })}
 								/>
 							</FormGroup>
 
@@ -685,7 +697,7 @@ class SelfRegistration extends React.Component {
 					handleHide={() => this.toggle('addMode')}
 					title="Tambah Data"
 					body={
-						<Form onSubmit={this.handleSubmit} autoComplete="off">
+						<Form onSubmit={this.handleSubmit}>
 							<FormGroup controlId="formNama">
 								<Label>Nama</Label>
 								<Input
@@ -699,18 +711,6 @@ class SelfRegistration extends React.Component {
 									onChange={(e) => this.setState({ name: e.target.value })}
 								/>
 							</FormGroup>
-
-							<Input
-								name="message_html"
-								hidden={true}
-								autoCapitalize="true"
-								autoComplete="false"
-								required={true}
-								value="Selamat! Self registration kamu diterima, selanjutnya silahkan login dengan nik dan password yang sudah kamu buat, terimakasih!"
-								type="text"
-								placeholder="Masukkan nama"
-								onChange={(e) => this.setState({ name: e.target.value })}
-							/>
 
 							<FormGroup controlId="formTipex">
 								<Label>Level</Label>
@@ -762,7 +762,6 @@ class SelfRegistration extends React.Component {
 								<Label>Email</Label>
 								<Input
 									name="to_email"
-									autoComplete="off"
 									required={true}
 									type="email"
 									value={email}
@@ -771,40 +770,16 @@ class SelfRegistration extends React.Component {
 								/>
 							</FormGroup>
 
-							{/* <FormGroup controlId="formx">
-								<Label>Username</Label>
-								<Input
-									autoComplete="off"
-									required={true}
-									type="text"
-									placeholder="Masukkan username"
-									onChange={(e) => this.setState({ username: e.target.value })}
-								/>
-							</FormGroup> */}
-
-							{/* <FormGroup controlId="formz">
-								<Label>Password</Label>
-								<Input
-									autoCapitalize="true"
-									autoComplete="new-password"
-									required={true}
-									type="password"
-									placeholder="Masukkan password"
-									onChange={(e) => this.setState({ password: e.target.value })}
-								/>
-							</FormGroup> */}
-
 							<FormGroup controlId="formNik">
 								<Label>NIK</Label>
 								<Input
 									autoCapitalize="true"
 									autoComplete="false"
 									required={true}
-									value={username}
+									value={nik}
 									type="text"
 									placeholder="Masukkan NIK"
-									onChange={(e) =>
-										this.setState({ nik: e.target.value.toUpperCase() })}
+									onChange={(e) => this.setState({ nik: e.target.value })}
 								/>
 							</FormGroup>
 
@@ -944,8 +919,22 @@ class SelfRegistration extends React.Component {
 								</Input>
 							</FormGroup>
 
-							<Button color="primary" type="submit">
-								'Submit'
+							<Button color="primary" type="submit" disabled={loadingModal}>
+								{loadingModal ? (
+									<div>
+										<Spinner
+											as="span"
+											cuti
+											animation="grow"
+											size="sm"
+											role="status"
+											aria-hidden="true"
+										/>{' '}
+										Submitting...
+									</div>
+								) : (
+									'Submit'
+								)}
 							</Button>
 						</Form>
 					}

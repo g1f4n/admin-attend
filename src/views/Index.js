@@ -223,7 +223,7 @@ class Index extends React.Component {
 										<div className="col">
 											<h3 className="mb-0">Daftar leader</h3>
 										</div>
-										<div className="col text-right">
+										{/* <div className="col text-right">
 											<Button
 												color="primary"
 												href="#pablo"
@@ -232,7 +232,7 @@ class Index extends React.Component {
 											>
 												See all
 											</Button>
-										</div>
+										</div> */}
 									</Row>
 								</CardHeader>
 								<Table className="align-items-center table-flush" responsive>
@@ -297,7 +297,7 @@ class Index extends React.Component {
 											<h3 className="mb-0">Change request</h3>
 										</div>
 										<div className="col text-right">
-											<Link to="/admin/staff">
+											<Link to="/admin/status-request">
 												<Button color="primary" size="sm">
 													See all
 												</Button>

@@ -140,15 +140,8 @@ class StatusRequest extends React.Component {
 			x.set('statusApprove', 0);
 			x.set('alasanReject', this.state.reason);
 			x.save().then(() => {
-				this.setState({ loadingModal: false });
-				let newArr = [ ...this.state.staff ];
-				newArr.splice(this.state.userIndex, 1);
-				this.setState({
-					staff: newArr,
-					rejectMode: false,
-					loadingModal: false
-				});
-				alert(`Berhasil reject'}`);
+				alert(`Berhasil reject`);
+				window.location.reload(false);
 				return;
 			});
 		});
