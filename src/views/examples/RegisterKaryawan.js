@@ -53,6 +53,7 @@ import moment from 'moment';
 import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
+import md5 from 'md5';
 
 class RegisterKaryawan extends React.Component {
 	constructor(props) {
@@ -295,8 +296,8 @@ class RegisterKaryawan extends React.Component {
 		user.set('fullname', name);
 		user.set('email', email);
 		user.set('username', username);
-		user.set('password', password);
-		user.set('passwordClone', password);
+		user.set('password', md5(password));
+		user.set('passwordClone', md5(password));
 		user.set('nik', nik.toUpperCase());
 		user.set('tipe', tipeKaryawan);
 		user.set('posisi', posisi);
