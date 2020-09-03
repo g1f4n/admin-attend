@@ -154,7 +154,8 @@ class Maps extends React.Component {
 			],
 			userLocation: [],
 			avgLat: 0,
-			avgLng: 0
+			avgLng: 0,
+			loading: false
 		};
 	}
 
@@ -163,6 +164,7 @@ class Maps extends React.Component {
 	}
 
 	getLeaderStaff = () => {
+		this.setState({ loading: true });
 		const id = this.props.match.params.id;
 		console.log(id);
 
@@ -187,10 +189,13 @@ class Maps extends React.Component {
 			.then((x) => {
 				console.log(x);
 				this.getCenterAverage(x);
-				this.setState({ userLocation: x }, () => console.log(this.state.userLocation));
+				this.setState({ userLocation: x, loading: false }, () =>
+					console.log(this.state.userLocation)
+				);
 			})
 			.catch((err) => {
 				console.log(err);
+				this.setState({ loading: false });
 			});
 	};
 
@@ -228,7 +233,15 @@ class Maps extends React.Component {
 					<Row>
 						<div className="col">
 							<Card className="shadow border-0">
-								{this.state.avgLat !== 0 ? (
+								{this.state.loading ? (
+									<div style={{ height: `100%`, textAlign: 'center' }}>
+										Loading map...
+									</div>
+								) : this.state.userLocation.length === 0 ? (
+									<div style={{ height: `100%`, textAlign: 'center' }}>
+										Tidak ada data absen hari ini
+									</div>
+								) : (
 									<MapWrapper
 										userPosition={this.state.userLocation}
 										avgLat={this.state.avgLat}
@@ -248,12 +261,6 @@ class Maps extends React.Component {
 											/>
 										}
 									/>
-								) : this.state.userLocation.length === 0 ? (
-									<div style={{ height: `100%`, textAlign: 'center' }}>
-										Tidak ada data absen hari ini
-									</div>
-								) : (
-									'Loading...'
 								)}
 							</Card>
 						</div>
