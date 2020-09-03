@@ -718,7 +718,8 @@ class LeaderList extends React.Component {
 							/>
 							<Card className="shadow">
 								<CardHeader className="border-0">
-									<Row className="mb-4">
+									<h3>Data absen staff</h3>
+									{/* <Row className="mb-4">
 										<Button
 											className="ml-2"
 											color="primary"
@@ -729,7 +730,7 @@ class LeaderList extends React.Component {
 											<i className="fa fa-plus" /> Register
 										</Button>
 									</Row>
-									{/* <Row> */}
+									{/* <Row>
 									<Form onSubmit={this.handleFilter} className>
 										<Row>
 											<Col lg={2}>Search by</Col>
@@ -780,7 +781,7 @@ class LeaderList extends React.Component {
 												</Button>
 											</Col>
 										</Row>
-									</Form>
+									</Form> */}
 									{/* </Row> */}
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>
@@ -862,7 +863,7 @@ class LeaderList extends React.Component {
 															</UncontrolledTooltip>
 														</Link>
 
-														<Button
+														{/* <Button
 															id="t1"
 															color="primary"
 															className="btn-circle"
@@ -885,7 +886,7 @@ class LeaderList extends React.Component {
 															target="t1"
 														>
 															Ubah data
-														</UncontrolledTooltip>
+														</UncontrolledTooltip> */}
 														{/* 
 														<Button
 															id="t2"

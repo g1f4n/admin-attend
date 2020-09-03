@@ -108,7 +108,8 @@ class SelfRegistration extends React.Component {
 			daftarPoint: [],
 			jamMasuk: 0,
 			jamKeluar: 0,
-			absenPoint: []
+			absenPoint: [],
+			imeiMessage: ''
 		};
 	}
 
@@ -120,6 +121,7 @@ class SelfRegistration extends React.Component {
 		this.getTipe();
 		this.getPoint();
 		this.getShifting();
+		//this.handleCheckImei();
 		emailjs.init('user_h2fWwDoztgEPcKNQ9vadt');
 	}
 
@@ -384,8 +386,34 @@ class SelfRegistration extends React.Component {
 		});
 	};
 
-	handleSubmit = (e) => {
+	handleCheckImei = (e, imei) => {
 		e.preventDefault();
+
+		const user = new Parse.User();
+		const query = new Parse.Query(user);
+
+		query.equalTo('imei', imei);
+		query
+			.first()
+			.then((x) => {
+				if (x) {
+					this.setState({
+						imeiMessage: 'Imei telah terdaftar',
+						loadingModal: false
+					});
+					return;
+				} else {
+					this.handleSubmit();
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+				this.setState({ loadingModal: false });
+			});
+	};
+
+	handleSubmit = () => {
+		//e.preventDefault();
 		this.setState({ loadingModal: true });
 		const {
 			name,
@@ -763,7 +791,7 @@ class SelfRegistration extends React.Component {
 					handleHide={() => this.toggle('addMode')}
 					title="Tambah Data"
 					body={
-						<Form onSubmit={this.handleSubmit}>
+						<Form onSubmit={(e) => this.handleCheckImei(e, this.state.imei)}>
 							<FormGroup controlId="formNama">
 								<Label>Nama</Label>
 								<Input
@@ -916,6 +944,14 @@ class SelfRegistration extends React.Component {
 									placeholder="Masukkan imei hp"
 									onChange={(e) => this.setState({ imei: e.target.value })}
 								/>
+								<FormText
+									className="text-muted"
+									style={{
+										color: 'red'
+									}}
+								>
+									{this.state.imeiMessage !== '' ? this.state.imeiMessage : ''}
+								</FormText>
 							</FormGroup>
 
 							<FormGroup controlId="formJam">
@@ -1072,7 +1108,7 @@ class SelfRegistration extends React.Component {
 							</Button>
 						</Form>
 					}
-					handleSubmit={(e) => this.handleAdd(e)}
+					handleSubmit={(e) => this.handleCheckImei(e, this.state.imei)}
 				/>
 
 				{/* reject modal */}

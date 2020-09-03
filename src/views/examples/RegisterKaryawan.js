@@ -90,11 +90,11 @@ class RegisterKaryawan extends React.Component {
 			loadingReco: false,
 			nama: '',
 			nik: '',
-			tipeKaryawan: 'Karyawan tetap',
+			tipeKaryawan: '',
 			posisi: '',
 			imei: '',
-			jamKerja: 'Jam tetap',
-			lokasiKerja: 'Tetap',
+			jamKerja: '',
+			lokasiKerja: '',
 			jumlahCuti: 0,
 			lembur: 'ya',
 			username: '',
@@ -111,7 +111,9 @@ class RegisterKaryawan extends React.Component {
 			visible: false,
 			message: '',
 			color: 'danger',
-			visible: false,
+			absenPoint: [],
+			daftarPoint: [],
+			imeiMessage: '',
 			searchBy: 'all',
 			searchValue: ''
 		};
@@ -124,8 +126,25 @@ class RegisterKaryawan extends React.Component {
 		this.getPosisi();
 		this.getTipe();
 		this.getShifting();
+		this.getPoint();
 		//this.testRelasi();
 	}
+
+	getPoint = () => {
+		const ValidGeopoint = new Parse.Object.extend('ValidGeopoint');
+		const query = new Parse.Query(ValidGeopoint);
+
+		query.equalTo('status', 1);
+		query
+			.find()
+			.then((x) => {
+				this.setState({ daftarPoint: x, loading: false });
+			})
+			.catch((err) => {
+				alert(err.message);
+				this.setState({ loading: false });
+			});
+	};
 
 	getTipe = () => {
 		this.setState({ loading: true });
@@ -396,8 +415,34 @@ class RegisterKaryawan extends React.Component {
 			.catch((err) => alert('Terjadi error...'));
 	};
 
-	handleSubmit = (e) => {
+	handleCheckImei = (e, imei) => {
 		e.preventDefault();
+		this.setState({ loadingModal: true });
+
+		const user = new Parse.User();
+		const query = new Parse.Query(user);
+
+		query.equalTo('imei', imei);
+		query
+			.first()
+			.then((x) => {
+				if (x) {
+					this.setState({
+						imeiMessage: 'Imei telah terdaftar',
+						loadingModal: false
+					});
+					return;
+				} else {
+					this.handleSubmit();
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+				this.setState({ loadingModal: false });
+			});
+	};
+
+	handleSubmit = () => {
 		this.setState({ loading: true });
 		const {
 			name,
@@ -616,9 +661,7 @@ class RegisterKaryawan extends React.Component {
 			tipeKaryawan,
 			nik,
 			posisi,
-			leaderIdNew,
-			approvalMode,
-			rejectMode,
+			daftarPoint,
 			loadingModal,
 			fullnames,
 			addMode,
@@ -892,7 +935,10 @@ class RegisterKaryawan extends React.Component {
 					handleHide={() => this.toggle('addMode')}
 					title="Tambah Data"
 					body={
-						<Form onSubmit={this.handleSubmit} autoComplete="off">
+						<Form
+							onSubmit={(e) => this.handleCheckImei(e, this.state.imei)}
+							autoComplete="off"
+						>
 							<FormGroup controlId="formCategory">
 								<Label>Foto wajah</Label>
 								<Input
@@ -1066,6 +1112,14 @@ class RegisterKaryawan extends React.Component {
 									placeholder="Masukkan imei hp"
 									onChange={(e) => this.setState({ imei: e.target.value })}
 								/>
+								<FormText
+									className="text-red"
+									style={{
+										color: 'red'
+									}}
+								>
+									{this.state.imeiMessage !== '' ? this.state.imeiMessage : ''}
+								</FormText>
 							</FormGroup>
 
 							<FormGroup controlId="formJam">
@@ -1087,7 +1141,39 @@ class RegisterKaryawan extends React.Component {
 								</Input>
 							</FormGroup>
 
-							<FormGroup controlId="formShifting">
+							{this.state.jamKerja !== '' && this.state.jamKerja !== 'Jam bebas' ? (
+								<FormGroup controlId="formJam">
+									<Label>Jam masuk dan keluar</Label>
+									<Row>
+										<Col md={6}>
+											<Input
+												type="number"
+												required={true}
+												placeholder="Jam Masuk"
+												onChange={(e) =>
+													this.setState({
+														jamMasuk: e.target.value
+													})}
+											/>
+										</Col>
+										<Col md={6}>
+											<Input
+												type="number"
+												placeholder="Jam Keluar"
+												required={true}
+												onChange={(e) =>
+													this.setState({
+														jamKeluar: e.target.value
+													})}
+											/>
+										</Col>
+									</Row>
+								</FormGroup>
+							) : (
+								''
+							)}
+
+							{/* <FormGroup controlId="formShifting">
 								<Label>Shifting</Label>
 								<Input
 									type="select"
@@ -1104,7 +1190,7 @@ class RegisterKaryawan extends React.Component {
 										<option value={x.id}>{x.get('tipeShift')}</option>
 									))}
 								</Input>
-							</FormGroup>
+							</FormGroup> */}
 
 							<FormGroup controlId="formLokasi">
 								<Label>Lokasi kerja</Label>
@@ -1124,6 +1210,42 @@ class RegisterKaryawan extends React.Component {
 									))}
 								</Input>
 							</FormGroup>
+
+							{this.state.lokasiKerja === 'Tetap' ? (
+								<FormGroup controlId="formPoint">
+									<Label>Absen point</Label>
+									<Input
+										type="select"
+										required={true}
+										onChange={(e) =>
+											this.setState(
+												{
+													absenPoint: e.target.value.split(',')
+												},
+												() =>
+													this.state.absenPoint.map((x) => {
+														console.log(parseFloat(x));
+													})
+											)}
+									>
+										<option selected disabled hidden>
+											Pilih absen point
+										</option>
+										{daftarPoint.map((x) => (
+											<option
+												value={[
+													parseFloat(x.get('latitude')),
+													parseFloat(x.get('longitude'))
+												]}
+											>
+												{x.get('placeName')}
+											</option>
+										))}
+									</Input>
+								</FormGroup>
+							) : (
+								''
+							)}
 
 							<FormGroup controlId="formCuti">
 								<Label>Jumlah cuti</Label>
@@ -1154,19 +1276,46 @@ class RegisterKaryawan extends React.Component {
 								</Input>
 							</FormGroup>
 
-							<Button
-								color={this.state.statusReco === 0 ? 'danger' : 'primary'}
-								type="submit"
-								disabled={this.state.statusReco === 0 ? true : false}
-							>
-								{this.state.statusReco === 0 ? (
-									'upload foto dahulu'
-								) : this.state.loading ? (
-									'Please wait..'
-								) : (
-									'Submit'
-								)}
-							</Button>
+							<Row>
+								<Col lg={4} md={4}>
+									<Button
+										color={this.state.statusReco === 0 ? 'danger' : 'primary'}
+										type="submit"
+										disabled={this.state.statusReco === 0 ? true : false}
+									>
+										{this.state.statusReco === 0 ? (
+											'upload foto dahulu'
+										) : this.state.loadingModal ? (
+											<div>
+												<Spinner
+													as="span"
+													animation="grow"
+													size="sm"
+													role="status"
+													aria-hidden="true"
+												/>{' '}
+												Submitting...
+											</div>
+										) : (
+											'Submit'
+										)}
+									</Button>
+								</Col>
+								<Col lg={8} md={8}>
+									<div
+										className="text-red"
+										style={{
+											color: 'red'
+										}}
+									>
+										{this.state.imeiMessage !== '' ? (
+											this.state.imeiMessage
+										) : (
+											''
+										)}
+									</div>
+								</Col>
+							</Row>
 						</Form>
 					}
 					handleSubmit={(e) => this.handleAdd(e)}
