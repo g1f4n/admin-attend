@@ -91,9 +91,7 @@ class Index extends React.Component {
 				this.setState({ daftarLeader: x, loading: false });
 			})
 			.catch((err) => {
-				alert(err.message);
-				window.location.reload(false);
-				return;
+				console.log(err.message);
 			});
 	};
 
@@ -119,8 +117,8 @@ class Index extends React.Component {
 			})
 			.catch(({ message }) => {
 				this.setState({ loading: false });
-				alert(message);
 				console.log(message);
+
 				//window.location.reload(false);
 				return;
 			});

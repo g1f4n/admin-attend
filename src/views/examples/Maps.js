@@ -248,8 +248,12 @@ class Maps extends React.Component {
 											/>
 										}
 									/>
+								) : this.state.userLocation.length === 0 ? (
+									<div style={{ height: `100%`, textAlign: 'center' }}>
+										Tidak ada data absen hari ini
+									</div>
 								) : (
-									'Loading map...'
+									'Loading...'
 								)}
 							</Card>
 						</div>
