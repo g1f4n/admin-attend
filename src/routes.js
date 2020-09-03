@@ -26,6 +26,10 @@ import ManajemenLevel from 'views/examples/ManajemenLevel';
 import ManajemenDepartemen from 'views/examples/ManajemenDepartemen';
 import ManajemenPoint from 'views/examples/ManajemenPoint';
 import SelfRegistration from 'views/examples/SelfRegistration';
+import ExportData from 'views/examples/ExportData';
+import ManajemenSetting from 'views/examples/ManajemenSetting';
+import Maps from 'views/examples/Maps';
+import LeaderList from 'views/examples/LeaderList';
 
 var routes = [
 	{
@@ -33,6 +37,21 @@ var routes = [
 		name: 'Dashboard',
 		icon: 'ni ni-tv-2 text-primary',
 		component: Index,
+		layout: '/admin'
+	},
+	{
+		path: '/view-absen/:id',
+		name: 'User Location',
+		icon: 'ni ni-tv-2 text-danger',
+		component: Maps,
+		layout: '/admin',
+		invisible: true
+	},
+	{
+		path: '/leader',
+		name: 'Leader',
+		icon: 'ni ni-tv-2 text-yellow',
+		component: LeaderList,
 		layout: '/admin'
 	},
 	{
@@ -92,10 +111,24 @@ var routes = [
 		layout: '/admin'
 	},
 	{
+		path: '/appsetting',
+		name: 'Manage Setting',
+		icon: 'ni ni-spaceship text-blue',
+		component: ManajemenSetting,
+		layout: '/admin'
+	},
+	{
 		path: '/departemen',
 		name: 'Manage Departemen',
 		icon: 'ni ni-key-25 text-primary',
 		component: ManajemenDepartemen,
+		layout: '/admin'
+	},
+	{
+		path: '/eksport',
+		name: 'Eksport Data',
+		icon: 'ni ni-key-25 text-primary',
+		component: ExportData,
 		layout: '/admin'
 	},
 	// {

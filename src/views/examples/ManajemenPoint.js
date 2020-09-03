@@ -51,6 +51,7 @@ import moment from 'moment';
 import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
+import Alertz from 'components/Alert/Alertz';
 
 class ManajemenPoint extends React.Component {
 	constructor(props) {
@@ -74,7 +75,10 @@ class ManajemenPoint extends React.Component {
 			deleteMode: false,
 			deleteCounter: 0,
 			latitude: 0,
-			longitude: 0
+			longitude: 0,
+			message: '',
+			color: 'danger',
+			visible: false
 		};
 	}
 
@@ -118,11 +122,14 @@ class ManajemenPoint extends React.Component {
 					loadingModal: false,
 					point: this.state.point.concat(z)
 				});
-				alert('Berhasil tambah data');
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal tambah data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -169,18 +176,23 @@ class ManajemenPoint extends React.Component {
 							editMode: false,
 							loadingModal: false
 						});
-						alert('Berhasil update');
-						// window.location.reload();
-						// return;
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal update data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingMModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingMModal: false,
+					message: 'Gagal update data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -206,16 +218,23 @@ class ManajemenPoint extends React.Component {
 							loadingModal: false,
 							point: newArr
 						});
-						alert('Berhasil hapus data');
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal hapus data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal hapus data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -250,15 +269,25 @@ class ManajemenPoint extends React.Component {
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row>
-										<Button
-											className="ml-2"
-											color="primary"
-											data-dismiss="modal"
-											type="button"
-											onClick={() => this.setState({ addMode: true })}
-										>
-											<i className="fa fa-plus" /> Tambah
-										</Button>
+										<Col lg={4}>
+											<Button
+												className="ml-2"
+												color="primary"
+												data-dismiss="modal"
+												type="button"
+												onClick={() => this.setState({ addMode: true })}
+											>
+												<i className="fa fa-plus" /> Tambah
+											</Button>
+										</Col>
+										<Col lg={4}>
+											<Alertz
+												color={this.state.color}
+												message={this.state.message}
+												open={this.state.visible}
+												togglez={() => this.toggle('visible')}
+											/>
+										</Col>
 									</Row>
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>

@@ -55,9 +55,9 @@ import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
 import md5 from 'md5';
 import Paginations from 'components/Pagination/Pagination';
-import Alertz from 'components/Alert/Alertz';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 
-class RegisterKaryawan extends React.Component {
+class ExportData extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -108,9 +108,6 @@ class RegisterKaryawan extends React.Component {
 			leader: {},
 			message: '',
 			color: '',
-			visible: false,
-			message: '',
-			color: 'danger',
 			visible: false,
 			searchBy: 'all',
 			searchValue: ''
@@ -231,113 +228,6 @@ class RegisterKaryawan extends React.Component {
 			});
 	};
 
-	handleFilter = (e) => {
-		e.preventDefault();
-		this.setState({ loadingFilter: true });
-		const { searchBy, searchValue } = this.state;
-		const { resPerPage, page } = this.state;
-
-		const User = new Parse.User();
-		const query = new Parse.Query(User);
-
-		// query.notContainedIn('roles', [ 'admin', 'leader', 'Admin', 'Leader' ]);
-		// query.skip(resPerPage * page - resPerPage);
-		// query.limit(resPerPage);
-		query.withCount();
-
-		switch (searchBy) {
-			case 'all':
-				query
-					.find({ useMasterKey: true })
-					.then((x) => {
-						this.setState({
-							daftarStaff: x.results,
-							totalData: x.count,
-							loadingFilter: false
-						});
-					})
-					.catch((err) => {
-						this.setState({ loadingFilter: false });
-						alert('cek koneksi anda');
-					});
-				break;
-
-			case 'name':
-				query.matches('fullname', searchValue, 'i');
-				query
-					.find({ useMasterKey: true })
-					.then((x) => {
-						this.setState({
-							daftarStaff: x.results,
-							totalData: x.count,
-							loadingFilter: false
-						});
-					})
-					.catch((err) => {
-						this.setState({ loadingFilter: false });
-						alert('cek koneksi anda');
-					});
-				break;
-
-			case 'nik':
-				query.equalTo('nik', searchValue);
-				query
-					.find({ useMasterKey: true })
-					.then((x) => {
-						this.setState({
-							daftarStaff: x.results,
-							totalData: x.count,
-							loadingFilter: false
-						});
-					})
-					.catch((err) => {
-						this.setState({ loadingFilter: false });
-						alert('cek koneksi anda');
-					});
-				break;
-
-			case 'level':
-				query.matches('level', searchValue, 'i');
-				query
-					.find({ useMasterKey: true })
-					.then((x) => {
-						this.setState({
-							daftarStaff: x.results,
-							totalData: x.count,
-							loadingFilter: false
-						});
-					})
-					.catch((err) => {
-						this.setState({ loadingFilter: false });
-						alert('cek koneksi anda');
-					});
-				break;
-
-			case 'leader':
-				const leader = new Parse.User();
-				const leaderQuery = new Parse.Query(leader);
-				leaderQuery.matches('fullname', searchValue, 'i');
-
-				query.matchesQuery('leaderIdNew', leaderQuery);
-				query
-					.find({ useMasterKey: true })
-					.then((x) => {
-						this.setState({
-							daftarStaff: x.results,
-							totalData: x.count,
-							loadingFilter: false
-						});
-					})
-					.catch((err) => {
-						this.setState({ loadingFilter: false });
-						alert('cek koneksi anda');
-					});
-				break;
-			default:
-				break;
-		}
-	};
-
 	getShifting = () => {
 		const Shifting = Parse.Object.extend('Shifting');
 		const query = new Parse.Query(Shifting);
@@ -446,20 +336,12 @@ class RegisterKaryawan extends React.Component {
 				this.setState({
 					daftarStaff: this.state.daftarStaff.concat(x),
 					addMode: false,
-					loading: false,
-					message: 'Berhasil tambah data',
-					visible: true,
-					color: 'success'
+					loading: false
 				});
 			})
 			.catch((err) => {
-				this.setState({
-					addMode: false,
-					loading: false,
-					message: 'Gagal tambah data, coba lagi',
-					visible: true
-				});
-				console.log(err.message);
+				this.setState({ addMode: false, loading: false });
+				alert(err.message);
 			});
 	};
 
@@ -526,31 +408,16 @@ class RegisterKaryawan extends React.Component {
 					.then((x) => {
 						this.setState({
 							editMode: false,
-							loadingModal: false,
-							message: 'Berhasil update data',
-							visible: true,
-							color: 'success'
+							loadingModal: false
 						});
+						alert('Sukses');
 					})
 					.catch((err) => {
-						this.setState({
-							editMode: false,
-							loadingModal: false,
-							message: 'Gagal update data, coba lagi',
-							visible: true
-						});
-						console.log(err.message);
+						this.setState({ editMode: false, loadingModal: false });
+						alert(err.message);
 					});
 			})
-			.catch((err) => {
-				this.setState({
-					editMode: false,
-					loadingModal: false,
-					message: err.message,
-					visible: true
-				});
-				console.log(err.message);
-			});
+			.catch((err) => {});
 	};
 
 	getDetail = (e, id) => {
@@ -590,6 +457,113 @@ class RegisterKaryawan extends React.Component {
 			.catch((err) => {
 				alert(err.message);
 			});
+	};
+
+	handleFilter = (e) => {
+		e.preventDefault();
+		this.setState({ loadingFilter: true });
+		const { searchBy, searchValue } = this.state;
+		const { resPerPage, page } = this.state;
+
+		const User = new Parse.User();
+		const query = new Parse.Query(User);
+
+		// query.notContainedIn('roles', [ 'admin', 'leader', 'Admin', 'Leader' ]);
+		// query.skip(resPerPage * page - resPerPage);
+		// query.limit(resPerPage);
+		query.withCount();
+
+		switch (searchBy) {
+			case 'all':
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loadingFilter: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loadingFilter: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'name':
+				query.matches('fullname', searchValue, 'i');
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loadingFilter: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loadingFilter: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'nik':
+				query.equalTo('nik', searchValue);
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loadingFilter: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loadingFilter: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'level':
+				query.matches('level', searchValue, 'i');
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loadingFilter: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loadingFilter: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'leader':
+				const leader = new Parse.User();
+				const leaderQuery = new Parse.Query(leader);
+				leaderQuery.matches('fullname', searchValue, 'i');
+
+				query.matchesQuery('leaderIdNew', leaderQuery);
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loadingFilter: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loadingFilter: false });
+						alert('cek koneksi anda');
+					});
+				break;
+			default:
+				break;
+		}
 	};
 
 	toggle = (state) => {
@@ -680,26 +654,18 @@ class RegisterKaryawan extends React.Component {
 					{/* Table */}
 					<Row>
 						<div className="col">
-							<Alertz
-								color={this.state.color}
-								message={this.state.message}
-								open={this.state.visible}
-								togglez={() => this.toggle('visible')}
-							/>
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row className="mb-4">
-										<Button
-											className="ml-2"
-											color="primary"
-											data-dismiss="modal"
-											type="button"
-											onClick={() => this.setState({ addMode: true })}
-										>
-											<i className="fa fa-plus" /> Register
-										</Button>
+										<ReactHTMLTableToExcel
+											id="test-table-xls-button"
+											className="btn btn-primary ml-2"
+											table="e1"
+											filename="tablexls"
+											sheet="tablexls"
+											buttonText="Export to .xls"
+										/>
 									</Row>
-									{/* <Row> */}
 									<Form onSubmit={this.handleFilter} className>
 										<Row>
 											<Col lg={2}>Search by</Col>
@@ -751,10 +717,13 @@ class RegisterKaryawan extends React.Component {
 											</Col>
 										</Row>
 									</Form>
-									{/* </Row> */}
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>
-								<Table className="align-items-center table-flush" responsive>
+								<Table
+									className="align-items-center table-flush"
+									id="e1"
+									responsive
+								>
 									<thead className="thead-light">
 										<tr>
 											<th scope="col">NIK</th>
@@ -763,7 +732,6 @@ class RegisterKaryawan extends React.Component {
 											<th scope="col">Tipe Karyawan</th>
 											<th scope="col">Posisi</th>
 											<th scope="col">Level</th>
-											<th scope="col">Aksi</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -805,74 +773,6 @@ class RegisterKaryawan extends React.Component {
 													<td>{prop.get('tipe')}</td>
 													<td>{prop.get('posisi')}</td>
 													<td>{prop.get('level')}</td>
-													<td>
-														<Button
-															id="t4"
-															color="yellow"
-															className="btn-circle"
-															onClick={() => {
-																this.setState({
-																	viewPhoto: true
-																});
-															}}
-														>
-															<i className="fa fa-eye" />
-														</Button>
-														<UncontrolledTooltip
-															delay={0}
-															placement="top"
-															target="t4"
-														>
-															Lihat detail
-														</UncontrolledTooltip>
-
-														<Button
-															id="t1"
-															color="primary"
-															className="btn-circle"
-															onClick={(e) => {
-																this.setState({
-																	approvalMode: true,
-																	userId: prop.id,
-																	userIndex: key,
-																	fullname: prop.get('fullname')
-																});
-
-																this.getDetail(e, prop.id);
-															}}
-														>
-															<i className="fa fa-edit" />
-														</Button>
-														<UncontrolledTooltip
-															delay={0}
-															placement="top"
-															target="t1"
-														>
-															Ubah data
-														</UncontrolledTooltip>
-														{/* 
-														<Button
-															id="t2"
-															className="btn-circle btn-danger"
-															onClick={(e) => {
-																this.setState({
-																	rejectMode: true,
-																	userId: prop.id,
-																	userIndex: key,
-																	fullnames: prop.get('fullname')
-																});
-															}}
-														>
-															<i className="fa fa-trash" />
-														</Button>
-														<UncontrolledTooltip
-															delay={0}
-															placement="top"
-															target="t2"
-														>
-															Hapus karyawan
-														</UncontrolledTooltip> */}
-													</td>
 												</tr>
 											))
 										)}
@@ -1459,4 +1359,4 @@ class RegisterKaryawan extends React.Component {
 	}
 }
 
-export default RegisterKaryawan;
+export default ExportData;

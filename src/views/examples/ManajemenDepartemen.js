@@ -51,6 +51,7 @@ import moment from 'moment';
 import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
+import Alertz from 'components/Alert/Alertz';
 
 class ManajemenDepartemen extends React.Component {
 	constructor(props) {
@@ -72,7 +73,10 @@ class ManajemenDepartemen extends React.Component {
 			addMode: false,
 			deleteMode: false,
 			editMode: false,
-			deleteCounter: 0
+			deleteCounter: 0,
+			message: '',
+			color: 'danger',
+			visible: false
 		};
 	}
 
@@ -116,8 +120,12 @@ class ManajemenDepartemen extends React.Component {
 				});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal tambah data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -157,16 +165,23 @@ class ManajemenDepartemen extends React.Component {
 							editMode: false,
 							loadingModal: false
 						});
-						alert('Berhasil update data');
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal update data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal update data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -191,16 +206,23 @@ class ManajemenDepartemen extends React.Component {
 							loadingModal: false,
 							dept: newArr
 						});
-						alert('Berhasil hapus data');
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal hapus data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal hapus data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -244,6 +266,12 @@ class ManajemenDepartemen extends React.Component {
 											<i className="fa fa-plus" /> Tambah
 										</Button>
 									</Row>
+									<Alertz
+										color={this.state.color}
+										message={this.state.message}
+										open={this.state.visible}
+										togglez={() => this.toggle('visible')}
+									/>
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>
 								<Table className="align-items-center table-flush" responsive>

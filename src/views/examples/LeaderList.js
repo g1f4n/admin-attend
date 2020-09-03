@@ -56,8 +56,9 @@ import HeaderNormal from 'components/Headers/HeaderNormal';
 import md5 from 'md5';
 import Paginations from 'components/Pagination/Pagination';
 import Alertz from 'components/Alert/Alertz';
+import { Link } from 'react-router-dom';
 
-class RegisterKaryawan extends React.Component {
+class LeaderList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -598,6 +599,37 @@ class RegisterKaryawan extends React.Component {
 		});
 	};
 
+	getLeaderStaff = (e, id) => {
+		e.preventDefault();
+
+		const Absence = Parse.Object.extend('Absence');
+		const query = new Parse.Query(Absence);
+
+		const d = new Date();
+		const start = new moment(d);
+		start.startOf('day');
+		const finish = new moment(start);
+		finish.add(1, 'day');
+
+		query.equalTo('leaderIdNew', {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: id
+		});
+		query.greaterThanOrEqualTo('absenMasuk', start.toDate());
+		query.lessThan('absenMasuk', finish.toDate());
+		query
+			.find()
+			.then((x) => {
+				x.map((y) => {
+					console.log(y.get('latitude') + ' ' + y.get('longitude'));
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
 	render() {
 		const {
 			daftarStaff,
@@ -616,9 +648,7 @@ class RegisterKaryawan extends React.Component {
 			tipeKaryawan,
 			nik,
 			posisi,
-			leaderIdNew,
-			approvalMode,
-			rejectMode,
+			daftarLeader,
 			loadingModal,
 			fullnames,
 			addMode,
@@ -792,12 +822,12 @@ class RegisterKaryawan extends React.Component {
 													aria-hidden="true"
 												/>
 											</td>
-										) : daftarStaff.length < 1 ? (
+										) : daftarLeader.length < 1 ? (
 											<td colSpan={6} style={{ textAlign: 'center' }}>
 												No data found...
 											</td>
 										) : (
-											daftarStaff.map((prop, key) => (
+											daftarLeader.map((prop, key) => (
 												<tr>
 													<td>{prop.get('nik')}</td>
 													<td>{prop.get('fullname')}</td>
@@ -806,25 +836,31 @@ class RegisterKaryawan extends React.Component {
 													<td>{prop.get('posisi')}</td>
 													<td>{prop.get('level')}</td>
 													<td>
-														<Button
-															id="t4"
-															color="yellow"
-															className="btn-circle"
-															onClick={() => {
-																this.setState({
-																	viewPhoto: true
-																});
-															}}
+														<Link
+															className="mr-2"
+															to={`/admin/view-absen/${prop.id}`}
 														>
-															<i className="fa fa-eye" />
-														</Button>
-														<UncontrolledTooltip
-															delay={0}
-															placement="top"
-															target="t4"
-														>
-															Lihat detail
-														</UncontrolledTooltip>
+															<Button
+																id="t4"
+																color="yellow"
+																className="btn-circle"
+																// onClick={(e) => {
+																// 	this.setState({
+																// 		leaderId: prop.id
+																// 	});
+																// 	this.getLeaderStaff(e, prop.id);
+																// }}
+															>
+																<i className="fa fa-eye" />
+															</Button>
+															<UncontrolledTooltip
+																delay={0}
+																placement="top"
+																target="t4"
+															>
+																Lihat detail
+															</UncontrolledTooltip>
+														</Link>
 
 														<Button
 															id="t1"
@@ -1459,4 +1495,4 @@ class RegisterKaryawan extends React.Component {
 	}
 }
 
-export default RegisterKaryawan;
+export default LeaderList;

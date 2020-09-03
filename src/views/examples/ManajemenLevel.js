@@ -51,6 +51,7 @@ import moment from 'moment';
 import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
+import Alertz from 'components/Alert/Alertz';
 
 class ManajemenLevel extends React.Component {
 	constructor(props) {
@@ -72,7 +73,10 @@ class ManajemenLevel extends React.Component {
 			addMode: false,
 			deleteMode: false,
 			editMode: false,
-			deleteCounter: 0
+			deleteCounter: 0,
+			message: '',
+			color: 'danger',
+			visible: false
 		};
 	}
 
@@ -112,12 +116,19 @@ class ManajemenLevel extends React.Component {
 				this.setState({
 					addMode: false,
 					loadingModal: false,
-					level: this.state.level.concat(z)
+					level: this.state.level.concat(z),
+					message: 'Berhasil tambah data',
+					visible: true,
+					color: 'success'
 				});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal tambah data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -159,13 +170,21 @@ class ManajemenLevel extends React.Component {
 						});
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal update data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal update data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -191,16 +210,23 @@ class ManajemenLevel extends React.Component {
 							loadingModal: false,
 							level: newArr
 						});
-						alert('Berhasil hapus data');
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal hapus data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal hapus data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -234,15 +260,25 @@ class ManajemenLevel extends React.Component {
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row>
-										<Button
-											className="ml-2"
-											color="primary"
-											data-dismiss="modal"
-											type="button"
-											onClick={() => this.setState({ addMode: true })}
-										>
-											<i className="fa fa-plus" /> Tambah
-										</Button>
+										<Col lg={4}>
+											<Button
+												className="ml-2"
+												color="primary"
+												data-dismiss="modal"
+												type="button"
+												onClick={() => this.setState({ addMode: true })}
+											>
+												<i className="fa fa-plus" /> Tambah
+											</Button>
+										</Col>
+										<Col lg={4}>
+											<Alertz
+												color={this.state.color}
+												message={this.state.message}
+												open={this.state.visible}
+												togglez={() => this.toggle('visible')}
+											/>
+										</Col>
 									</Row>
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>

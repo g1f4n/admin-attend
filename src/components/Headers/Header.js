@@ -24,6 +24,7 @@ import { Link } from 'react-router-dom';
 import Parse from 'parse';
 import moment from 'moment';
 import { getLeaderId } from 'utils';
+import Alertz from 'components/Alert/Alertz';
 
 class Header extends React.Component {
 	constructor(props) {
@@ -36,7 +37,10 @@ class Header extends React.Component {
 			daftarLeader: [],
 			leave: 0,
 			totalLeader: 0,
-			totalStaff: 0
+			totalStaff: 0,
+			message: '',
+			visible: false,
+			color: 'danger'
 		};
 	}
 
@@ -81,7 +85,9 @@ class Header extends React.Component {
 			.then((x) => {
 				this.setState({ totalLeader: x });
 			})
-			.catch((err) => {});
+			.catch((err) => {
+				console.log(err.message);
+			});
 	};
 
 	getTotalRequest = () => {
@@ -95,10 +101,20 @@ class Header extends React.Component {
 				this.setState({ totalRequest: x });
 			})
 			.catch(({ message }) => {
-				this.setState({ loading: false });
+				this.setState({
+					loading: false,
+					message: message,
+					visible: true
+				});
 				alert(message);
 				window.location.reload(false);
 			});
+	};
+
+	toggle = (state) => {
+		this.setState({
+			[state]: !this.state[state]
+		});
 	};
 
 	render() {
@@ -110,6 +126,12 @@ class Header extends React.Component {
 			<React.Fragment>
 				<div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
 					<Container fluid>
+						<Alertz
+							color={this.state.color}
+							message={this.state.message}
+							open={this.state.visible}
+							togglez={() => this.toggle('visible')}
+						/>
 						<div className="header-body">
 							{/* Card stats */}
 							<Row>

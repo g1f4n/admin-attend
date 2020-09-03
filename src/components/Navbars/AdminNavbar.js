@@ -83,7 +83,9 @@ class AdminNavbar extends React.Component {
 										<span className="avatar avatar-sm rounded-circle">
 											<img
 												alt="..."
-												src={getCurrentUser().get('fotoWajah').url() }
+												width={37}
+												height={37}
+												src={getCurrentUser().get('fotoWajah').url()}
 											/>
 										</span>
 										<Media className="ml-2 d-none d-lg-block">

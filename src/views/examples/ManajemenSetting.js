@@ -53,12 +53,13 @@ import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
 import Alertz from 'components/Alert/Alertz';
 
-class ManajemenPosisi extends React.Component {
+class ManajemenSetting extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			posisi: [],
-			inputPosisi: '',
+			inputTimer: 0,
+			inputRadius: 0,
 			detail: {},
 			loading: false,
 			approvalMode: false,
@@ -86,13 +87,14 @@ class ManajemenPosisi extends React.Component {
 
 	getData = () => {
 		this.setState({ loading: true });
-		const Position = new Parse.Object.extend('Position');
-		const query = new Parse.Query(Position);
+		const AppSetting = new Parse.Object.extend('AppSetting');
+		const query = new Parse.Query(AppSetting);
 
 		query.equalTo('status', 1);
 		query
 			.find()
 			.then((x) => {
+				console.log(x);
 				this.setState({ posisi: x, loading: false });
 			})
 			.catch((err) => {
@@ -103,12 +105,13 @@ class ManajemenPosisi extends React.Component {
 
 	handleAdd = (e) => {
 		e.preventDefault();
-		const { inputPosisi } = this.state;
+		const { inputRadius, inputTimer } = this.state;
 		this.setState({ loadingModal: true });
 
-		const Position = Parse.Object.extend('Position');
-		const query = new Position();
-		query.set('position', inputPosisi);
+		const AppSetting = Parse.Object.extend('AppSetting');
+		const query = new AppSetting();
+		query.set('validationTimer', parseInt(inputRadius));
+		query.set('radiusAbsen', parseInt(inputTimer));
 
 		query
 			.save()
@@ -135,13 +138,17 @@ class ManajemenPosisi extends React.Component {
 	getDetail = (e, id) => {
 		e.preventDefault();
 
-		const Position = Parse.Object.extend('Position');
-		const query = new Parse.Query(Position);
+		const AppSetting = Parse.Object.extend('AppSetting');
+		const query = new Parse.Query(AppSetting);
 
 		query
 			.get(id)
 			.then(({ attributes }) => {
-				this.setState({ inputPosisi: attributes.position, editMode: true });
+				this.setState({
+					inputTimer: attributes.validationTimer,
+					inputRadius: attributes.radiusAbsen,
+					editMode: true
+				});
 			})
 			.catch((err) => {
 				console.log(err.message);
@@ -155,16 +162,17 @@ class ManajemenPosisi extends React.Component {
 
 	handleUpdate = (e) => {
 		e.preventDefault();
-		const { inputPosisi } = this.state;
+		const { inputTimer, inputRadius } = this.state;
 		this.setState({ loadingModal: true });
 
-		const Position = Parse.Object.extend('Position');
-		const query = new Parse.Query(Position);
+		const AppSetting = Parse.Object.extend('AppSetting');
+		const query = new Parse.Query(AppSetting);
 
 		query
 			.get(this.state.userId)
 			.then((z) => {
-				z.set('position', inputPosisi);
+				z.set('validationTimer', inputTimer);
+				z.set('radiusAbsen', inputRadius);
 				z
 					.save()
 					.then((x) => {
@@ -200,8 +208,8 @@ class ManajemenPosisi extends React.Component {
 		const { inputLevel } = this.state;
 		this.setState({ loadingModal: true });
 
-		const Position = Parse.Object.extend('Position');
-		const query = new Parse.Query(Position);
+		const AppSetting = Parse.Object.extend('AppSetting');
+		const query = new Parse.Query(AppSetting);
 
 		query
 			.get(this.state.userId)
@@ -270,7 +278,8 @@ class ManajemenPosisi extends React.Component {
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row>
-										<Button
+										Manage Setting
+										{/* <Button
 											className="ml-2"
 											color="primary"
 											data-dismiss="modal"
@@ -278,7 +287,7 @@ class ManajemenPosisi extends React.Component {
 											onClick={() => this.setState({ addMode: true })}
 										>
 											<i className="fa fa-plus" /> Tambah
-										</Button>
+										</Button> */}
 									</Row>
 									<Alertz
 										color={this.state.color}
@@ -292,7 +301,8 @@ class ManajemenPosisi extends React.Component {
 									<thead className="thead-light">
 										<tr>
 											<th scope="col">No</th>
-											<th scope="col">Posisi</th>
+											<th scope="col">Validation Timer</th>
+											<th scope="col">Radius Absen</th>
 											<th scope="col">Aksi</th>
 										</tr>
 									</thead>
@@ -330,7 +340,8 @@ class ManajemenPosisi extends React.Component {
 											posisi.map((prop, key) => (
 												<tr>
 													<td>{key + 1}</td>
-													<td>{prop.get('position')}</td>
+													<td>{prop.get('validationTimer')}</td>
+													<td>{prop.get('radiusAbsen')}</td>
 													<td>
 														<Button
 															id="t1"
@@ -354,7 +365,7 @@ class ManajemenPosisi extends React.Component {
 															Ubah data
 														</UncontrolledTooltip>
 
-														<Button
+														{/* <Button
 															id="t2"
 															className="btn-circle btn-danger"
 															onClick={(e) => {
@@ -374,7 +385,7 @@ class ManajemenPosisi extends React.Component {
 															target="t2"
 														>
 															Hapus data
-														</UncontrolledTooltip>
+														</UncontrolledTooltip> */}
 													</td>
 												</tr>
 											))
@@ -448,14 +459,26 @@ class ManajemenPosisi extends React.Component {
 					body={
 						<Form onSubmit={(e) => this.handleUpdate(e)}>
 							<FormGroup>
-								<Label>Posisi</Label>
+								<Label>Validation Timer</Label>
 								<Input
 									id="zz1"
-									placeholder="Masukkan posisi"
-									value={this.state.inputPosisi}
+									placeholder="Masukkan validation timer"
+									value={this.state.inputTimer}
 									type="text"
 									required={true}
-									onChange={(e) => this.setState({ inputPosisi: e.target.value })}
+									onChange={(e) => this.setState({ inputTimer: e.target.value })}
+								/>
+							</FormGroup>
+
+							<FormGroup>
+								<Label>Radius Absen</Label>
+								<Input
+									id="zz1"
+									placeholder="Masukkan radius absen"
+									value={this.state.inputRadius}
+									type="text"
+									required={true}
+									onChange={(e) => this.setState({ inputRadius: e.target.value })}
 								/>
 							</FormGroup>
 
@@ -506,4 +529,4 @@ class ManajemenPosisi extends React.Component {
 	}
 }
 
-export default ManajemenPosisi;
+export default ManajemenSetting;

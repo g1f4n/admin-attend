@@ -54,6 +54,7 @@ import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
 import emailjs from 'emailjs-com';
+import Alertz from 'components/Alert/Alertz';
 
 class SelfRegistration extends React.Component {
 	constructor(props) {
@@ -88,11 +89,11 @@ class SelfRegistration extends React.Component {
 			loadingReco: false,
 			name: '',
 			nik: '',
-			tipeKaryawan: 'Karyawan tetap',
+			tipeKaryawan: '',
 			posisi: '',
 			imei: '',
-			jamKerja: 'Jam tetap',
-			lokasiKerja: 'Tetap',
+			jamKerja: '',
+			lokasiKerja: '',
 			jumlahCuti: 0,
 			lembur: 'ya',
 			username: '',
@@ -100,7 +101,14 @@ class SelfRegistration extends React.Component {
 			selectLeader: '',
 			statusReco: 0,
 			email: '',
-			fotoWajahObj: {}
+			fotoWajahObj: {},
+			message: '',
+			color: 'danger',
+			visible: false,
+			daftarPoint: [],
+			jamMasuk: 0,
+			jamKeluar: 0,
+			absenPoint: []
 		};
 	}
 
@@ -110,9 +118,26 @@ class SelfRegistration extends React.Component {
 		this.getLevel();
 		this.getPosisi();
 		this.getTipe();
+		this.getPoint();
 		this.getShifting();
 		emailjs.init('user_h2fWwDoztgEPcKNQ9vadt');
 	}
+
+	getPoint = () => {
+		const ValidGeopoint = new Parse.Object.extend('ValidGeopoint');
+		const query = new Parse.Query(ValidGeopoint);
+
+		query.equalTo('status', 1);
+		query
+			.find()
+			.then((x) => {
+				this.setState({ daftarPoint: x, loading: false });
+			})
+			.catch((err) => {
+				alert(err.message);
+				this.setState({ loading: false });
+			});
+	};
 
 	sendEmail = (e) => {
 		emailjs.sendForm('gmail', 'template_N8cRQk3D', e.target, 'user_h2fWwDoztgEPcKNQ9vadt').then(
@@ -284,7 +309,7 @@ class SelfRegistration extends React.Component {
 			.catch((err) => alert('Terjadi error...'));
 	};
 
-	handleSendEmail = (email, from, to, message, alasan, state) => {
+	handleSendEmail = (email, from, to, message, alasan, state, alertMessage) => {
 		var template_params = {
 			to_email: email,
 			from_name: from,
@@ -293,22 +318,32 @@ class SelfRegistration extends React.Component {
 			alasan: alasan
 		};
 
-		var service_id = 'default_service';
+		var service_id = 'gmail';
 		var template_id = 'template_N8cRQk3D';
 		emailjs
 			.send(service_id, template_id, template_params)
 			.then(() => {
 				this.setState({
 					[state]: false,
-					loadingModal: false
+					loadingModal: false,
+					message: alertMessage,
+					visible: true,
+					color: 'success'
 				});
-				alert(`Berhasil ${state === 'addMode' ? 'registrasi' : 'reject'}`);
+				//alert(`Berhasil ${state === 'addMode' ? 'registrasi' : 'reject'}`);
 				console.log('sukses');
+
 				window.location.reload(false);
 				return;
 			})
 			.catch((err) => {
-				alert('Something went wrong, please try again');
+				this.setState({
+					[state]: false,
+					loadingModal: false,
+					message: 'Gagal tambah data, coba lagi',
+					visible: true
+				});
+				//alert('Something went wrong, please try again');
 				console.log(err);
 				window.location.reload(false);
 			});
@@ -333,12 +368,18 @@ class SelfRegistration extends React.Component {
 						this.state.name,
 						'Maaf self registration kamu ditolak dengan alasan:',
 						this.state.reason,
-						'rejectMode'
+						'rejectMode',
+						'Berhasil reject'
 					);
 				})
 				.catch((err) => {
 					alert(err.message);
-					this.setState({ loadingModal: false, rejectMode: false });
+					this.setState({
+						loadingModal: false,
+						rejectMode: false,
+						message: 'Gagal reject data',
+						visible: true
+					});
 				});
 		});
 	};
@@ -360,7 +401,8 @@ class SelfRegistration extends React.Component {
 			fotoWajah,
 			username,
 			password,
-			email
+			email,
+			absenPoint
 		} = this.state;
 
 		const user = new Parse.User();
@@ -369,10 +411,16 @@ class SelfRegistration extends React.Component {
 			className: '_User',
 			objectId: this.state.selectLeader
 		});
+		// user.set('absenPoint', {
+		// 	__type: 'Pointer',
+		// 	className: 'ValidGeopoint',
+		// 	objectId: absenPoint
+		// });
 		user.set('fullname', name);
 		user.set('email', email);
 		user.set('username', nik.toUpperCase());
 		user.set('password', password);
+		user.set('absenPoint', this.state.absenPoint);
 		user.set('passwordClone', password);
 		user.set('nik', nik.toUpperCase());
 		user.set('tipe', tipeKaryawan);
@@ -402,19 +450,30 @@ class SelfRegistration extends React.Component {
 								this.state.name,
 								'Selamat kamu berhasil melakukan self registration! Silahkan login menggunakan NIK dan password yang sudah kamu buat, terimakasih!',
 								'',
-								'addMode'
+								'addMode',
+								'Berhasil approve data'
 							);
 						})
 						.catch((err) => {
-							alert(err.message);
-							this.setState({ loadingModal: false, rejectMode: false });
+							console.log(err.message);
+							this.setState({
+								loadingModal: false,
+								rejectMode: false,
+								message: 'Gagal tambah data, coba lagi',
+								visible: true
+							});
 						});
 				});
 			})
 			.catch((err) => {
-				this.setState({ addMode: false, loadingModal: false });
+				this.setState({
+					addMode: false,
+					loadingModal: false,
+					message: 'Gagal tambah data, coba lagi',
+					visible: true
+				});
 				console.log(err.message);
-				alert(err.message);
+				//alert(err.message);
 			});
 	};
 
@@ -431,6 +490,7 @@ class SelfRegistration extends React.Component {
 			loadingReco,
 			message,
 			approvalMode,
+			daftarPoint,
 			rejectMode,
 			detailMode,
 			loadingModal,
@@ -461,6 +521,12 @@ class SelfRegistration extends React.Component {
 								<CardHeader className="border-0">
 									<h3>Data self registration</h3>
 									<Row>
+										<Alertz
+											color={this.state.color}
+											message={this.state.message}
+											open={this.state.visible}
+											togglez={() => this.toggle('visible')}
+										/>
 										{/* <Button
 											className="ml-2"
 											color="primary"
@@ -871,6 +937,38 @@ class SelfRegistration extends React.Component {
 								</Input>
 							</FormGroup>
 
+							{this.state.jamKerja !== '' && this.state.jamKerja !== 'Jam bebas' ? (
+								<FormGroup controlId="formJam">
+									<Label>Jam masuk dan keluar</Label>
+									<Row>
+										<Col md={6}>
+											<Input
+												type="number"
+												required={true}
+												placeholder="Jam Masuk"
+												onChange={(e) =>
+													this.setState({
+														jamMasuk: e.target.value
+													})}
+											/>
+										</Col>
+										<Col md={6}>
+											<Input
+												type="number"
+												placeholder="Jam Keluar"
+												required={true}
+												onChange={(e) =>
+													this.setState({
+														jamKeluar: e.target.value
+													})}
+											/>
+										</Col>
+									</Row>
+								</FormGroup>
+							) : (
+								''
+							)}
+
 							<FormGroup controlId="formLokasi">
 								<Label>Lokasi kerja</Label>
 								<Input
@@ -889,6 +987,42 @@ class SelfRegistration extends React.Component {
 									))}
 								</Input>
 							</FormGroup>
+
+							{this.state.lokasiKerja === 'Tetap' ? (
+								<FormGroup controlId="formPoint">
+									<Label>Absen point</Label>
+									<Input
+										type="select"
+										required={true}
+										onChange={(e) =>
+											this.setState(
+												{
+													absenPoint: e.target.value.split(',')
+												},
+												() =>
+													this.state.absenPoint.map((x) => {
+														console.log(parseFloat(x));
+													})
+											)}
+									>
+										<option selected disabled hidden>
+											Pilih absen point
+										</option>
+										{daftarPoint.map((x) => (
+											<option
+												value={[
+													parseFloat(x.get('latitude')),
+													parseFloat(x.get('longitude'))
+												]}
+											>
+												{x.get('placeName')}
+											</option>
+										))}
+									</Input>
+								</FormGroup>
+							) : (
+								''
+							)}
 
 							<FormGroup controlId="formCuti">
 								<Label>Jumlah cuti</Label>

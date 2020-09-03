@@ -51,6 +51,7 @@ import moment from 'moment';
 import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
+import Alertz from 'components/Alert/Alertz';
 
 class TipeKaryawan extends React.Component {
 	constructor(props) {
@@ -72,7 +73,10 @@ class TipeKaryawan extends React.Component {
 			addMode: false,
 			deleteMode: false,
 			editMode: false,
-			deleteCounter: 0
+			deleteCounter: 0,
+			message: '',
+			color: 'danger',
+			visible: false
 		};
 	}
 
@@ -112,12 +116,19 @@ class TipeKaryawan extends React.Component {
 				this.setState({
 					addMode: false,
 					loadingModal: false,
-					tipe: this.state.tipe.concat(z)
+					tipe: this.state.tipe.concat(z),
+					message: 'Berhasil tambah data',
+					visible: true,
+					color: 'success'
 				});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal tambah data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -155,17 +166,27 @@ class TipeKaryawan extends React.Component {
 					.then((x) => {
 						this.setState({
 							editMode: false,
-							loadingModal: false
+							loadingModal: false,
+							message: 'Berhasil update data',
+							visible: true
 						});
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal update data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal update data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -188,18 +209,27 @@ class TipeKaryawan extends React.Component {
 						this.setState({
 							deleteMode: false,
 							loadingModal: false,
-							tipe: newArr
+							tipe: newArr,
+							message: 'Berhasil hapus data',
+							visible: true
 						});
-						alert('Berhasil hapus data');
 					})
 					.catch((err) => {
-						alert(err.message);
-						this.setState({ loadingModal: false });
+						console.log(err.message);
+						this.setState({
+							loadingModal: false,
+							message: 'Gagal hapus data, coba lagi',
+							visible: true
+						});
 					});
 			})
 			.catch((err) => {
-				alert(err.message);
-				this.setState({ loadingModal: false });
+				console.log(err.message);
+				this.setState({
+					loadingModal: false,
+					message: 'Gagal hapus data, coba lagi',
+					visible: true
+				});
 			});
 	};
 
@@ -243,6 +273,12 @@ class TipeKaryawan extends React.Component {
 											<i className="fa fa-plus" /> Tambah
 										</Button>
 									</Row>
+									<Alertz
+										color={this.state.color}
+										message={this.state.message}
+										open={this.state.visible}
+										togglez={() => this.toggle('visible')}
+									/>
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>
 								<Table className="align-items-center table-flush" responsive>

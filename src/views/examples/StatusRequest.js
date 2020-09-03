@@ -43,6 +43,7 @@ import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import Axios from 'axios';
 import HeaderNormal from 'components/Headers/HeaderNormal';
+import Alertz from 'components/Alert/Alertz';
 
 class StatusRequest extends React.Component {
 	constructor(props) {
@@ -62,7 +63,11 @@ class StatusRequest extends React.Component {
 			checkId: [],
 			loadingReco: false,
 			detail: {},
-			detailMode: false
+			detailMode: false,
+			message: '',
+			color: 'danger',
+			visible: false,
+			idUser: ''
 		};
 	}
 
@@ -131,18 +136,20 @@ class StatusRequest extends React.Component {
 		const ChangeRequest = Parse.Object.extend('ChangeRequest');
 		const query = new Parse.Query(ChangeRequest);
 
-		query.equalTo('userId', {
-			__type: 'Pointer',
-			className: '_User',
-			objectId: this.state.userId
-		});
-		query.first().then((x) => {
+		query.get(this.state.idUser).then((x) => {
 			x.set('statusApprove', 0);
 			x.set('alasanReject', this.state.reason);
 			x.save().then(() => {
-				alert(`Berhasil reject`);
-				window.location.reload(false);
-				return;
+				const newArr = [ ...this.state.staff ];
+				newArr.splice(this.state.userIndex, 1);
+				this.setState({
+					message: 'Berhasil reject',
+					color: 'success',
+					visible: true,
+					staff: newArr,
+					rejectMode: false,
+					loading: false
+				});
 			});
 		});
 	};
@@ -159,22 +166,20 @@ class StatusRequest extends React.Component {
 				const ChangeRequest = Parse.Object.extend('ChangeRequest');
 				const query = new Parse.Query(ChangeRequest);
 
-				query.equalTo('userId', {
-					__type: 'Pointer',
-					className: '_User',
-					objectId: this.state.userId
-				});
 				query.exclude('createdAt');
 				query.exclude('updatedAt');
 
 				query.include('userId');
 				query
-					.first()
+					.get(this.state.idUser)
 					.then((changeRequest) => {
 						let data = changeRequest.attributes;
 						console.log(changeRequest);
 						for (var i in data) {
 							if (i === 'statusApprove') continue;
+							if (i === 'leaderId') continue;
+							if (i === 'idUser') continue;
+							if (i === 'userId') continue;
 							user.set(i, data[i]);
 						}
 						user
@@ -186,28 +191,54 @@ class StatusRequest extends React.Component {
 								changeRequest
 									.save()
 									.then((ex) => {
-										alert(`Berhasil ${approvalMode ? 'approve' : 'reject'}`);
-										window.location.reload();
-										return;
+										const newArr = [ ...this.state.staff ];
+										newArr.splice(this.state.userIndex, 1);
+										this.setState({
+											message: 'Berhasil approve',
+											color: 'success',
+											staff: newArr,
+											approvalMode: false,
+											loadingModal: false,
+											visible: true
+										});
 									})
 									.catch((err) => {
-										alert(err.message);
-										this.setState({ loadingModal: false });
+										console.log(err.message);
+										this.setState({
+											loadingModal: false,
+											message: 'Terjadi kesalahan',
+											color: 'danger',
+											visible: true
+										});
 									});
 							})
-							.catch((err) => alert(err.message));
+							.catch((err) => {
+								console.log(err.message);
+								this.setState({
+									loadingModal: false,
+									message: 'Terjadi kesalahan',
+									color: 'danger'
+								});
+							});
 					})
 					.catch(({ message }) => {
-						this.setState({ loading: false });
-						alert(message);
-						window.location.reload(false);
-						return;
+						this.setState({
+							loadingModal: false,
+							message: 'Terjadi kesalahan',
+							color: 'danger',
+							visible: true
+						});
+						console.log(message);
 					});
 			})
 			.catch((err) => {
 				console.log(err.message);
-				this.setState({ loading: false });
-				alert('cek koneksi anda');
+				this.setState({
+					loading: false,
+					message: 'Terjadi kesalahan',
+					color: 'danger',
+					visible: true
+				});
 			});
 	};
 
@@ -233,7 +264,13 @@ class StatusRequest extends React.Component {
 						<div className="col">
 							<Card className="shadow">
 								<CardHeader className="border-0">
-									<h3 className="mb-0">Change request status</h3>
+									<h3 className="mb-2">Change request status</h3>
+									<Alertz
+										color={this.state.color}
+										message={this.state.message}
+										open={this.state.visible}
+										togglez={() => this.toggle('visible')}
+									/>
 								</CardHeader>
 								<Table className="align-items-center table-flush" responsive>
 									<thead className="thead-light">
@@ -338,6 +375,7 @@ class StatusRequest extends React.Component {
 																this.setState({
 																	approvalMode: true,
 																	userId: prop.get('userId').id,
+																	idUser: prop.id,
 																	userIndex: key,
 																	fullnames: prop.get('userId')
 																		.attributes.fullname
@@ -361,6 +399,7 @@ class StatusRequest extends React.Component {
 																this.setState({
 																	rejectMode: true,
 																	userId: prop.get('userId').id,
+																	idUser: prop.id,
 																	userIndex: key,
 																	fullnames: prop.get('userId')
 																		.attributes.fullname
