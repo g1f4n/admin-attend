@@ -278,7 +278,7 @@ class ManajemenSetting extends React.Component {
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row>
-										Manage Setting
+										<h3 className="ml-2">Manage Setting</h3>
 										{/* <Button
 											className="ml-2"
 											color="primary"

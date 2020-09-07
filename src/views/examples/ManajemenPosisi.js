@@ -280,12 +280,14 @@ class ManajemenPosisi extends React.Component {
 											<i className="fa fa-plus" /> Tambah
 										</Button>
 									</Row>
-									<Alertz
-										color={this.state.color}
-										message={this.state.message}
-										open={this.state.visible}
-										togglez={() => this.toggle('visible')}
-									/>
+									<Row>
+										<Alertz
+											color={this.state.color}
+											message={this.state.message}
+											open={this.state.visible}
+											togglez={() => this.toggle('visible')}
+										/>
+									</Row>
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>
 								<Table className="align-items-center table-flush" responsive>

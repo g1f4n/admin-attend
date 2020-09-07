@@ -15,7 +15,8 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from 'react';
+import React, { useRef } from 'react';
+import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polyline } from 'react-google-maps';
 // node.js library that concatenates classes (strings)
 import classnames from 'classnames';
 // javascipt plugin for creating charts
@@ -49,17 +50,87 @@ import Header from 'components/Headers/Header.js';
 import { getUsername } from 'utils';
 import { getLeaderId } from 'utils';
 import { Link } from 'react-router-dom';
+import { convertDate } from 'utils';
+import { slicename } from 'utils/slice';
+
+const MapWrapper = withScriptjs(
+	withGoogleMap((props) => (
+		<GoogleMap
+			defaultZoom={12}
+			defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+			center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+			defaultOptions={{
+				scrollwheel: false
+			}}
+		>
+			{props.userPosition.map((x) => (
+				<Marker
+					icon={{
+						labelOrigin: new window.google.maps.Point(11, 50),
+						url: require(`./GmapsIcon/${x.get('user').attributes.color === undefined
+							? 'red'
+							: x.get('user').attributes.color}-dot.png`),
+						//size: new window.google.maps.Size(22, 40),
+						origin: new window.google.maps.Point(0, 0),
+						anchor: new window.google.maps.Point(11, 40)
+					}}
+					// icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
+					// 	? 'red'
+					// 	: x.get('user').attributes.color}-dot.png`)}
+					title={`${x.get('fullname')} absen masuk: ${convertDate(
+						x.get('absenMasuk'),
+						'HH:mm:ss'
+					)}`}
+					position={{
+						lat: parseFloat(x.get('latitude')),
+						lng: parseFloat(x.get('longitude'))
+					}}
+					label={{
+						text: slicename(x.get('fullname')),
+						fontWeight: 'bold'
+					}}
+				/>
+			))}
+
+			{/* {path.concat(path2).map((x, i) => (
+				<Marker
+					title="joker"
+					position={{
+						lat: x['lat'],
+						lng: x['lng']
+					}}
+				/>
+			))}
+
+			{[ path, path2 ].map((x, i) => (
+				<Polyline
+					options={{
+						strokeColor: '#ff2527',
+						strokeOpacity: 0.75,
+						strokeWeight: 2
+					}}
+					path={x}
+				/>
+			))} */}
+		</GoogleMap>
+	))
+);
 
 class Index extends React.Component {
 	constructor(props) {
 		super(props);
+		this.lcoationRef = React.createRef();
 		this.state = {
 			activeNav: 1,
 			chartExample1Data: 'data1',
 			loading: false,
 			totalStaff: 0,
 			daftarRequest: [],
-			daftarLeader: []
+			daftarLeader: [],
+			dataAbsen: [],
+			late: [],
+			avgLat: 0,
+			avgLng: 0
 		};
 		if (window.Chart) {
 			parseOptions(Chart, chartOptions());
@@ -69,7 +140,28 @@ class Index extends React.Component {
 	componentDidMount() {
 		this.getDaftarRequest();
 		this.getDaftarLeader();
+		this.getLeaderStaff();
+		this.getDataTerlambat();
 	}
+
+	scrollToMyRef = () => window.scrollTo(0, this.lcoationRef.offsetTop);
+
+	getCenterAverage = (arr) => {
+		let avgLat = arr.reduce((acc, currentValue) => {
+			return acc + parseFloat(currentValue.get('latitude'));
+		}, 0);
+
+		let avgLng = arr.reduce((acc, currentValue) => {
+			return acc + parseFloat(currentValue.get('longitude'));
+		}, 0);
+
+		console.log(avgLat + ' ' + avgLng);
+
+		this.setState({
+			avgLat: avgLat / arr.length,
+			avgLng: avgLng / arr.length
+		});
+	};
 
 	toggleNavs = (e, index) => {
 		e.preventDefault();
@@ -124,8 +216,69 @@ class Index extends React.Component {
 			});
 	};
 
+	getDataTerlambat = () => {
+		this.setState({ loading: true });
+		const Late = Parse.Object.extend('Late');
+		const query = new Parse.Query(Late);
+
+		const d = new Date();
+		const start = new moment(d);
+		start.startOf('day');
+		const finish = new moment(start);
+		finish.add(1, 'day');
+
+		query.equalTo('status', 3);
+		query.greaterThanOrEqualTo('time', start.toDate());
+		query.lessThan('time', finish.toDate());
+		query.include('user');
+		query
+			.find()
+			.then((x) => {
+				x.map((y) => (y.select = false));
+				console.log(x);
+				this.setState({ late: x, loading: false });
+			})
+			.catch((err) => {
+				alert(err.message);
+				this.setState({ loading: false });
+			});
+	};
+
+	getLeaderStaff = () => {
+		this.setState({ loading: true });
+
+		const Absence = Parse.Object.extend('Absence');
+		const query = new Parse.Query(Absence);
+
+		const d = new Date();
+		const start = new moment(d);
+		start.startOf('day');
+		const finish = new moment(start);
+		finish.add(1, 'day');
+
+		query.greaterThanOrEqualTo('absenMasuk', start.toDate());
+		query.lessThan('absenMasuk', finish.toDate());
+		query.include('user');
+		query
+			.find()
+			.then((x) => {
+				console.log(x);
+				this.getCenterAverage(x);
+				this.setState({ dataAbsen: x, loading: false });
+			})
+			.catch((err) => {
+				console.log(err);
+				this.setState({ loading: false });
+			});
+	};
+
+	setCenterMaps = (lat, lng) => {
+		this.setState({ avgLat: parseFloat(lat), avgLng: parseFloat(lng) });
+	};
+
 	render() {
 		const { daftarRequest, loading, daftarLeader } = this.state;
+		console.log(this.state.dataAbsen.concat(this.state.late));
 
 		return (
 			<React.Fragment>
@@ -214,80 +367,43 @@ class Index extends React.Component {
 					</Row>
 					{''} */}
 					<Row className="mt-5">
-						<Col className="mb-5 mb-xl-0" xl="6">
-							<Card className="shadow">
-								<CardHeader className="border-0">
-									<Row className="align-items-center">
-										<div className="col">
-											<h3 className="mb-0">Daftar leader</h3>
-										</div>
-										{/* <div className="col text-right">
-											<Button
-												color="primary"
-												href="#pablo"
-												onClick={(e) => e.preventDefault()}
-												size="sm"
-											>
-												See all
-											</Button>
-										</div> */}
-									</Row>
-								</CardHeader>
-								<Table className="align-items-center table-flush" responsive>
-									<thead className="thead-light">
-										<tr>
-											<th scope="col">NIK</th>
-											<th scope="col">Fullname</th>
-											<th scope="col">Email</th>
-										</tr>
-									</thead>
-									<tbody>
-										{loading ? (
-											<tr>
-												<td colSpan={4} style={{ textAlign: 'center' }}>
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>{' '}
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>{' '}
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>
-												</td>
-											</tr>
-										) : daftarLeader.length < 1 ? (
-											<tr>
-												<td colSpan={4} style={{ textAlign: 'center' }}>
-													No data found...
-												</td>
-											</tr>
-										) : (
-											daftarLeader.map((prop, key) => (
-												<tr>
-													<td>{prop.get('nik')}</td>
-													<td>{prop.get('fullname')}</td>
-													<td>{prop.get('email')}</td>
-												</tr>
-											))
-										)}
-									</tbody>
-								</Table>
+						<Col className="mb-5 mb-xl-0" xl="12">
+							<Card className="shadow mb-5" ref={this.lcoationRef}>
+								{this.state.loading ? (
+									<div style={{ height: `100%`, textAlign: 'center' }}>
+										Loading map...
+									</div>
+								) : this.state.dataAbsen.concat(this.state.late).length === 0 ? (
+									<div style={{ height: `100%`, textAlign: 'center' }}>
+										Tidak ada data absen hari ini
+									</div>
+								) : (
+									<MapWrapper
+										userPosition={this.state.dataAbsen.concat(this.state.late)}
+										avgLat={this.state.avgLat}
+										avgLng={this.state.avgLng}
+										googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q"
+										loadingElement={<div style={{ height: `100%` }} />}
+										containerElement={
+											<div
+												style={{ height: `600px` }}
+												className="map-canvas"
+												id="map-canvas"
+											/>
+										}
+										mapElement={
+											<div
+												style={{
+													height: `100%`,
+													borderRadius: 'inherit'
+												}}
+											/>
+										}
+									/>
+								)}
 							</Card>
 						</Col>
-						<Col xl="6">
+						<Col xl="6" className="mb-5">
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row className="align-items-center">
@@ -379,6 +495,93 @@ class Index extends React.Component {
 								</Table>
 							</Card>
 						</Col>
+						<Col xl="6">
+							<Card className="shadow">
+								<CardHeader className="border-0">
+									<Row className="align-items-center">
+										<div className="col">
+											<h3 className="mb-0">Data absen hari ini</h3>
+										</div>
+									</Row>
+								</CardHeader>
+								<Table className="align-items-center table-flush" responsive>
+									<thead className="thead-light">
+										<tr>
+											<th scope="col">NIK</th>
+											<th scope="col">Nama</th>
+											<th scope="col">Absen masuk</th>
+										</tr>
+									</thead>
+									<tbody>
+										{loading ? (
+											<tr>
+												<td colSpan={3} style={{ textAlign: 'center' }}>
+													<Spinner
+														as="span"
+														animation="grow"
+														size="sm"
+														role="status"
+														aria-hidden="true"
+													/>{' '}
+													<Spinner
+														as="span"
+														animation="grow"
+														size="sm"
+														role="status"
+														aria-hidden="true"
+													/>{' '}
+													<Spinner
+														as="span"
+														animation="grow"
+														size="sm"
+														role="status"
+														aria-hidden="true"
+													/>
+												</td>
+											</tr>
+										) : this.state.dataAbsen.concat(this.state.late).map < 1 ? (
+											<tr>
+												<td colSpan={3} style={{ textAlign: 'center' }}>
+													No data found...
+												</td>
+											</tr>
+										) : (
+											this.state.dataAbsen
+												.concat(this.state.late)
+												.map((prop, key) => (
+													<tr
+														onClick={() => {
+															this.setCenterMaps(
+																prop.get('latitude'),
+																prop.get('longitude')
+															);
+															this.scrollToMyRef();
+														}}
+													>
+														<td>{prop.get('user').attributes.nik}</td>
+														<td>
+															{prop.get('user').attributes.fullname}
+														</td>
+														<td>
+															{prop.className === 'Late' ? (
+																`Terlambat ${convertDate(
+																	prop.get('time'),
+																	'HH:mm:ss'
+																)}`
+															) : (
+																convertDate(
+																	prop.get('absenMasuk'),
+																	'HH:mm:ss'
+																)
+															)}
+														</td>
+													</tr>
+												))
+										)}
+									</tbody>
+								</Table>
+							</Card>
+						</Col>
 					</Row>
 				</Container>
 			</React.Fragment>
@@ -386,4 +589,4 @@ class Index extends React.Component {
 	}
 }
 
-export default Index;
+export const Indexz = React.memo(Index);

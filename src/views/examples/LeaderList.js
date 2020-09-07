@@ -718,7 +718,7 @@ class LeaderList extends React.Component {
 							/>
 							<Card className="shadow">
 								<CardHeader className="border-0">
-									<h3>Data absen staff</h3>
+									<h3>Data leader</h3>
 									{/* <Row className="mb-4">
 										<Button
 											className="ml-2"
@@ -843,7 +843,7 @@ class LeaderList extends React.Component {
 														>
 															<Button
 																id="t4"
-																color="yellow"
+																color="primary"
 																className="btn-circle"
 																// onClick={(e) => {
 																// 	this.setState({
@@ -859,7 +859,7 @@ class LeaderList extends React.Component {
 																placement="top"
 																target="t4"
 															>
-																Lihat detail
+																Lihat absen staff
 															</UncontrolledTooltip>
 														</Link>
 

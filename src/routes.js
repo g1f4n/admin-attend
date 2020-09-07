@@ -30,13 +30,14 @@ import ExportData from 'views/examples/ExportData';
 import ManajemenSetting from 'views/examples/ManajemenSetting';
 import Maps from 'views/examples/Maps';
 import LeaderList from 'views/examples/LeaderList';
+import { Indexz } from 'views/Index';
 
 var routes = [
 	{
 		path: '/index',
 		name: 'Dashboard',
 		icon: 'ni ni-tv-2 text-primary',
-		component: Index,
+		component: Indexz,
 		layout: '/admin'
 	},
 	{
@@ -50,7 +51,7 @@ var routes = [
 	{
 		path: '/leader',
 		name: 'Leader',
-		icon: 'ni ni-tv-2 text-yellow',
+		icon: 'ni ni-pin-3 text-yellow',
 		component: LeaderList,
 		layout: '/admin'
 	},
@@ -113,14 +114,14 @@ var routes = [
 	{
 		path: '/appsetting',
 		name: 'Manage Setting',
-		icon: 'ni ni-spaceship text-blue',
+		icon: 'ni ni-settings text-blue',
 		component: ManajemenSetting,
 		layout: '/admin'
 	},
 	{
 		path: '/departemen',
 		name: 'Manage Departemen',
-		icon: 'ni ni-key-25 text-primary',
+		icon: 'ni ni-folder-17 text-primary',
 		component: ManajemenDepartemen,
 		layout: '/admin'
 	},

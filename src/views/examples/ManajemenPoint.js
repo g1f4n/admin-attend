@@ -269,26 +269,23 @@ class ManajemenPoint extends React.Component {
 							<Card className="shadow">
 								<CardHeader className="border-0">
 									<Row>
-										<Col lg={4}>
-											<Button
-												className="ml-2"
-												color="primary"
-												data-dismiss="modal"
-												type="button"
-												onClick={() => this.setState({ addMode: true })}
-											>
-												<i className="fa fa-plus" /> Tambah
-											</Button>
-										</Col>
-										<Col lg={4}>
-											<Alertz
-												color={this.state.color}
-												message={this.state.message}
-												open={this.state.visible}
-												togglez={() => this.toggle('visible')}
-											/>
-										</Col>
+										<Button
+											className="ml-2"
+											color="primary"
+											data-dismiss="modal"
+											type="button"
+											onClick={() => this.setState({ addMode: true })}
+										>
+											<i className="fa fa-plus" /> Tambah
+										</Button>
 									</Row>
+									<Alertz
+										color={this.state.color}
+										message={this.state.message}
+										open={this.state.visible}
+										togglez={() => this.toggle('visible')}
+									/>
+
 									{/* <input type="text" placeholder="input" /> */}
 								</CardHeader>
 								<Table className="align-items-center table-flush" responsive>

@@ -115,7 +115,9 @@ class RegisterKaryawan extends React.Component {
 			daftarPoint: [],
 			imeiMessage: '',
 			searchBy: 'all',
-			searchValue: ''
+			searchValue: '',
+			jamMasuk: 0,
+			jamKeluar: 0
 		};
 	}
 
@@ -468,7 +470,7 @@ class RegisterKaryawan extends React.Component {
 			className: '_User',
 			objectId: this.state.selectLeader
 		});
-		user.set('shifting', Shifting.createWithoutData(this.state.shifting));
+		//user.set('shifting', Shifting.createWithoutData(this.state.shifting));
 		user.set('fullname', name);
 		user.set('email', email);
 		user.set('username', username);
@@ -481,6 +483,8 @@ class RegisterKaryawan extends React.Component {
 		user.set('imei', imei);
 		user.set('jamKerja', jamKerja);
 		user.set('lokasiKerja', lokasiKerja);
+		user.set('jamMasuk', this.state.jamMasuk);
+		user.set('jamKeluar', this.state.jamKeluar);
 		user.set('jumlahCuti', parseInt(jumlahCuti));
 		user.set('lembur', lembur);
 		user.set('roles', level);
@@ -542,14 +546,17 @@ class RegisterKaryawan extends React.Component {
 						className: '_User',
 						objectId: this.state.selectLeader
 					});
-				if (this.state.shifting !== '')
-					x.set('shifting', {
-						__type: 'Pointer',
-						className: 'Shifting',
-						objectId: this.state.shifting
-					});
+				// if (this.state.shifting !== '')
+				// 	x.set('shifting', {
+				// 		__type: 'Pointer',
+				// 		className: 'Shifting',
+				// 		objectId: this.state.shifting
+				// 	});
 				x.set('fullname', this.state.fullname);
 				x.set('email', email);
+				x.set('username', username);
+				x.set('jamMasuk', this.state.jamMasuk);
+				x.set('jamKeluar', this.state.jamKeluar);
 				x.set('username', username);
 				if (password !== '') {
 					x.set('password', md5(password));
