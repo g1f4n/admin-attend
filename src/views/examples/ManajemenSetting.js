@@ -90,7 +90,7 @@ class ManajemenSetting extends React.Component {
 		const AppSetting = new Parse.Object.extend('AppSetting');
 		const query = new Parse.Query(AppSetting);
 
-		query.equalTo('status', 1);
+		//query.equalTo('status', 1);
 		query
 			.find()
 			.then((x) => {
@@ -301,8 +301,8 @@ class ManajemenSetting extends React.Component {
 									<thead className="thead-light">
 										<tr>
 											<th scope="col">No</th>
-											<th scope="col">Validation Timer</th>
-											<th scope="col">Radius Absen</th>
+											<th scope="col">Validation Timer (Detik)</th>
+											<th scope="col">Radius Absen (Meter)</th>
 											<th scope="col">Aksi</th>
 										</tr>
 									</thead>

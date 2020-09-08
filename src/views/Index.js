@@ -16,7 +16,15 @@
 
 */
 import React, { useRef } from 'react';
-import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polyline } from 'react-google-maps';
+import { compose, withProps, withStateHandlers } from 'recompose';
+import {
+	withScriptjs,
+	withGoogleMap,
+	GoogleMap,
+	Marker,
+	Polyline,
+	InfoWindow
+} from 'react-google-maps';
 // node.js library that concatenates classes (strings)
 import classnames from 'classnames';
 // javascipt plugin for creating charts
@@ -53,7 +61,107 @@ import { Link } from 'react-router-dom';
 import { convertDate } from 'utils';
 import { slicename } from 'utils/slice';
 
-const MapWrapper = withScriptjs(
+const MapWrapper = compose(
+	withStateHandlers(
+		() => ({
+			isOpen: false,
+			id: ''
+		}),
+		{
+			onToggleOpen: ({ isOpen, id }) => (idx) => ({
+				isOpen: !isOpen,
+				id: idx
+			})
+		}
+	),
+	withScriptjs,
+	withGoogleMap
+)((props) => (
+	<GoogleMap
+		defaultZoom={12}
+		defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+		center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+		defaultOptions={{
+			scrollwheel: false
+		}}
+	>
+		{props.userPosition.map((x) => (
+			<Marker
+				key={x.id}
+				onClick={(e) => {
+					console.log(x.id);
+					props.onToggleOpen(x.id);
+					// x.select = true;
+				}}
+				icon={{
+					labelOrigin: new window.google.maps.Point(11, 50),
+					url: require(`./GmapsIcon/${x.get('user').attributes.color === undefined
+						? 'red'
+						: x.get('user').attributes.color}-dot.png`),
+					//size: new window.google.maps.Size(22, 40),
+					origin: new window.google.maps.Point(0, 0),
+					anchor: new window.google.maps.Point(11, 40)
+				}}
+				// icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
+				// 	? 'red'
+				// 	: x.get('user').attributes.color}-dot.png`)}
+				title={`${x.get('fullname')} absen masuk: ${convertDate(
+					x.get('absenMasuk'),
+					'HH:mm:ss'
+				)}`}
+				position={{
+					lat: parseFloat(x.get('latitude')),
+					lng: parseFloat(x.get('longitude'))
+				}}
+				label={{
+					text: slicename(x.get('fullname')),
+					fontWeight: 'bold'
+				}}
+			>
+				{x.id === props.id && (
+					<InfoWindow onCloseClick={props.onToggleOpen}>
+						<div>
+							<img src={x.get('selfieImage').url()} height={100} width={100} />
+
+							<br />
+							<br />
+							{x.className === 'Late' && <p>Terlambat</p>}
+							<p>
+								Absen masuk:{' '}
+								<span style={{ color: x.className === 'Late' ? 'red' : 'blue' }}>
+									{convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
+								</span>
+							</p>
+						</div>
+					</InfoWindow>
+				)}
+			</Marker>
+		))}
+
+		{/* {path.concat(path2).map((x, i) => (
+				<Marker
+					title="joker"
+					position={{
+						lat: x['lat'],
+						lng: x['lng']
+					}}
+				/>
+			))}
+
+			{[ path, path2 ].map((x, i) => (
+				<Polyline
+					options={{
+						strokeColor: '#ff2527',
+						strokeOpacity: 0.75,
+						strokeWeight: 2
+					}}
+					path={x}
+				/>
+			))} */}
+	</GoogleMap>
+));
+
+const MapWrapper2 = withScriptjs(
 	withGoogleMap((props) => (
 		<GoogleMap
 			defaultZoom={12}
@@ -144,9 +252,17 @@ class Index extends React.Component {
 		this.getDataTerlambat();
 	}
 
+	componentDidUpdate(prevProps, prevState) {
+		if (prevState.late !== this.state.late) {
+			console.log(this.state.dataAbsen);
+			this.getCenterAverage(this.state.dataAbsen.concat(this.state.late));
+		}
+	}
+
 	scrollToMyRef = () => window.scrollTo(0, this.lcoationRef.offsetTop);
 
 	getCenterAverage = (arr) => {
+		this.setState({ loading: true });
 		let avgLat = arr.reduce((acc, currentValue) => {
 			return acc + parseFloat(currentValue.get('latitude'));
 		}, 0);
@@ -159,7 +275,8 @@ class Index extends React.Component {
 
 		this.setState({
 			avgLat: avgLat / arr.length,
-			avgLng: avgLng / arr.length
+			avgLng: avgLng / arr.length,
+			loading: false
 		});
 	};
 
@@ -180,7 +297,7 @@ class Index extends React.Component {
 		query
 			.find({ useMasterKey: true })
 			.then((x) => {
-				this.setState({ daftarLeader: x, loading: false });
+				this.setState({ daftarLeader: x });
 			})
 			.catch((err) => {
 				console.log(err.message);
@@ -236,7 +353,7 @@ class Index extends React.Component {
 			.then((x) => {
 				x.map((y) => (y.select = false));
 				console.log(x);
-				this.setState({ late: x, loading: false });
+				this.setState({ late: x });
 			})
 			.catch((err) => {
 				alert(err.message);
@@ -262,9 +379,9 @@ class Index extends React.Component {
 		query
 			.find()
 			.then((x) => {
+				x.map((y) => (y.select = false));
 				console.log(x);
-				this.getCenterAverage(x);
-				this.setState({ dataAbsen: x, loading: false });
+				this.setState({ dataAbsen: x });
 			})
 			.catch((err) => {
 				console.log(err);
@@ -386,7 +503,7 @@ class Index extends React.Component {
 										loadingElement={<div style={{ height: `100%` }} />}
 										containerElement={
 											<div
-												style={{ height: `600px` }}
+												style={{ height: `500px` }}
 												className="map-canvas"
 												id="map-canvas"
 											/>
@@ -564,10 +681,14 @@ class Index extends React.Component {
 														</td>
 														<td>
 															{prop.className === 'Late' ? (
-																`Terlambat ${convertDate(
-																	prop.get('time'),
-																	'HH:mm:ss'
-																)}`
+																<div>
+																	<span style={{ color: 'red' }}>
+																		{convertDate(
+																			prop.get('time'),
+																			'HH:mm:ss'
+																		)}
+																	</span>
+																</div>
 															) : (
 																convertDate(
 																	prop.get('absenMasuk'),

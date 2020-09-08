@@ -22,10 +22,9 @@
 	"bugs": {
 		"url": "https://github.com/creativetimofficial/argon-dashboard-react/issues"
 	},
-	
 	"scripts": {
-		"startz": "react-scripts start",
-		"start": "node server.js",
+		"start": "react-scripts start",
+		"startz": "node server.js",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
@@ -67,7 +66,8 @@
 		"react-loading-skeleton": "^2.1.1",
 		"react-router-dom": "5.1.2",
 		"react-scripts": "^3.4.1",
-		"reactstrap": "8.4.1"
+		"reactstrap": "8.4.1",
+		"recompose": "^0.30.0"
 	},
 	"devDependencies": {
 		"@types/googlemaps": "3.39.2",
