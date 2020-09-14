@@ -32,12 +32,8 @@ import Maps from 'views/admin/Maps';
 import LeaderList from 'views/admin/LeaderList';
 import { Indexz } from 'views/Index';
 import AllAbsen from 'views/admin/AllAbsen';
-import { AllAbsenz } from 'views/admin/AllAbsen';
-import DaftarHariCuti from 'views/admin/DaftarHariCuti';
-import { Reportingz } from 'views/admin/Reporting';
-import TesEksport from 'views/admin/TesEksport';
 
-var routes = [
+var leaderRoutes = [
 	{
 		path: '/index',
 		name: 'Dashboard',
@@ -64,7 +60,7 @@ var routes = [
 		path: '/export-absen/:id',
 		name: 'Absen',
 		icon: 'ni ni-pin-3 text-danger',
-		component: AllAbsenz,
+		component: AllAbsen,
 		layout: '/admin',
 		invisible: true
 	},
@@ -80,13 +76,6 @@ var routes = [
 		name: 'Register',
 		icon: 'ni ni-bullet-list-67 text-red',
 		component: RegisterKaryawan,
-		layout: '/admin'
-	},
-	{
-		path: '/tes-eksport',
-		name: 'Tes eksport',
-		icon: 'ni ni-bullet-list-67 text-green',
-		component: TesEksport,
 		layout: '/admin'
 	},
 	{
@@ -108,13 +97,6 @@ var routes = [
 		name: 'Manage Tipe',
 		icon: 'ni ni-archive-2 text-danger',
 		component: TipeKaryawan,
-		layout: '/admin'
-	},
-	{
-		path: '/haricuti',
-		name: 'Manage Hari Cuti',
-		icon: 'ni ni-calendar-grid-58 text-primary',
-		component: DaftarHariCuti,
 		layout: '/admin'
 	},
 	{
@@ -150,13 +132,6 @@ var routes = [
 		name: 'Manage Departemen',
 		icon: 'ni ni-folder-17 text-primary',
 		component: ManajemenDepartemen,
-		layout: '/admin'
-	},
-	{
-		path: '/reporting',
-		name: 'Reporting',
-		icon: 'ni ni-key-25 text-danger',
-		component: Reportingz,
 		layout: '/admin'
 	},
 	{
@@ -240,4 +215,4 @@ var routes = [
 		invisible: true
 	}
 ];
-export default routes;
+export default leaderRoutes;

@@ -38,8 +38,10 @@ class Admin extends React.Component {
 				return (
 					<Route path={prop.layout + prop.path} component={prop.component} key={key} />
 				);
-			} else {
-				return null;
+			} else if (prop.layout === '/leader') {
+				return (
+					<Route path={prop.layout + prop.path} component={prop.component} key={key} />
+				);
 			}
 		});
 	};

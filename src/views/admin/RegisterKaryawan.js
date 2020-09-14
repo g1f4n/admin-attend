@@ -28,7 +28,6 @@ import {
 	UncontrolledDropdown,
 	DropdownToggle,
 	Media,
-	Pagination,
 	PaginationItem,
 	PaginationLink,
 	Progress,
@@ -45,6 +44,7 @@ import {
 	Label,
 	FormText
 } from 'reactstrap';
+import Pagination from 'react-js-pagination';
 // core components
 import Header from 'components/Headers/Header.js';
 import Parse from 'parse';
@@ -54,7 +54,6 @@ import { getLeaderId } from 'utils';
 import ModalHandler from 'components/Modal/Modal';
 import HeaderNormal from 'components/Headers/HeaderNormal';
 import md5 from 'md5';
-import Paginations from 'components/Pagination/Pagination';
 import Alertz from 'components/Alert/Alertz';
 
 class RegisterKaryawan extends React.Component {
@@ -66,7 +65,7 @@ class RegisterKaryawan extends React.Component {
 			daftarTipe: [],
 			daftarPosisi: [],
 			daftarLevel: [],
-			resPerPage: 25,
+			resPerPage: 20,
 			first: {},
 			loading: false,
 			approvalMode: false,
@@ -113,6 +112,7 @@ class RegisterKaryawan extends React.Component {
 			color: 'danger',
 			absenPoint: [],
 			daftarPoint: [],
+			idPoint: '',
 			imeiMessage: '',
 			searchBy: 'all',
 			searchValue: '',
@@ -122,7 +122,8 @@ class RegisterKaryawan extends React.Component {
 	}
 
 	componentDidMount() {
-		this.getStaff();
+		//this.getStaff();
+		this.handleFilterPagination();
 		this.getLeader();
 		this.getLevel();
 		this.getPosisi();
@@ -262,8 +263,8 @@ class RegisterKaryawan extends React.Component {
 		const query = new Parse.Query(User);
 
 		// query.notContainedIn('roles', [ 'admin', 'leader', 'Admin', 'Leader' ]);
-		// query.skip(resPerPage * page - resPerPage);
-		// query.limit(resPerPage);
+		query.skip(resPerPage * page - resPerPage);
+		query.limit(resPerPage);
 		query.withCount();
 
 		switch (searchBy) {
@@ -317,6 +318,23 @@ class RegisterKaryawan extends React.Component {
 					});
 				break;
 
+			case 'divisi':
+				query.matches('posisi', searchValue, 'i');
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loadingFilter: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
 			case 'level':
 				query.matches('level', searchValue, 'i');
 				query
@@ -351,6 +369,129 @@ class RegisterKaryawan extends React.Component {
 					})
 					.catch((err) => {
 						this.setState({ loadingFilter: false });
+						alert('cek koneksi anda');
+					});
+				break;
+			default:
+				break;
+		}
+	};
+
+	handleFilterPagination = (pageNumber = 1) => {
+		this.setState({ loading: true, page: pageNumber });
+		const { searchBy, searchValue } = this.state;
+		const { resPerPage, page } = this.state;
+
+		const User = new Parse.User();
+		const query = new Parse.Query(User);
+
+		// query.notContainedIn('roles', [ 'admin', 'leader', 'Admin', 'Leader' ]);
+		query.skip(resPerPage * pageNumber - resPerPage);
+		query.limit(resPerPage);
+		query.withCount();
+
+		switch (searchBy) {
+			case 'all':
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loading: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'divisi':
+				query.matches('posisi', searchValue, 'i');
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loading: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'name':
+				query.matches('fullname', searchValue, 'i');
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loading: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'nik':
+				query.equalTo('nik', searchValue);
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loading: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'level':
+				query.matches('level', searchValue, 'i');
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loading: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
+						alert('cek koneksi anda');
+					});
+				break;
+
+			case 'leader':
+				const leader = new Parse.User();
+				const leaderQuery = new Parse.Query(leader);
+				leaderQuery.matches('fullname', searchValue, 'i');
+
+				query.matchesQuery('leaderIdNew', leaderQuery);
+				query
+					.find({ useMasterKey: true })
+					.then((x) => {
+						this.setState({
+							daftarStaff: x.results,
+							totalData: x.count,
+							loading: false
+						});
+					})
+					.catch((err) => {
+						this.setState({ loading: false });
 						alert('cek koneksi anda');
 					});
 				break;
@@ -470,6 +611,11 @@ class RegisterKaryawan extends React.Component {
 			className: '_User',
 			objectId: this.state.selectLeader
 		});
+		user.set('absenPoint', {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: this.state.absenPoint
+		});
 		//user.set('shifting', Shifting.createWithoutData(this.state.shifting));
 		user.set('fullname', name);
 		user.set('email', email);
@@ -545,6 +691,12 @@ class RegisterKaryawan extends React.Component {
 						__type: 'Pointer',
 						className: '_User',
 						objectId: this.state.selectLeader
+					});
+				if (this.state.idPoint !== '')
+					x.set('absenPoint', {
+						__type: 'Pointer',
+						className: '_User',
+						objectId: this.state.idPoint
 					});
 				// if (this.state.shifting !== '')
 				// 	x.set('shifting', {
@@ -650,6 +802,20 @@ class RegisterKaryawan extends React.Component {
 		});
 	};
 
+	handleIdAbsen = (e) => {
+		var element_input = document.getElementById('myoptions');
+		var element_datalist = document.getElementById('data');
+		var opSelected = element_datalist.querySelector(`[value="${element_input.value}"]`);
+		if (opSelected.getAttribute('data-key') !== null) {
+			var id = opSelected.getAttribute('data-key');
+			console.log(id);
+			console.log(e.target.value);
+			this.setState({
+				selectLeader: id
+			});
+		}
+	};
+
 	render() {
 		const {
 			daftarStaff,
@@ -694,13 +860,21 @@ class RegisterKaryawan extends React.Component {
 						})}
 				>
 					<option selected disabled hidden>
-						Pilih level
+						Pilih {this.state.searchBy}
 					</option>
-					{daftarLevel.map((x, i) => (
-						<option key={i} value={x.get('level')}>
-							{x.get('level')}
-						</option>
-					))}
+					{this.state.searchBy === 'leader' ? (
+						daftarLevel.map((x, i) => (
+							<option key={i} value={x.get('level')}>
+								{x.get('level')}
+							</option>
+						))
+					) : (
+						this.state.daftarPosisi.map((x, i) => (
+							<option key={i} value={x.get('position')}>
+								{x.get('position')}
+							</option>
+						))
+					)}
 				</Input>
 			</FormGroup>
 		);
@@ -760,16 +934,17 @@ class RegisterKaryawan extends React.Component {
 														type="select"
 														onChange={(e) =>
 															this.setState({
-																searchBy: e.target.value,
+																searchBy: e.target.value.toLowerCase(),
 																searchValue: ''
 															})}
 													>
 														{[
-															'all',
-															'nik',
-															'name',
-															'level',
-															'leader'
+															'All',
+															'NIK',
+															'Name',
+															'Level',
+															'Leader',
+															'Divisi'
 														].map((x) => (
 															<option value={x}>{x}</option>
 														))}
@@ -777,7 +952,8 @@ class RegisterKaryawan extends React.Component {
 												</FormGroup>
 											</Col>
 											<Col lg={4}>
-												{this.state.searchBy === 'level' ? (
+												{this.state.searchBy === 'level' ||
+												this.state.searchBy === 'divisi' ? (
 													selectForm
 												) : (
 													textForm
@@ -928,7 +1104,20 @@ class RegisterKaryawan extends React.Component {
 										)}
 									</tbody>
 								</Table>
-								<Paginations resPerPage={this.state.resPerPage} totalPosts={20} />
+								<Pagination
+									activePage={this.state.page}
+									itemsCountPerPage={this.state.resPerPage}
+									totalItemsCount={this.state.totalData}
+									pageRangeDisplayed={5}
+									onChange={(pageNumber) =>
+										this.handleFilterPagination(pageNumber)}
+									innerClass="pagination justify-content-end p-4"
+									itemClass="page-item mt-2"
+									linkClass="page-link"
+									prevPageText="<"
+									nextPageText=">"
+								/>
+								{/* <Paginations resPerPage={this.state.resPerPage} totalPosts={20} /> */}
 							</Card>
 						</div>
 					</Row>
@@ -1001,12 +1190,13 @@ class RegisterKaryawan extends React.Component {
 								<FormGroup controlId="formLeaders">
 									<Label>Pilih leader</Label>
 									<Input
-										type="select"
+										id="myoptions"
+										list="data"
+										type="text"
 										required={true}
-										onChange={(e) =>
-											this.setState({
-												selectLeader: e.target.value
-											})}
+										onChange={(e) => {
+											this.handleIdAbsen(e);
+										}}
 									>
 										<option selected disabled hidden>
 											Pilih leader
@@ -1017,6 +1207,16 @@ class RegisterKaryawan extends React.Component {
 											</option>
 										))}
 									</Input>
+									{/* <datalist id="data">
+										{this.state.daftarLeader.map((x, i) => (
+											<option
+												key={i}
+												data-key={x.id}
+												value={x.get('fullname')}
+											>
+											</option>
+										))}
+									</datalist> */}
 								</FormGroup>
 							) : (
 								''
@@ -1225,28 +1425,15 @@ class RegisterKaryawan extends React.Component {
 										type="select"
 										required={true}
 										onChange={(e) =>
-											this.setState(
-												{
-													absenPoint: e.target.value.split(',')
-												},
-												() =>
-													this.state.absenPoint.map((x) => {
-														console.log(parseFloat(x));
-													})
-											)}
+											this.setState({
+												idPoint: e.target.value
+											})}
 									>
 										<option selected disabled hidden>
 											Pilih absen point
 										</option>
 										{daftarPoint.map((x) => (
-											<option
-												value={[
-													parseFloat(x.get('latitude')),
-													parseFloat(x.get('longitude'))
-												]}
-											>
-												{x.get('placeName')}
-											</option>
+											<option value={x.id}>{x.get('placeName')}</option>
 										))}
 									</Input>
 								</FormGroup>

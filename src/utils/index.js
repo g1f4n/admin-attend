@@ -13,6 +13,17 @@ export const checkUser = () => {
 	return false;
 };
 
+export const getUserRole = () => {
+	const user = Parse.User.current();
+
+	if (user) {
+		console.log(user.get('roles').toLowerCase());
+		return user.get('roles').toLowerCase();
+	}
+
+	return false;
+};
+
 export const getUsername = () => {
 	const user = Parse.User.current();
 
@@ -49,6 +60,27 @@ export const handleConvert = (key) => {
 			return 'Overtime';
 		case 'Pulang Cepat':
 			return 'EarlyLeave';
+		default:
+			break;
+	}
+};
+
+export const handleSelect = (key) => {
+	switch (key) {
+		case 0:
+			return 'Rejected';
+		case 1:
+			return 'Approved';
+		case 3:
+			return 'Belum Terproses';
+		case 4:
+			return 'DAILY';
+		case 5:
+			return 'WEEKLY';
+		case 6:
+			return 'MONTHLY';
+		case 7:
+			return 'RANGE';
 		default:
 			break;
 	}

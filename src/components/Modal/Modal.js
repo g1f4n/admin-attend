@@ -5,6 +5,7 @@ class ModalHandler extends Component {
 	render() {
 		return (
 			<Modal
+				size={this.props.size}
 				scrollable={true}
 				className="modal-dialog-centered"
 				isOpen={this.props.show}

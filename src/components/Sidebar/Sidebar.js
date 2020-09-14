@@ -51,6 +51,7 @@ import {
 	Row,
 	Col
 } from 'reactstrap';
+import { getCurrentUser } from 'utils';
 
 var ps;
 
@@ -151,7 +152,9 @@ class Sidebar extends React.Component {
 									<span className="avatar avatar-sm rounded-circle">
 										<img
 											alt="..."
-											src={require('assets/img/theme/team-1-800x800.jpg')}
+											width={37}
+											height={37}
+											src={getCurrentUser().get('fotoWajah').url()}
 										/>
 									</span>
 								</Media>

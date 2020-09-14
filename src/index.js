@@ -30,7 +30,7 @@ import AuthLayout from 'layouts/Auth.js';
 import Parse from 'parse';
 import * as env from './env';
 
-import { checkUser } from './utils';
+import { checkUser, getUserRole } from './utils';
 
 Parse.initialize(env.APPLICATION_ID, env.JAVASCRIPT_KEY, env.MASTER_KEY);
 Parse.serverURL = env.SERVER_URL;
@@ -39,12 +39,29 @@ Parse.masterKey = env.MASTER_KEY;
 ReactDOM.render(
 	<BrowserRouter>
 		<Switch>
+			{getUserRole() === 'admin' ? (
+				<Route
+					path="/admin"
+					render={(props) =>
+						checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />}
+				/>
+			) : (
+				<Route
+					path="/admin"
+					render={(props) =>
+						checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />}
+				/>
+			)}
+
 			<Route
-				path="/admin"
+				path="/auth"
 				render={(props) =>
-					checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />}
+					!checkUser() ? (
+						<AuthLayout {...props} />
+					) : (
+						<Redirect to={`/${getUserRole()}/index`} />
+					)}
 			/>
-			<Route path="/auth" render={(props) => <AuthLayout {...props} />} />
 			<Redirect from="/" to="/admin/index" />
 		</Switch>
 	</BrowserRouter>,

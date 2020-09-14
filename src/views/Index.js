@@ -121,7 +121,17 @@ const MapWrapper = compose(
 				{x.id === props.id && (
 					<InfoWindow onCloseClick={props.onToggleOpen}>
 						<div>
-							<img src={x.get('selfieImage').url()} height={100} width={100} />
+							<img
+								src={
+									x.get('selfieImage') == undefined ? (
+										''
+									) : (
+										x.get('selfieImage').url()
+									)
+								}
+								height={100}
+								width={100}
+							/>
 
 							<br />
 							<br />
@@ -656,7 +666,8 @@ class Index extends React.Component {
 													/>
 												</td>
 											</tr>
-										) : this.state.dataAbsen.concat(this.state.late).map < 1 ? (
+										) : this.state.dataAbsen.concat(this.state.late).length <
+										1 ? (
 											<tr>
 												<td colSpan={3} style={{ textAlign: 'center' }}>
 													No data found...
