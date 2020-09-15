@@ -84,7 +84,7 @@ var routes = [
 	},
 	{
 		path: '/tes-eksport',
-		name: 'Tes eksport',
+		name: 'Reporting karyawan',
 		icon: 'ni ni-bullet-list-67 text-green',
 		component: TesEksport,
 		layout: '/admin'

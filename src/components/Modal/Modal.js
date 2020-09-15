@@ -6,7 +6,7 @@ class ModalHandler extends Component {
 		return (
 			<Modal
 				size={this.props.size}
-				scrollable={true}
+				scrollable={false}
 				className="modal-dialog-centered"
 				isOpen={this.props.show}
 				toggle={this.props.handleHide}
@@ -36,7 +36,12 @@ class ModalHandler extends Component {
 						>
 							Close
 						</Button>
-						<Button color="primary" type="button" onClick={this.props.handleSubmit}>
+						<Button
+							color="primary"
+							type="button"
+							onClick={this.props.handleSubmit}
+							disabled={this.props.disabled || false}
+						>
 							{this.props.loading ? (
 								<div>
 									<Spinner
