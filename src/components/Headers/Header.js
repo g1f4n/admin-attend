@@ -45,9 +45,6 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    Parse.User.logOut().then(() => {
-      return this.props.history.push('/auth/login');
-    });
     this.getTotalLeader();
     this.getTotalRequest();
     this.getTotalStaff();

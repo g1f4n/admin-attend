@@ -247,9 +247,6 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    Parse.User.logOut().then(() => {
-      return this.props.history.push('/auth/login');
-    });
     this.getDaftarRequest();
     this.getDaftarLeader();
     this.getLeaderStaff();
