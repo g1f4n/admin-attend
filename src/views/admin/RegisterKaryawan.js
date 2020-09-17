@@ -609,7 +609,7 @@ class RegisterKaryawan extends React.Component {
     this.setState({ loadingReco: true, statusReco: 0, fotoWajah: e.target.files[0] });
     const formData = new FormData();
     formData.append('knax', e.target.files[0]);
-    Axios.post('http://34.126.96.126/:4000/api/face-check', formData, {
+    Axios.post('http://34.126.96.126:4000/api/face-check', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
