@@ -18,12 +18,12 @@
 import React, { useRef } from 'react';
 import { compose, withProps, withStateHandlers } from 'recompose';
 import {
-	withScriptjs,
-	withGoogleMap,
-	GoogleMap,
-	Marker,
-	Polyline,
-	InfoWindow
+  withScriptjs,
+  withGoogleMap,
+  GoogleMap,
+  Marker,
+  Polyline,
+  InfoWindow
 } from 'react-google-maps';
 // node.js library that concatenates classes (strings)
 import classnames from 'classnames';
@@ -36,19 +36,19 @@ import Parse from 'parse';
 import moment from 'moment';
 // reactstrap components
 import {
-	Button,
-	Card,
-	CardHeader,
-	CardBody,
-	NavItem,
-	NavLink,
-	Nav,
-	Progress,
-	Table,
-	Container,
-	Row,
-	Col,
-	Spinner
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  NavItem,
+  NavLink,
+  Nav,
+  Progress,
+  Table,
+  Container,
+  Row,
+  Col,
+  Spinner
 } from 'reactstrap';
 
 // core components
@@ -62,93 +62,84 @@ import { convertDate } from 'utils';
 import { slicename } from 'utils/slice';
 
 const MapWrapper = compose(
-	withStateHandlers(
-		() => ({
-			isOpen: false,
-			id: ''
-		}),
-		{
-			onToggleOpen: ({ isOpen, id }) => (idx) => ({
-				isOpen: !isOpen,
-				id: idx
-			})
-		}
-	),
-	withScriptjs,
-	withGoogleMap
+  withStateHandlers(
+    () => ({
+      isOpen: false,
+      id: ''
+    }),
+    {
+      onToggleOpen: ({ isOpen, id }) => (idx) => ({
+        isOpen: !isOpen,
+        id: idx
+      })
+    }
+  ),
+  withScriptjs,
+  withGoogleMap
 )((props) => (
-	<GoogleMap
-		defaultZoom={12}
-		defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
-		center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
-		defaultOptions={{
-			scrollwheel: false
-		}}
-	>
-		{props.userPosition.map((x) => (
-			<Marker
-				key={x.id}
-				onClick={(e) => {
-					console.log(x.id);
-					props.onToggleOpen(x.id);
-					// x.select = true;
-				}}
-				icon={{
-					labelOrigin: new window.google.maps.Point(11, 50),
-					url: require(`./GmapsIcon/${x.get('user').attributes.color === undefined
-						? 'red'
-						: x.get('user').attributes.color}-dot.png`),
-					//size: new window.google.maps.Size(22, 40),
-					origin: new window.google.maps.Point(0, 0),
-					anchor: new window.google.maps.Point(11, 40)
-				}}
-				// icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
-				// 	? 'red'
-				// 	: x.get('user').attributes.color}-dot.png`)}
-				title={`${x.get('fullname')} absen masuk: ${convertDate(
-					x.get('absenMasuk'),
-					'HH:mm:ss'
-				)}`}
-				position={{
-					lat: parseFloat(x.get('latitude')),
-					lng: parseFloat(x.get('longitude'))
-				}}
-				label={{
-					text: slicename(x.get('fullname')),
-					fontWeight: 'bold'
-				}}
-			>
-				{x.id === props.id && (
-					<InfoWindow onCloseClick={props.onToggleOpen}>
-						<div>
-							<img
-								src={
-									x.get('selfieImage') == undefined ? (
-										''
-									) : (
-										x.get('selfieImage').url()
-									)
-								}
-								height={100}
-								width={100}
-							/>
+  <GoogleMap
+    defaultZoom={12}
+    defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+    center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+    defaultOptions={{
+      scrollwheel: false
+    }}
+  >
+    {props.userPosition.map((x) => (
+      <Marker
+        key={x.id}
+        onClick={(e) => {
+          console.log(x.id);
+          props.onToggleOpen(x.id);
+          // x.select = true;
+        }}
+        icon={{
+          labelOrigin: new window.google.maps.Point(11, 50),
+          url: require(`./GmapsIcon/${
+            x.get('user').attributes.color === undefined ? 'red' : x.get('user').attributes.color
+          }-dot.png`),
+          //size: new window.google.maps.Size(22, 40),
+          origin: new window.google.maps.Point(0, 0),
+          anchor: new window.google.maps.Point(11, 40)
+        }}
+        // icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
+        // 	? 'red'
+        // 	: x.get('user').attributes.color}-dot.png`)}
+        title={`${x.get('fullname')} absen masuk: ${convertDate(x.get('absenMasuk'), 'HH:mm:ss')}`}
+        position={{
+          lat: parseFloat(x.get('latitude')),
+          lng: parseFloat(x.get('longitude'))
+        }}
+        label={{
+          text: slicename(x.get('fullname')),
+          fontWeight: 'bold'
+        }}
+      >
+        {x.id === props.id && (
+          <InfoWindow onCloseClick={props.onToggleOpen}>
+            <div>
+              <img
+                src={x.get('selfieImage') == undefined ? '' : x.get('selfieImage').url()}
+                height={100}
+                width={100}
+              />
 
-							<br />
-							<br />
-							{x.className === 'Late' && <p>Terlambat</p>}
-							<p>
-								Absen masuk:{' '}
-								<span style={{ color: x.className === 'Late' ? 'red' : 'blue' }}>
-									{convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
-								</span>
-							</p>
-						</div>
-					</InfoWindow>
-				)}
-			</Marker>
-		))}
+              <br />
+              <br />
+              {x.className === 'Late' && <p>Terlambat</p>}
+              <p>
+                Absen masuk:{' '}
+                <span style={{ color: x.className === 'Late' ? 'red' : 'blue' }}>
+                  {convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
+                </span>
+              </p>
+            </div>
+          </InfoWindow>
+        )}
+      </Marker>
+    ))}
 
-		{/* {path.concat(path2).map((x, i) => (
+    {/* {path.concat(path2).map((x, i) => (
 				<Marker
 					title="joker"
 					position={{
@@ -168,49 +159,49 @@ const MapWrapper = compose(
 					path={x}
 				/>
 			))} */}
-	</GoogleMap>
+  </GoogleMap>
 ));
 
 const MapWrapper2 = withScriptjs(
-	withGoogleMap((props) => (
-		<GoogleMap
-			defaultZoom={12}
-			defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
-			center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
-			defaultOptions={{
-				scrollwheel: false
-			}}
-		>
-			{props.userPosition.map((x) => (
-				<Marker
-					icon={{
-						labelOrigin: new window.google.maps.Point(11, 50),
-						url: require(`./GmapsIcon/${x.get('user').attributes.color === undefined
-							? 'red'
-							: x.get('user').attributes.color}-dot.png`),
-						//size: new window.google.maps.Size(22, 40),
-						origin: new window.google.maps.Point(0, 0),
-						anchor: new window.google.maps.Point(11, 40)
-					}}
-					// icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
-					// 	? 'red'
-					// 	: x.get('user').attributes.color}-dot.png`)}
-					title={`${x.get('fullname')} absen masuk: ${convertDate(
-						x.get('absenMasuk'),
-						'HH:mm:ss'
-					)}`}
-					position={{
-						lat: parseFloat(x.get('latitude')),
-						lng: parseFloat(x.get('longitude'))
-					}}
-					label={{
-						text: slicename(x.get('fullname')),
-						fontWeight: 'bold'
-					}}
-				/>
-			))}
+  withGoogleMap((props) => (
+    <GoogleMap
+      defaultZoom={12}
+      defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+      center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
+      defaultOptions={{
+        scrollwheel: false
+      }}
+    >
+      {props.userPosition.map((x) => (
+        <Marker
+          icon={{
+            labelOrigin: new window.google.maps.Point(11, 50),
+            url: require(`./GmapsIcon/${
+              x.get('user').attributes.color === undefined ? 'red' : x.get('user').attributes.color
+            }-dot.png`),
+            //size: new window.google.maps.Size(22, 40),
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(11, 40)
+          }}
+          // icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
+          // 	? 'red'
+          // 	: x.get('user').attributes.color}-dot.png`)}
+          title={`${x.get('fullname')} absen masuk: ${convertDate(
+            x.get('absenMasuk'),
+            'HH:mm:ss'
+          )}`}
+          position={{
+            lat: parseFloat(x.get('latitude')),
+            lng: parseFloat(x.get('longitude'))
+          }}
+          label={{
+            text: slicename(x.get('fullname')),
+            fontWeight: 'bold'
+          }}
+        />
+      ))}
 
-			{/* {path.concat(path2).map((x, i) => (
+      {/* {path.concat(path2).map((x, i) => (
 				<Marker
 					title="joker"
 					position={{
@@ -230,189 +221,192 @@ const MapWrapper2 = withScriptjs(
 					path={x}
 				/>
 			))} */}
-		</GoogleMap>
-	))
+    </GoogleMap>
+  ))
 );
 
 class Index extends React.Component {
-	constructor(props) {
-		super(props);
-		this.lcoationRef = React.createRef();
-		this.state = {
-			activeNav: 1,
-			chartExample1Data: 'data1',
-			loading: false,
-			totalStaff: 0,
-			daftarRequest: [],
-			daftarLeader: [],
-			dataAbsen: [],
-			late: [],
-			avgLat: 0,
-			avgLng: 0
-		};
-		if (window.Chart) {
-			parseOptions(Chart, chartOptions());
-		}
-	}
+  constructor(props) {
+    super(props);
+    this.lcoationRef = React.createRef();
+    this.state = {
+      activeNav: 1,
+      chartExample1Data: 'data1',
+      loading: false,
+      totalStaff: 0,
+      daftarRequest: [],
+      daftarLeader: [],
+      dataAbsen: [],
+      late: [],
+      avgLat: 0,
+      avgLng: 0
+    };
+    if (window.Chart) {
+      parseOptions(Chart, chartOptions());
+    }
+  }
 
-	componentDidMount() {
-		this.getDaftarRequest();
-		this.getDaftarLeader();
-		this.getLeaderStaff();
-		this.getDataTerlambat();
-	}
+  componentDidMount() {
+    Parse.User.logOut().then(() => {
+      return this.props.history.push('/auth/login');
+    });
+    this.getDaftarRequest();
+    this.getDaftarLeader();
+    this.getLeaderStaff();
+    this.getDataTerlambat();
+  }
 
-	componentDidUpdate(prevProps, prevState) {
-		if (prevState.late !== this.state.late) {
-			console.log(this.state.dataAbsen);
-			this.getCenterAverage(this.state.dataAbsen.concat(this.state.late));
-		}
-	}
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.late !== this.state.late) {
+      console.log(this.state.dataAbsen);
+      this.getCenterAverage(this.state.dataAbsen.concat(this.state.late));
+    }
+  }
 
-	scrollToMyRef = () => window.scrollTo(0, this.lcoationRef.offsetTop);
+  scrollToMyRef = () => window.scrollTo(0, this.lcoationRef.offsetTop);
 
-	getCenterAverage = (arr) => {
-		this.setState({ loading: true });
-		let avgLat = arr.reduce((acc, currentValue) => {
-			return acc + parseFloat(currentValue.get('latitude'));
-		}, 0);
+  getCenterAverage = (arr) => {
+    this.setState({ loading: true });
+    let avgLat = arr.reduce((acc, currentValue) => {
+      return acc + parseFloat(currentValue.get('latitude'));
+    }, 0);
 
-		let avgLng = arr.reduce((acc, currentValue) => {
-			return acc + parseFloat(currentValue.get('longitude'));
-		}, 0);
+    let avgLng = arr.reduce((acc, currentValue) => {
+      return acc + parseFloat(currentValue.get('longitude'));
+    }, 0);
 
-		console.log(avgLat + ' ' + avgLng);
+    console.log(avgLat + ' ' + avgLng);
 
-		this.setState({
-			avgLat: avgLat / arr.length,
-			avgLng: avgLng / arr.length,
-			loading: false
-		});
-	};
+    this.setState({
+      avgLat: avgLat / arr.length,
+      avgLng: avgLng / arr.length,
+      loading: false
+    });
+  };
 
-	toggleNavs = (e, index) => {
-		e.preventDefault();
-		this.setState({
-			activeNav: index,
-			chartExample1Data: this.state.chartExample1Data === 'data1' ? 'data2' : 'data1'
-		});
-	};
+  toggleNavs = (e, index) => {
+    e.preventDefault();
+    this.setState({
+      activeNav: index,
+      chartExample1Data: this.state.chartExample1Data === 'data1' ? 'data2' : 'data1'
+    });
+  };
 
-	getDaftarLeader = () => {
-		this.setState({ loading: true });
-		const User = new Parse.User();
-		const query = new Parse.Query(User);
+  getDaftarLeader = () => {
+    this.setState({ loading: true });
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
 
-		query.equalTo('roles', 'leader' || 'Leader');
-		query
-			.find({ useMasterKey: true })
-			.then((x) => {
-				this.setState({ daftarLeader: x });
-			})
-			.catch((err) => {
-				console.log(err.message);
-			});
-	};
+    query.equalTo('roles', 'leader' || 'Leader');
+    query
+      .find({ useMasterKey: true })
+      .then((x) => {
+        this.setState({ daftarLeader: x });
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
 
-	getDaftarRequest = () => {
-		const ChangeRequest = Parse.Object.extend('ChangeRequest');
-		const query = new Parse.Query(ChangeRequest);
+  getDaftarRequest = () => {
+    const ChangeRequest = Parse.Object.extend('ChangeRequest');
+    const query = new Parse.Query(ChangeRequest);
 
-		query.equalTo('statusApprove', 3);
-		query.exclude('createdAt');
-		query.exclude('updatedAt');
+    query.equalTo('statusApprove', 3);
+    query.exclude('createdAt');
+    query.exclude('updatedAt');
 
-		query.include('userId');
-		query
-			.find()
-			.then((x) => {
-				// let data = x[1].attributes;
-				// console.log(x);
-				// for (var i in data) {
-				// 	console.log(i);
-				// 	console.log(data[i]);
-				// }
-				this.setState({ daftarRequest: x });
-			})
-			.catch(({ message }) => {
-				this.setState({ loading: false });
-				console.log(message);
+    query.include('userId');
+    query
+      .find()
+      .then((x) => {
+        // let data = x[1].attributes;
+        // console.log(x);
+        // for (var i in data) {
+        // 	console.log(i);
+        // 	console.log(data[i]);
+        // }
+        this.setState({ daftarRequest: x });
+      })
+      .catch(({ message }) => {
+        this.setState({ loading: false });
+        console.log(message);
 
-				//window.location.reload(false);
-				return;
-			});
-	};
+        //window.location.reload(false);
+        return;
+      });
+  };
 
-	getDataTerlambat = () => {
-		this.setState({ loading: true });
-		const Late = Parse.Object.extend('Late');
-		const query = new Parse.Query(Late);
+  getDataTerlambat = () => {
+    this.setState({ loading: true });
+    const Late = Parse.Object.extend('Late');
+    const query = new Parse.Query(Late);
 
-		const d = new Date();
-		const start = new moment(d);
-		start.startOf('day');
-		const finish = new moment(start);
-		finish.add(1, 'day');
+    const d = new Date();
+    const start = new moment(d);
+    start.startOf('day');
+    const finish = new moment(start);
+    finish.add(1, 'day');
 
-		query.equalTo('status', 3);
-		query.greaterThanOrEqualTo('time', start.toDate());
-		query.lessThan('time', finish.toDate());
-		query.include('user');
-		query
-			.find()
-			.then((x) => {
-				x.map((y) => (y.select = false));
-				console.log(x);
-				this.setState({ late: x });
-			})
-			.catch((err) => {
-				alert(err.message);
-				this.setState({ loading: false });
-			});
-	};
+    query.equalTo('status', 3);
+    query.greaterThanOrEqualTo('time', start.toDate());
+    query.lessThan('time', finish.toDate());
+    query.include('user');
+    query
+      .find()
+      .then((x) => {
+        x.map((y) => (y.select = false));
+        console.log(x);
+        this.setState({ late: x });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
 
-	getLeaderStaff = () => {
-		this.setState({ loading: true });
+  getLeaderStaff = () => {
+    this.setState({ loading: true });
 
-		const Absence = Parse.Object.extend('Absence');
-		const query = new Parse.Query(Absence);
+    const Absence = Parse.Object.extend('Absence');
+    const query = new Parse.Query(Absence);
 
-		const d = new Date();
-		const start = new moment(d);
-		start.startOf('day');
-		const finish = new moment(start);
-		finish.add(1, 'day');
+    const d = new Date();
+    const start = new moment(d);
+    start.startOf('day');
+    const finish = new moment(start);
+    finish.add(1, 'day');
 
-		query.greaterThanOrEqualTo('absenMasuk', start.toDate());
-		query.lessThan('absenMasuk', finish.toDate());
-		query.include('user');
-		query
-			.find()
-			.then((x) => {
-				x.map((y) => (y.select = false));
-				console.log(x);
-				this.setState({ dataAbsen: x });
-			})
-			.catch((err) => {
-				console.log(err);
-				this.setState({ loading: false });
-			});
-	};
+    query.greaterThanOrEqualTo('absenMasuk', start.toDate());
+    query.lessThan('absenMasuk', finish.toDate());
+    query.include('user');
+    query
+      .find()
+      .then((x) => {
+        x.map((y) => (y.select = false));
+        console.log(x);
+        this.setState({ dataAbsen: x });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ loading: false });
+      });
+  };
 
-	setCenterMaps = (lat, lng) => {
-		this.setState({ avgLat: parseFloat(lat), avgLng: parseFloat(lng) });
-	};
+  setCenterMaps = (lat, lng) => {
+    this.setState({ avgLat: parseFloat(lat), avgLng: parseFloat(lng) });
+  };
 
-	render() {
-		const { daftarRequest, loading, daftarLeader } = this.state;
-		console.log(this.state.dataAbsen.concat(this.state.late));
+  render() {
+    const { daftarRequest, loading, daftarLeader } = this.state;
+    console.log(this.state.dataAbsen.concat(this.state.late));
 
-		return (
-			<React.Fragment>
-				<Header />
-				{/* Page content */}
-				<Container className="mt--8" fluid>
-					{/* <Row>
+    return (
+      <React.Fragment>
+        <Header />
+        {/* Page content */}
+        <Container className="mt--8" fluid>
+          {/* <Row>
 						<Col className="mb-5 mb-xl-0" xl="8">
 							<Card className="bg-gradient-default shadow">
 								<CardHeader className="bg-transparent">
@@ -493,232 +487,206 @@ class Index extends React.Component {
 						</Col>
 					</Row>
 					{''} */}
-					<Row className="mt-5">
-						<Col className="mb-5 mb-xl-0" xl="12">
-							<Card className="shadow mb-5" ref={this.lcoationRef}>
-								{this.state.loading ? (
-									<div style={{ height: `100%`, textAlign: 'center' }}>
-										Loading map...
-									</div>
-								) : this.state.dataAbsen.concat(this.state.late).length === 0 ? (
-									<div style={{ height: `100%`, textAlign: 'center' }}>
-										Tidak ada data absen hari ini
-									</div>
-								) : (
-									<MapWrapper
-										userPosition={this.state.dataAbsen.concat(this.state.late)}
-										avgLat={this.state.avgLat}
-										avgLng={this.state.avgLng}
-										googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q"
-										loadingElement={<div style={{ height: `100%` }} />}
-										containerElement={
-											<div
-												style={{ height: `500px` }}
-												className="map-canvas"
-												id="map-canvas"
-											/>
-										}
-										mapElement={
-											<div
-												style={{
-													height: `100%`,
-													borderRadius: 'inherit'
-												}}
-											/>
-										}
-									/>
-								)}
-							</Card>
-						</Col>
-						<Col xl="6" className="mb-5">
-							<Card className="shadow">
-								<CardHeader className="border-0">
-									<Row className="align-items-center">
-										<div className="col">
-											<h3 className="mb-0">Change request</h3>
-										</div>
-										<div className="col text-right">
-											<Link to="/admin/status-request">
-												<Button color="primary" size="sm">
-													See all
-												</Button>
-											</Link>
-										</div>
-									</Row>
-								</CardHeader>
-								<Table className="align-items-center table-flush" responsive>
-									<thead className="thead-light">
-										<tr>
-											<th scope="col">NIK</th>
-											<th scope="col">Nama</th>
-											<th scope="col">Status</th>
-										</tr>
-									</thead>
-									<tbody>
-										{loading ? (
-											<tr>
-												<td colSpan={4} style={{ textAlign: 'center' }}>
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>{' '}
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>{' '}
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>
-												</td>
-											</tr>
-										) : daftarRequest.length < 1 ? (
-											<tr>
-												<td colSpan={4} style={{ textAlign: 'center' }}>
-													No data found...
-												</td>
-											</tr>
-										) : (
-											daftarRequest.map((prop, key) => (
-												<tr>
-													<td>{prop.get('userId').attributes.nik}</td>
-													<td>
-														{prop.get('userId').attributes.fullname}
-													</td>
-													<td
-														style={{
-															color: `${prop.attributes
-																.statusApprove === 3
-																? 'blue'
-																: `${prop.attributes
-																		.statusApprove === 1
-																		? 'green'
-																		: 'red'}`}`
-														}}
-													>
-														<strong>
-															{prop.get('statusApprove') === 3 ? (
-																'Waiting'
-															) : prop.get('statusApprove') === 1 ? (
-																'Approved'.toUpperCase()
-															) : (
-																'Rejected'.toUpperCase()
-															)}
-														</strong>
-													</td>
-												</tr>
-											))
-										)}
-									</tbody>
-								</Table>
-							</Card>
-						</Col>
-						<Col xl="6">
-							<Card className="shadow">
-								<CardHeader className="border-0">
-									<Row className="align-items-center">
-										<div className="col">
-											<h3 className="mb-0">Data absen hari ini</h3>
-										</div>
-									</Row>
-								</CardHeader>
-								<Table className="align-items-center table-flush" responsive>
-									<thead className="thead-light">
-										<tr>
-											<th scope="col">NIK</th>
-											<th scope="col">Nama</th>
-											<th scope="col">Absen masuk</th>
-										</tr>
-									</thead>
-									<tbody>
-										{loading ? (
-											<tr>
-												<td colSpan={3} style={{ textAlign: 'center' }}>
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>{' '}
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>{' '}
-													<Spinner
-														as="span"
-														animation="grow"
-														size="sm"
-														role="status"
-														aria-hidden="true"
-													/>
-												</td>
-											</tr>
-										) : this.state.dataAbsen.concat(this.state.late).length <
-										1 ? (
-											<tr>
-												<td colSpan={3} style={{ textAlign: 'center' }}>
-													No data found...
-												</td>
-											</tr>
-										) : (
-											this.state.dataAbsen
-												.concat(this.state.late)
-												.map((prop, key) => (
-													<tr
-														onClick={() => {
-															this.setCenterMaps(
-																prop.get('latitude'),
-																prop.get('longitude')
-															);
-															this.scrollToMyRef();
-														}}
-													>
-														<td>{prop.get('user').attributes.nik}</td>
-														<td>
-															{prop.get('user').attributes.fullname}
-														</td>
-														<td>
-															{prop.className === 'Late' ? (
-																<div>
-																	<span style={{ color: 'red' }}>
-																		{convertDate(
-																			prop.get('time'),
-																			'HH:mm:ss'
-																		)}
-																	</span>
-																</div>
-															) : (
-																convertDate(
-																	prop.get('absenMasuk'),
-																	'HH:mm:ss'
-																)
-															)}
-														</td>
-													</tr>
-												))
-										)}
-									</tbody>
-								</Table>
-							</Card>
-						</Col>
-					</Row>
-				</Container>
-			</React.Fragment>
-		);
-	}
+          <Row className="mt-5">
+            <Col className="mb-5 mb-xl-0" xl="12">
+              <Card className="shadow mb-5" ref={this.lcoationRef}>
+                {this.state.loading ? (
+                  <div style={{ height: `100%`, textAlign: 'center' }}>Loading map...</div>
+                ) : this.state.dataAbsen.concat(this.state.late).length === 0 ? (
+                  <div style={{ height: `100%`, textAlign: 'center' }}>
+                    Tidak ada data absen hari ini
+                  </div>
+                ) : (
+                  <MapWrapper
+                    userPosition={this.state.dataAbsen.concat(this.state.late)}
+                    avgLat={this.state.avgLat}
+                    avgLng={this.state.avgLng}
+                    googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q"
+                    loadingElement={<div style={{ height: `100%` }} />}
+                    containerElement={
+                      <div style={{ height: `500px` }} className="map-canvas" id="map-canvas" />
+                    }
+                    mapElement={
+                      <div
+                        style={{
+                          height: `100%`,
+                          borderRadius: 'inherit'
+                        }}
+                      />
+                    }
+                  />
+                )}
+              </Card>
+            </Col>
+            <Col xl="6" className="mb-5">
+              <Card className="shadow">
+                <CardHeader className="border-0">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h3 className="mb-0">Change request</h3>
+                    </div>
+                    <div className="col text-right">
+                      <Link to="/admin/status-request">
+                        <Button color="primary" size="sm">
+                          See all
+                        </Button>
+                      </Link>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <Table className="align-items-center table-flush" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">NIK</th>
+                      <th scope="col">Nama</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center' }}>
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />{' '}
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />{' '}
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        </td>
+                      </tr>
+                    ) : daftarRequest.length < 1 ? (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center' }}>
+                          No data found...
+                        </td>
+                      </tr>
+                    ) : (
+                      daftarRequest.map((prop, key) => (
+                        <tr>
+                          <td>{prop.get('userId').attributes.nik}</td>
+                          <td>{prop.get('userId').attributes.fullname}</td>
+                          <td
+                            style={{
+                              color: `${
+                                prop.attributes.statusApprove === 3
+                                  ? 'blue'
+                                  : `${prop.attributes.statusApprove === 1 ? 'green' : 'red'}`
+                              }`
+                            }}
+                          >
+                            <strong>
+                              {prop.get('statusApprove') === 3
+                                ? 'Waiting'
+                                : prop.get('statusApprove') === 1
+                                ? 'Approved'.toUpperCase()
+                                : 'Rejected'.toUpperCase()}
+                            </strong>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </Table>
+              </Card>
+            </Col>
+            <Col xl="6">
+              <Card className="shadow">
+                <CardHeader className="border-0">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h3 className="mb-0">Data absen hari ini</h3>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <Table className="align-items-center table-flush" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">NIK</th>
+                      <th scope="col">Nama</th>
+                      <th scope="col">Absen masuk</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={3} style={{ textAlign: 'center' }}>
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />{' '}
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />{' '}
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        </td>
+                      </tr>
+                    ) : this.state.dataAbsen.concat(this.state.late).length < 1 ? (
+                      <tr>
+                        <td colSpan={3} style={{ textAlign: 'center' }}>
+                          No data found...
+                        </td>
+                      </tr>
+                    ) : (
+                      this.state.dataAbsen.concat(this.state.late).map((prop, key) => (
+                        <tr
+                          onClick={() => {
+                            this.setCenterMaps(prop.get('latitude'), prop.get('longitude'));
+                            this.scrollToMyRef();
+                          }}
+                        >
+                          <td>{prop.get('user').attributes.nik}</td>
+                          <td>{prop.get('user').attributes.fullname}</td>
+                          <td>
+                            {prop.className === 'Late' ? (
+                              <div>
+                                <span style={{ color: 'red' }}>
+                                  {convertDate(prop.get('time'), 'HH:mm:ss')}
+                                </span>
+                              </div>
+                            ) : (
+                              convertDate(prop.get('absenMasuk'), 'HH:mm:ss')
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </Table>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </React.Fragment>
+    );
+  }
 }
 
 export const Indexz = React.memo(Index);

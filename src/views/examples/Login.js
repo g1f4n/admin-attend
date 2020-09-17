@@ -50,7 +50,9 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    console.log('Mounted');
+    Parse.User.logOut().then(() => {
+      return this.props.history.push('/auth/login');
+    });
   }
 
   handleSubmit = (e) => {
