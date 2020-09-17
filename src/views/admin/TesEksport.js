@@ -78,7 +78,19 @@ class TesEksport extends React.Component {
       employeeName: [],
       employeeID: [],
       employeeDepartment: [],
-      employeeTitle: []
+      employeeTitle: [],
+      sisaJam: [],
+      sisaJamLate: [],
+      sisaJamOvertime: [],
+      sisaJamTotalMinutes: [],
+      minutesEarly: [],
+      minutesTotal: [],
+      jamEarly: [],
+      minutesLate: [],
+      hoursLate: [],
+      minutesOvertime: [],
+      jamOvertime: [],
+      jamTotal: []
     };
   }
 
@@ -381,254 +393,1049 @@ class TesEksport extends React.Component {
     this.setState({ loadingModal: false });
   };
 
+  getDaftarAbsen = () => {
+    this.setState({ loading: true });
+    const Absence = Parse.Object.extend('Absence');
+    const Leader = Parse.Object.extend('Leader');
+    const leader = new Leader();
+    const query = new Parse.Query(Absence);
+
+    const id = this.props.match.params.id;
+
+    const nullData = 'Data tidak ditemukan';
+
+    const d = new Date();
+    const start = new moment(d);
+    start.startOf('day');
+    const finish = new moment(start);
+    finish.add(1, 'day');
+
+    query.equalTo('user', {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: id
+    });
+    query.descending('createdAt');
+    // query.greaterThanOrEqualTo('createdAt', start.toDate());
+    // query.lessThan('createdAt', finish.toDate());
+    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.include('user');
+    query
+      .find()
+      .then((x) => {
+        console.log('user', x);
+        let early = [];
+        let hours = [];
+        let lateTimesMinute = [];
+        let lateTimesHours = [];
+        let overtimeMinutes = [];
+        let overtimeHours = [];
+        let totalHours = [];
+        let totalMinutes = [];
+        x.filter((z) => {
+          if (z.get('earlyTimes') === undefined) {
+            return false;
+          }
+          // else if (z.get("lateTimes") === undefined) {
+          //   return false;
+          // } else if (z.get("overtimeOut") === undefined) {
+          //   return false;
+          // }
+          return true;
+        }).map((value, index) => {
+          early.push(
+            moment
+              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
+              .minutes()
+          );
+          hours.push(
+            moment
+              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
+              .hours()
+          );
+          console.log('early departure', early);
+        });
+        // late times map
+        x.filter((a) => {
+          if (a.get('lateTimes') === undefined) {
+            return false;
+          }
+          return true;
+        }).map((value, index) => {
+          // lateTime
+          lateTimesMinute.push(
+            moment
+              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
+              .minutes()
+          );
+          lateTimesHours.push(
+            moment
+              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
+              .hours()
+          );
+          console.log('value late', lateTimesMinute);
+        });
+
+        // overtime
+        x.filter((d) => {
+          if (d.get('overtimeOut') === undefined) {
+            return false;
+          }
+          return true;
+        }).map((value, index) => {
+          overtimeMinutes.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
+              .minutes()
+          );
+          overtimeHours.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
+              .hours()
+          );
+        });
+
+        // Total Hours
+        x.map((value, index) => {
+          totalMinutes.push(
+            moment
+              .duration(
+                value.get('earlyTimes') !== undefined
+                  ? convertDate(value.get('earlyTimes'), 'HH:mm')
+                  : value.get('overtimeOut') !== undefined
+                  ? convertDate(value.get('overtimeOut'), 'HH:mm')
+                  : value.get('absenKeluar') !== undefined
+                  ? convertDate(value.get('absenKeluar'), 'HH:mm')
+                  : `00:00`,
+                'HH:mm'
+              )
+              .subtract(
+                moment.duration(
+                  value.get('lateTimes') !== undefined
+                    ? convertDate(value.get('lateTimes'), 'HH:mm')
+                    : value.get('absenMasuk') !== undefined
+                    ? convertDate(value.get('absenMasuk'), 'HH:mm')
+                    : `00:00`,
+                  'HH:mm'
+                )
+              )
+              .minutes()
+          );
+          totalHours.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(
+                moment.duration(
+                  value.get('lateTimes') !== undefined
+                    ? convertDate(value.get('lateTimes'), 'HH:mm')
+                    : convertDate(value.get('absenMasuk'), 'HH:mm'),
+                  'HH:mm'
+                )
+              )
+              .hours()
+          );
+        });
+        // console.log("total hours", totalMinutes);
+
+        // if (early.length < 1 || hours.length < 1) {
+        //   return false;
+        // }
+        // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
+        //   return false;
+        // }
+        if (early.length === 1) {
+          early.reduce((acc, curr) => {
+            console.log(!acc);
+            console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
+            console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+            this.setState({
+              sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+              minutesEarly: (parseInt(acc) + parseInt(curr)) % 60
+            });
+          }, 0);
+        } else if (early.length > 1) {
+          early.reduce((acc, curr) => {
+            console.log(!acc);
+            console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
+            console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+            this.setState({
+              sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+              minutesEarly: (parseInt(acc) + parseInt(curr)) % 60
+            });
+          });
+        } else {
+          this.setState({ minutesEarly: 0, sisaJam: 0 });
+        }
+
+        if (hours.length === 1) {
+          hours
+            .filter((val) => {
+              if (val === '') {
+                return false;
+              }
+              return true;
+            })
+            .reduce((acc, curr) => {
+              console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
+              this.setState({
+                jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam
+              });
+            }, 0);
+        } else if (hours.length > 1) {
+          hours
+            .filter((val) => {
+              if (val === '') {
+                return false;
+              }
+              return true;
+            })
+            .reduce((acc, curr) => {
+              console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
+              this.setState({
+                jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam
+              });
+            });
+        } else {
+          this.setState({ jamEarly: 0 });
+        }
+        // late Times
+        console.log('late times ', lateTimesHours);
+        if (lateTimesMinute.length === 1) {
+          lateTimesMinute.reduce((acc, curr) => {
+            this.setState({
+              sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+              minutesLate: (parseInt(acc) + parseInt(curr)) % 60
+            });
+            console.log('sisa Jam Late', this.state.sisaJamLate);
+            console.log('menit Late', this.state.minutesLate);
+          }, 0);
+        } else if (lateTimesMinute.length > 1) {
+          lateTimesMinute.reduce((acc, curr) => {
+            this.setState({
+              sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+              minutesLate: (parseInt(acc) + parseInt(curr)) % 60
+            });
+            console.log('sisa Jam Late', this.state.sisaJamLate);
+            console.log('menit Late', this.state.minutesLate);
+          });
+        } else {
+          this.setState({
+            sisaJamLate: 0,
+            minutesLate: 0
+          });
+        }
+        if (lateTimesHours.length === 1) {
+          lateTimesHours.reduce((acc, curr) => {
+            this.setState({
+              hoursLate: parseInt(acc) + parseInt(curr) + this.state.sisaJamLate
+            });
+            console.log('jamLate', this.state.hoursLate);
+          }, 0);
+        } else if (lateTimesHours.length > 1) {
+          lateTimesHours.reduce((acc, curr) => {
+            this.setState({
+              hoursLate: parseInt(acc) + parseInt(curr) + this.state.sisaJamLate
+            });
+            console.log('jamLate', this.state.hoursLate);
+          });
+        } else {
+          this.setState({ hoursLate: 0 });
+        }
+
+        console.log(overtimeMinutes);
+        // overtime
+        if (overtimeMinutes.length === 1) {
+          overtimeMinutes.reduce((acc, curr) => {
+            this.setState(
+              {
+                sisaJamOvertime: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+                minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60
+              },
+              () => console.log(this.state.minutesOvertime)
+            );
+          }, 0);
+        } else if (overtimeMinutes.length > 1) {
+          overtimeMinutes.reduce((acc, curr) => {
+            this.setState(
+              {
+                sisaJamOvertime: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+                minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60
+              },
+              () => console.log(this.state.minutesOvertime)
+            );
+          });
+        } else {
+          this.setState({ minutesOvertime: 0, sisaJam: 0 });
+        }
+        if (overtimeHours.length === 1) {
+          overtimeHours.reduce((acc, curr) => {
+            this.setState({
+              jamOvertime: parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime
+            });
+          }, 0);
+        } else if (overtimeHours.length > 1) {
+          overtimeHours.reduce((acc, curr) => {
+            this.setState({
+              jamOvertime: parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime
+            });
+          });
+        } else {
+          this.setState({
+            jamOvertime: 0
+          });
+        }
+        if (totalMinutes.length > 0) {
+          totalMinutes.reduce((acc, curr) => {
+            this.setState({
+              sisaJamTotalMinutes: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+              minutesTotal: (parseInt(acc) + parseInt(curr)) % 60
+            });
+          });
+          console.log('total minutes', totalMinutes);
+          console.log('total minutes2', typeof this.state.minutesTotal);
+        } else {
+          this.setState({ minutesTotal: 0, sisaJamTotalMinutes: 0 });
+        }
+        if (totalHours.length > 0) {
+          totalHours.reduce((acc, curr) => {
+            this.setState({
+              jamTotal: parseInt(acc) + parseInt(curr) + this.state.sisaJamTotalMinutes
+            });
+          });
+        } else {
+          this.setState({
+            jamTotal: 0
+          });
+        }
+        this.setState({
+          absence: x,
+          loading: false,
+          employeeName: _.isEmpty(x) ? nullData : x[0].get('fullname'),
+          employeeID: _.isEmpty(x) ? nullData : x[0].get('user').attributes.nik,
+          employeeTitle: _.isEmpty(x) ? nullData : x[0].get('user').attributes.level,
+          employeeDepartment: _.isEmpty(x) ? nullData : x[0].get('user').attributes.posisi
+        });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
+  queryAbsen = (filterType, id, rangeType, totalData) => {
+    const Absence = Parse.Object.extend('Absence');
+    const query = new Parse.Query(Absence);
+    const d = new Date();
+
+    const { checkId } = this.state;
+
+    const nullData = 'DATA TIDAK DITEMUKAN';
+
+    let start, finish;
+
+    if (rangeType) {
+      start = new moment(this.state.startDate);
+      //start.startOf('month');
+      finish = new moment(this.state.endDate);
+    } else {
+      start = new moment(this.state.startDate);
+      start.startOf(filterType);
+      finish = new moment(start);
+      finish.add(1, filterType);
+    }
+
+    query.equalTo('user', {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: id
+    });
+    query.ascending('absenMasuk');
+    query.greaterThanOrEqualTo('absenMasuk', start.toDate());
+    query.lessThan('absenMasuk', finish.toDate());
+    query.include('user');
+    query
+      .find()
+      .then((x) => {
+        console.log('user', x);
+        let early = [];
+        let hours = [];
+        let lateTimesMinute = [];
+        let lateTimesHours = [];
+        let overtimeMinutes = [];
+        let overtimeHours = [];
+        let totalHours = [];
+        let totalMinutes = [];
+        x.filter((z) => {
+          if (z.get('earlyTimes') === undefined) {
+            return false;
+          }
+          // else if (z.get("lateTimes") === undefined) {
+          //   return false;
+          // } else if (z.get("overtimeOut") === undefined) {
+          //   return false;
+          // }
+          return true;
+        }).map((value, index) => {
+          early.push(
+            moment
+              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
+              .minutes()
+          );
+          hours.push(
+            moment
+              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
+              .hours()
+          );
+          console.log('early departure', early);
+        });
+        // late times map
+        x.filter((a) => {
+          if (a.get('lateTimes') === undefined) {
+            return false;
+          }
+          return true;
+        }).map((value, index) => {
+          // lateTime
+          lateTimesMinute.push(
+            moment
+              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
+              .minutes()
+          );
+          lateTimesHours.push(
+            moment
+              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
+              .hours()
+          );
+          console.log('value late', lateTimesMinute);
+        });
+
+        // overtime
+        x.filter((d) => {
+          if (d.get('overtimeOut') === undefined) {
+            return false;
+          }
+          return true;
+        }).map((value, index) => {
+          overtimeMinutes.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
+              .minutes()
+          );
+          overtimeHours.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
+              .hours()
+          );
+        });
+
+        // Total Hours
+        x.map((value, index) => {
+          totalMinutes.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('absenMasuk'), 'HH:mm'), 'HH:mm'))
+              .minutes()
+            // moment
+            //   .duration(
+            //     value.get('absenKeluar') === undefined
+            //       ? `00:00`
+            //       : convertDate(value.get('absenMasuk'), 'HH:mm'),
+            //     'HH:mm'
+            //   )
+            //   .subtract(
+            //     moment.duration(
+            //       value.get('absenMasuk') !== undefined
+            //         ? convertDate(value.get('absenMasuk'), 'HH:mm')
+            //         : `00:00`,
+            //       'HH:mm'
+            //     )
+            //   )
+            //   .minutes()
+          );
+          totalHours.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('absenMasuk'), 'HH:mm'), 'HH:mm'))
+              .hours()
+          );
+        });
+        console.log('total menit', totalMinutes);
+        console.log('total jam', totalHours);
+        console.log(lateTimesMinute);
+        console.log(lateTimesHours);
+        console.log(overtimeMinutes);
+        console.log(overtimeHours);
+
+        let totalOvertime = hours.reduce((acc, curr) => {
+          return acc + curr;
+        }, 0);
+
+        console.log('total overtime', totalOvertime);
+
+        let totalSum = 0;
+
+        let totalJumlah = totalHours.reduce((exe, croz) => {
+          return exe + croz;
+        });
+
+        let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+          return parseInt(acc) + parseInt(currz);
+        });
+
+        console.log(totalJumlah + Math.floor(totalJumlahMenit / 60));
+
+        console.log(totalJumlahMenit % 60);
+
+        // if (early.length < 1 || hours.length < 1) {
+        //   return false;
+        // }
+        // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
+        //   return false;
+        // }
+        if (early.length === 1) {
+          let jumlahEarly = early.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const sisaJamConcat = [...this.state.sisaJam];
+          sisaJamConcat.splice(totalData, 0, Math.floor(jumlahEarly / 60));
+          const minutesEarly = [...this.state.minutesEarly];
+          minutesEarly.splice(totalData, 0, jumlahEarly % 60);
+          this.setState({
+            sisaJam: sisaJamConcat,
+            minutesEarly: minutesEarly
+          });
+
+          // early.reduce((acc, curr) => {
+          //   console.log(!acc);
+          //   console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
+          //   console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const sisaJamConcat = [...this.state.sisaJam];
+          //   sisaJamConcat.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const minutesEarly = [...this.state.minutesEarly];
+          //   minutesEarly.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
+          //   this.setState({
+          //     sisaJam: sisaJamConcat,
+          //     minutesEarly: minutesEarly
+          //   });
+          // }, 0);
+        } else if (early.length > 1) {
+          let jumlahEarly = early.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const sisaJamConcat = [...this.state.sisaJam];
+          sisaJamConcat.splice(totalData, 0, Math.floor(jumlahEarly / 60));
+          const minutesEarly = [...this.state.minutesEarly];
+          minutesEarly.splice(totalData, 0, jumlahEarly % 60);
+          this.setState({
+            sisaJam: sisaJamConcat,
+            minutesEarly: minutesEarly
+          });
+
+          // early.reduce((acc, curr) => {
+          //   console.log(!acc);
+          //   console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
+          //   console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const sisaJamConcat = [...this.state.sisaJam];
+          //   sisaJamConcat.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const minutesEarly = [...this.state.minutesEarly];
+          //   minutesEarly.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
+          //   this.setState({
+          //     sisaJam: sisaJamConcat,
+          //     minutesEarly: minutesEarly
+          //   });
+          // });
+        } else {
+          this.setState({ minutesEarly: 0, sisaJam: 0 });
+        }
+
+        if (hours.length === 1) {
+          let totalHours = hours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          let jamEarly = [...this.state.jamEarly];
+          jamEarly.splice(totalData, 0, totalHours + this.state.sisaJam[totalData]);
+          this.setState({
+            jamEarly: jamEarly
+          });
+
+          // hours
+          //   .filter((val) => {
+          //     if (val === '') {
+          //       return false;
+          //     }
+          //     return true;
+          //   })
+          //   .reduce((acc, curr) => {
+          //     console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
+          //     const jamEarly = [...this.state.jamEarly];
+          //     jamEarly.splice(
+          //       totalData,
+          //       0,
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJam[totalData]
+          //     );
+          //     this.setState({
+          //       jamEarly: jamEarly
+          //     });
+          //   }, 0);
+        } else if (hours.length > 1) {
+          let totalHours = hours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const jamEarly = [...this.state.jamEarly];
+          jamEarly.splice(totalData, 0, totalHours + this.state.sisaJam[totalData]);
+          this.setState({
+            jamEarly: jamEarly
+          });
+
+          // hours
+          //   .filter((val) => {
+          //     if (val === '') {
+          //       return false;
+          //     }
+          //     return true;
+          //   })
+          //   .reduce((acc, curr) => {
+          //     console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
+          //     const jamEarly = [...this.state.jamEarly];
+          //     jamEarly.splice(
+          //       totalData,
+          //       0,
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJam[totalData]
+          //     );
+          //     this.setState({
+          //       jamEarly: jamEarly
+          //     });
+          //   });
+        } else {
+          this.setState({ jamEarly: 0 });
+        }
+        // late Times
+        console.log('late times ', lateTimesHours);
+        if (lateTimesMinute.length === 1) {
+          let lateTimesMinutesSum = lateTimesMinute.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const sisaJamLate = [...this.state.sisaJamLate];
+          sisaJamLate.splice(totalData, 0, Math.floor(lateTimesMinutesSum / 60));
+          const minutesLate = [...this.state.minutesLate];
+          minutesLate.splice(totalData, 0, lateTimesMinutesSum % 60);
+          this.setState({
+            sisaJamLate: sisaJamLate,
+            minutesLate: minutesLate
+          });
+
+          // lateTimesMinute.reduce((acc, curr) => {
+          //   const sisaJamLate = [...this.state.sisaJamLate];
+          //   sisaJamLate.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const minutesLate = [...this.state.minutesLate];
+          //   minutesLate.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
+          //   this.setState({
+          //     sisaJamLate: sisaJamLate,
+          //     minutesLate: minutesLate
+          //   });
+          //   console.log('sisa Jam Late', this.state.sisaJamLate);
+          //   console.log('menit Late', this.state.minutesLate);
+          // }, 0);
+        } else if (lateTimesMinute.length > 1) {
+          let lateTimesMinutesSum = lateTimesMinute.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const sisaJamLate = [...this.state.sisaJamLate];
+          sisaJamLate.splice(totalData, 0, Math.floor(lateTimesMinutesSum / 60));
+          const minutesLate = [...this.state.minutesLate];
+          minutesLate.splice(totalData, 0, lateTimesMinutesSum % 60);
+          this.setState({
+            sisaJamLate: sisaJamLate,
+            minutesLate: minutesLate
+          });
+
+          // lateTimesMinute.reduce((acc, curr) => {
+          //   const sisaJamLate = [...this.state.sisaJamLate];
+          //   sisaJamLate.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const minutesLate = [...this.state.minutesLate];
+          //   minutesLate.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
+          //   this.setState({
+          //     sisaJamLate: sisaJamLate,
+          //     minutesLate: minutesLate
+          //   });
+          //   console.log('sisa Jam Late', this.state.sisaJamLate);
+          //   console.log('menit Late', this.state.minutesLate);
+          // });
+        } else {
+          this.setState({
+            sisaJamLate: 0,
+            minutesLate: 0
+          });
+        }
+        if (lateTimesHours.length === 1) {
+          let lateTimesHoursSum = lateTimesHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const hoursLate = [...this.state.hoursLate];
+          hoursLate.splice(totalData, 0, lateTimesHoursSum + this.state.sisaJamLate[totalData]);
+
+          this.setState({
+            hoursLate: hoursLate
+          });
+
+          // lateTimesHours.reduce((acc, curr) => {
+          //   const hoursLate = [...this.state.hoursLate];
+          //   hoursLate.splice(
+          //     totalData,
+          //     0,
+          //     parseInt(acc) + parseInt(curr) + this.state.sisaJamLate[totalData]
+          //   );
+
+          //   this.setState({
+          //     hoursLate: hoursLate
+          //   });
+          //   console.log('jamLate', this.state.hoursLate);
+          // }, 0);
+        } else if (lateTimesHours.length > 1) {
+          let lateTimesHoursSum = lateTimesHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const hoursLate = [...this.state.hoursLate];
+          hoursLate.splice(totalData, 0, lateTimesHoursSum + this.state.sisaJamLate[totalData]);
+
+          this.setState({
+            hoursLate: hoursLate
+          });
+          // lateTimesHours.reduce((acc, curr) => {
+          //   const hoursLate = [...this.state.hoursLate];
+          //   hoursLate.splice(
+          //     totalData,
+          //     0,
+          //     parseInt(acc) + parseInt(curr) + this.state.sisaJamLate[totalData]
+          //   );
+          //   this.setState({
+          //     hoursLate: hoursLate
+          //   });
+          //   console.log('jamLate', this.state.hoursLate);
+          // });
+        } else {
+          this.setState({ hoursLate: 0 });
+        }
+
+        console.log(overtimeMinutes);
+        // overtime
+        if (overtimeMinutes.length === 1) {
+          let overtimeMinutesSum = overtimeMinutes.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const sisaJamOvertime = [...this.state.sisaJamOvertime];
+          sisaJamOvertime.splice(totalData, 0, Math.floor(overtimeMinutesSum / 60));
+          const minutesOvertime = [...this.state.minutesOvertime];
+          minutesOvertime.splice(totalData, 0, overtimeMinutesSum % 60);
+          this.setState(
+            {
+              sisaJamOvertime: sisaJamOvertime,
+              minutesOvertime: minutesOvertime
+            },
+            () => console.log(this.state.minutesOvertime)
+          );
+
+          // overtimeMinutes.reduce((acc, curr) => {
+          //   const sisaJamOvertime = [...this.state.sisaJamOvertime];
+          //   sisaJamOvertime.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const minutesOvertime = [...this.state.minutesOvertime];
+          //   minutesOvertime.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
+          //   this.setState(
+          //     {
+          //       sisaJamOvertime: sisaJamOvertime,
+          //       minutesOvertime: minutesOvertime
+          //     },
+          //     () => console.log(this.state.minutesOvertime)
+          //   );
+          // }, 0);
+        } else if (overtimeMinutes.length > 1) {
+          let overtimeMinutesSum = overtimeMinutes.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const sisaJamOvertime = [...this.state.sisaJamOvertime];
+          sisaJamOvertime.splice(totalData, 0, Math.floor(overtimeMinutesSum / 60));
+          const minutesOvertime = [...this.state.minutesOvertime];
+          minutesOvertime.splice(totalData, 0, overtimeMinutesSum % 60);
+          this.setState(
+            {
+              sisaJamOvertime: sisaJamOvertime,
+              minutesOvertime: minutesOvertime
+            },
+            () => console.log(this.state.minutesOvertime)
+          );
+
+          // overtimeMinutes.reduce((acc, curr) => {
+          //   const sisaJamOvertime = [...this.state.sisaJamOvertime];
+          //   sisaJamOvertime.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+          //   const minutesOvertime = [...this.state.minutesOvertime];
+          //   minutesOvertime.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
+          //   this.setState(
+          //     {
+          //       sisaJamOvertime: sisaJamOvertime,
+          //       minutesOvertime: minutesOvertime
+          //     },
+          //     () => console.log(this.state.minutesOvertime)
+          //   );
+          // });
+        } else if (overtimeMinutes.length === 0) {
+          this.setState({ minutesOvertime: '0', sisaJam: '0' });
+        }
+        if (overtimeHours.length === 1) {
+          let overtimeHoursSum = overtimeHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const jamOvertime = [...this.state.jamOvertime];
+          jamOvertime.splice(
+            totalData,
+            0,
+            overtimeHoursSum + this.state.sisaJamOvertime[totalData]
+          );
+          this.setState({
+            jamOvertime: jamOvertime
+          });
+
+          // overtimeHours.reduce((acc, curr) => {
+          //   const jamOvertime = [...this.state.jamOvertime];
+          //   jamOvertime.splice(
+          //     totalData,
+          //     0,
+          //     parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime[totalData]
+          //   );
+          //   this.setState({
+          //     jamOvertime: jamOvertime
+          //   });
+          // }, 0);
+        } else if (overtimeHours.length > 1) {
+          let overtimeHoursSum = overtimeHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+
+          const jamOvertime = [...this.state.jamOvertime];
+          jamOvertime.splice(
+            totalData,
+            0,
+            overtimeHoursSum + this.state.sisaJamOvertime[totalData]
+          );
+          this.setState({
+            jamOvertime: jamOvertime
+          });
+
+          // overtimeHours.reduce((acc, curr) => {
+          //   const jamOvertime = [...this.state.jamOvertime];
+          //   jamOvertime.splice(
+          //     totalData,
+          //     0,
+          //     parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime[totalData]
+          //   );
+          //   this.setState({
+          //     jamOvertime: jamOvertime
+          //   });
+          // });
+        } else if (overtimeHours.length === 0) {
+          this.setState({
+            jamOvertime: '0'
+          });
+        }
+        if (totalMinutes.length === 1) {
+          let totalJumlah = totalHours.reduce((exe, croz) => {
+            return exe + croz;
+          }, 0);
+
+          let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+            return parseInt(acc) + parseInt(currz);
+          }, 0);
+
+          const sisaJamTotalMinutes = [...this.state.sisaJamTotalMinutes];
+          sisaJamTotalMinutes.splice(totalData, 0, Math.floor(totalJumlahMenit / 60));
+          const minutesTotal = [...this.state.minutesTotal];
+          minutesTotal.splice(totalData, 0, totalJumlahMenit % 60);
+
+          this.setState(
+            {
+              sisaJamTotalMinutes: sisaJamTotalMinutes,
+              minutesTotal: minutesTotal
+            },
+            () => {
+              console.log('sisa jam', this.state.sisaJamTotalMinutes);
+              console.log('menit total', this.state.minutesTotal);
+            }
+          );
+
+          console.log('total minutes', totalMinutes);
+          console.log('total minutes2', this.state.minutesTotal);
+        }
+        if (totalMinutes.length > 1) {
+          let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+            return parseInt(acc) + parseInt(currz);
+          }, 0);
+
+          const sisaJamTotalMinutes = [...this.state.sisaJamTotalMinutes];
+          sisaJamTotalMinutes.splice(totalData, 0, Math.floor(totalJumlahMenit / 60));
+          const minutesTotal = [...this.state.minutesTotal];
+          minutesTotal.splice(totalData, 0, totalJumlahMenit % 60);
+
+          this.setState(
+            {
+              sisaJamTotalMinutes: sisaJamTotalMinutes,
+              minutesTotal: minutesTotal
+            },
+            () => {
+              console.log('sisa jam', this.state.sisaJamTotalMinutes);
+              console.log('menit total', this.state.minutesTotal);
+            }
+          );
+        } else {
+          this.setState({ minutesTotal: 0, sisaJamTotalMinutes: 0 });
+        }
+        if (totalHours.length === 1) {
+          console.log(totalHours);
+          let totalJumlah = totalHours.reduce((exe, croz) => {
+            return exe + croz;
+          }, 0);
+
+          const jamTotal = [...this.state.jamTotal];
+          jamTotal.splice(totalData, 0, totalJumlah + this.state.sisaJamTotalMinutes[totalData]);
+          this.setState({
+            jamTotal: jamTotal
+          });
+
+          // totalHours.reduce((acc, curr) => {
+          //   const jamTotal = [...this.state.jamTotal];
+          //   jamTotal.splice(
+          //     totalData,
+          //     0,
+          //     parseInt(acc) + parseInt(curr) + this.state.sisaJamTotalMinutes[totalData]
+          //   );
+          //   this.setState({
+          //     jamTotal: jamTotal
+          //   });
+          // }, 0);
+        }
+        if (totalHours.length > 1) {
+          console.log(totalHours);
+          let totalJumlah = totalHours.reduce((exe, croz) => {
+            return exe + croz;
+          }, 0);
+
+          const jamTotal = [...this.state.jamTotal];
+          jamTotal.splice(totalData, 0, totalJumlah + this.state.sisaJamTotalMinutes[totalData]);
+          this.setState({
+            jamTotal: jamTotal
+          });
+
+          // totalHours.reduce((acc, curr) => {
+          //   const jamTotal = [...this.state.jamTotal];
+          //   jamTotal.splice(
+          //     totalData,
+          //     0,
+          //     parseInt(acc) + parseInt(curr) + this.state.sisaJamTotalMinutes[totalData]
+          //   );
+          //   this.setState({
+          //     jamTotal: jamTotal
+          //   });
+          // });
+        } else {
+          this.setState({
+            jamTotal: 0
+          });
+        }
+        let newArr = [...this.state.absence];
+        newArr.splice(totalData, 0, x);
+        let tableArr = [...this.state.tableData];
+        tableArr.splice(totalData, 0, {
+          fileName: _.isEmpty(x[0])
+            ? this.state.fileData[totalData].fileName
+            : x[0].get('fullname'),
+          tableId: `ekspor${totalData}`
+        });
+        this.setState({
+          absence: newArr,
+          tableData: tableArr,
+          employeeName: _.isEmpty(x)
+            ? this.state.employeeName.concat(nullData)
+            : this.state.employeeName.concat(x[0].get('fullname')),
+          employeeID: _.isEmpty(x)
+            ? this.state.employeeID.concat(nullData)
+            : this.state.employeeID.concat(x[0].get('user').attributes.nik),
+          employeeTitle: _.isEmpty(x)
+            ? this.state.employeeTitle.concat(nullData)
+            : this.state.employeeTitle.concat(x[0].get('user').attributes.level),
+          employeeDepartment: _.isEmpty(x)
+            ? this.state.employeeDepartment.concat(nullData)
+            : this.state.employeeDepartment.concat(x[0].get('user').attributes.posisi)
+        });
+        totalData = totalData + 1;
+        if (totalData === checkId.length) {
+          this.setState({ loading: false });
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
   getDataAbsen = (e) => {
     e.preventDefault();
     this.setState({ loading: true });
-    this.setState({ absence: [], tableData: [] });
+    this.setState({
+      absence: [],
+      tableData: [],
+      sisaJam: [],
+      sisaJamLate: [],
+      sisaJamOvertime: [],
+      sisaJamTotalMinutes: [],
+      minutesEarly: [],
+      minutesTotal: [],
+      jamEarly: [],
+      minutesLate: [],
+      hoursLate: [],
+      minutesOvertime: [],
+      jamOvertime: [],
+      jamTotal: []
+    });
     const { checkId } = this.state;
     const nullData = 'DATA TIDAK DITEMUKAN';
     let totalData = 0;
 
     if (parseInt(this.state.status) === 4) {
       checkId.map((id) => {
-        const Absence = Parse.Object.extend('Absence');
-        const query = new Parse.Query(Absence);
-        const d = new Date();
-        const start = new moment(this.state.startDate);
-        start.startOf('day');
-        const finish = new moment(start);
-        finish.add(1, 'day');
-
-        query.equalTo('user', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: id
-        });
-        query.ascending('createdAt');
-        query.greaterThanOrEqualTo('createdAt', start.toDate());
-        query.lessThan('createdAt', finish.toDate());
-        query.include('user');
-        query
-          .find()
-          .then((x) => {
-            console.log('user', x);
-            let newArr = [...this.state.absence];
-            newArr.splice(totalData, 0, x);
-            let tableArr = [...this.state.tableData];
-            tableArr.splice(totalData, 0, {
-              fileName: _.isEmpty(x[0])
-                ? this.state.fileData[totalData].fileName
-                : x[0].get('fullname'),
-              tableId: `ekspor${totalData}`
-            });
-            this.setState({
-              absence: newArr,
-              tableData: tableArr,
-              employeeName: _.isEmpty(x)
-                ? this.state.employeeName.concat(nullData)
-                : this.state.employeeName.concat(x[0].get('fullname')),
-              employeeID: _.isEmpty(x)
-                ? this.state.employeeID.concat(nullData)
-                : this.state.employeeID.concat(x[0].get('user').attributes.nik),
-              employeeTitle: _.isEmpty(x)
-                ? this.state.employeeTitle.concat(nullData)
-                : this.state.employeeTitle.concat(x[0].get('user').attributes.level),
-              employeeDepartment: _.isEmpty(x)
-                ? this.state.employeeDepartment.concat(nullData)
-                : this.state.employeeDepartment.concat(x[0].get('user').attributes.posisi)
-            });
-            totalData = totalData + 1;
-            if (totalData === checkId.length) {
-              this.setState({ loading: false });
-            }
-          })
-          .catch((err) => {
-            alert(err.message);
-            this.setState({ loading: false });
-          });
+        this.queryAbsen('day', id, false, totalData);
       });
     } else if (parseInt(this.state.status) === 5) {
       checkId.map((id) => {
-        const Absence = Parse.Object.extend('Absence');
-        const query = new Parse.Query(Absence);
-        const d = new Date();
-        const start = new moment(this.state.startDate);
-        start.startOf('week');
-        const finish = new moment(start);
-        finish.add(1, 'week');
-
-        query.equalTo('user', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: id
-        });
-        query.ascending('createdAt');
-        query.greaterThanOrEqualTo('createdAt', start.toDate());
-        query.lessThan('createdAt', finish.toDate());
-        query.include('user');
-        query
-          .find()
-          .then((x) => {
-            console.log('user', x);
-            let newArr = [...this.state.absence];
-            newArr.splice(totalData, 0, x);
-            let tableArr = [...this.state.tableData];
-            tableArr.splice(totalData, 0, {
-              fileName: _.isEmpty(x[0])
-                ? this.state.fileData[totalData].fileName
-                : x[0].get('fullname'),
-              tableId: `ekspor${totalData}`
-            });
-            this.setState({
-              absence: newArr,
-              loading: false,
-              tableData: tableArr,
-              employeeName: _.isEmpty(x)
-                ? this.state.employeeName.concat(nullData)
-                : this.state.employeeName.concat(x[0].get('fullname')),
-              employeeID: _.isEmpty(x)
-                ? this.state.employeeID.concat(nullData)
-                : this.state.employeeID.concat(x[0].get('user').attributes.nik),
-              employeeTitle: _.isEmpty(x)
-                ? this.state.employeeTitle.concat(nullData)
-                : this.state.employeeTitle.concat(x[0].get('user').attributes.level),
-              employeeDepartment: _.isEmpty(x)
-                ? this.state.employeeDepartment.concat(nullData)
-                : this.state.employeeDepartment.concat(x[0].get('user').attributes.posisi)
-            });
-            totalData = totalData + 1;
-            if (totalData === checkId.length) {
-              this.setState({ loading: false });
-            }
-          })
-          .catch((err) => {
-            alert(err.message);
-            this.setState({ loading: false });
-          });
+        this.queryAbsen('week', id, false, totalData);
       });
     } else if (parseInt(this.state.status) === 6) {
       checkId.map((id) => {
-        const Absence = Parse.Object.extend('Absence');
-        const query = new Parse.Query(Absence);
-        const d = new Date();
-        const start = new moment(this.state.startDate);
-        start.startOf('month');
-        const finish = new moment(start);
-        finish.add(1, 'month');
-
-        query.equalTo('user', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: id
-        });
-        query.ascending('createdAt');
-        query.greaterThanOrEqualTo('createdAt', start.toDate());
-        query.lessThan('createdAt', finish.toDate());
-        query.include('user');
-        query
-          .find()
-          .then((x) => {
-            console.log('user', x);
-            let newArr = [...this.state.absence];
-            newArr.splice(totalData, 0, x);
-            let tableArr = [...this.state.tableData];
-            tableArr.splice(totalData, 0, {
-              fileName: _.isEmpty(x[0])
-                ? this.state.fileData[totalData].fileName
-                : x[0].get('fullname'),
-              tableId: `ekspor${totalData}`
-            });
-            this.setState({
-              absence: newArr,
-              loading: false,
-              tableData: tableArr,
-              employeeName: _.isEmpty(x)
-                ? this.state.employeeName.concat(nullData)
-                : this.state.employeeName.concat(x[0].get('fullname')),
-              employeeID: _.isEmpty(x)
-                ? this.state.employeeID.concat(nullData)
-                : this.state.employeeID.concat(x[0].get('user').attributes.nik),
-              employeeTitle: _.isEmpty(x)
-                ? this.state.employeeTitle.concat(nullData)
-                : this.state.employeeTitle.concat(x[0].get('user').attributes.level),
-              employeeDepartment: _.isEmpty(x)
-                ? this.state.employeeDepartment.concat(nullData)
-                : this.state.employeeDepartment.concat(x[0].get('user').attributes.posisi)
-            });
-            totalData = totalData + 1;
-            if (totalData === checkId.length) {
-              this.setState({ loading: false });
-            }
-          })
-          .catch((err) => {
-            alert(err.message);
-            this.setState({ loading: false });
-          });
+        this.queryAbsen('month', id, false, totalData);
       });
     } else if (parseInt(this.state.status) === 7) {
       checkId.map((id) => {
-        const Absence = Parse.Object.extend('Absence');
-        const query = new Parse.Query(Absence);
-        const d = new Date();
-        const start = new moment(this.state.startDate);
-        //start.startOf('month');
-        const finish = new moment(this.state.endDate);
-        //finish.add(1, 'month');
-
-        query.equalTo('user', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: id
-        });
-        query.ascending('createdAt');
-        query.greaterThanOrEqualTo('createdAt', start.toDate());
-        query.lessThan('createdAt', finish.toDate());
-        query.include('user');
-        query
-          .find()
-          .then((x) => {
-            console.log('user', x);
-            let newArr = [...this.state.absence];
-            newArr.splice(totalData, 0, x);
-            let tableArr = [...this.state.tableData];
-            tableArr.splice(totalData, 0, {
-              fileName: _.isEmpty(x[0])
-                ? this.state.fileData[totalData].fileName
-                : x[0].get('fullname'),
-              tableId: `ekspor${totalData}`
-            });
-            this.setState(
-              {
-                absence: newArr,
-                loading: false,
-                tableData: tableArr,
-                employeeName: _.isEmpty(x)
-                  ? this.state.employeeName.concat(nullData)
-                  : this.state.employeeName.concat(x[0].get('fullname')),
-                employeeID: _.isEmpty(x)
-                  ? this.state.employeeID.concat(nullData)
-                  : this.state.employeeID.concat(x[0].get('user').attributes.nik),
-                employeeTitle: _.isEmpty(x)
-                  ? this.state.employeeTitle.concat(nullData)
-                  : this.state.employeeTitle.concat(x[0].get('user').attributes.level),
-                employeeDepartment: _.isEmpty(x)
-                  ? this.state.employeeDepartment.concat(nullData)
-                  : this.state.employeeDepartment.concat(x[0].get('user').attributes.posisi)
-              },
-              () => {
-                console.log(this.state.absence);
-                console.log(this.state.tableData);
-              }
-            );
-            totalData = totalData + 1;
-            if (totalData === checkId.length) {
-              this.setState({ loading: false });
-            }
-          })
-          .catch((err) => {
-            alert(err.message);
-            this.setState({ loading: false });
-          });
+        this.queryAbsen('range', id, true, totalData);
       });
     }
 
@@ -964,16 +1771,16 @@ class TesEksport extends React.Component {
                           Working Hour
                         </th>
                         <th scope="col" colSpan="2">
-                          Dutty On
+                          Duty On
                         </th>
                         <th scope="col" colSpan="2">
-                          Dutty Off
+                          Duty Off
                         </th>
                         <th scope="col" colSpan="2">
                           Late In
                         </th>
                         <th scope="col" colSpan="2">
-                          Early Derparture
+                          Early Departure
                         </th>
                         <th scope="col" colSpan="2">
                           Over Time
@@ -1016,15 +1823,15 @@ class TesEksport extends React.Component {
                             {/* Date */}
                             <td>
                               {/* {prop.className === "Late"
-                      ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                      : prop.className === "Absence"
-                      ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                      : prop.className === "Overtime"
-                      ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                      : prop.className === "EarlyLeave"
-                      ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                      : ""} */}
-                              {convertDate(prop.get('absenMasuk'), 'DD/MM/YYYY')}
+                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
+                        : prop.className === "Absence"
+                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
+                        : prop.className === "Overtime"
+                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
+                        : prop.className === "EarlyLeave"
+                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
+                        : ""} */}
+                              {convertDate(prop.get('createdAt'), 'DD/MM/YYYY')}
                             </td>
 
                             {/* Working Hour */}
@@ -1043,13 +1850,15 @@ class TesEksport extends React.Component {
                               }}
                             >
                               {/* {prop.className === "Late"
-                      ? convertDate(prop.get("time"), "k")
-                      : prop.className === "Absence"
-                      ? convertDate(prop.get("absenMasuk"), "k")
-                      : ""} */}
+                        ? convertDate(prop.get("time"), "k")
+                        : prop.className === "Absence"
+                        ? convertDate(prop.get("absenMasuk"), "k")
+                        : ""} */}
                               {prop.get('lateTimes') !== undefined
                                 ? convertDate(prop.get('lateTimes'), 'k')
-                                : convertDate(prop.get('absenMasuk'), 'k')}
+                                : prop.get('absenMasuk') !== undefined
+                                ? convertDate(prop.get('absenMasuk'), 'k')
+                                : ''}
                             </td>
 
                             {/* Dutty On Minutes */}
@@ -1059,13 +1868,15 @@ class TesEksport extends React.Component {
                               }}
                             >
                               {/* {prop.className === "Late"
-                      ? convertDate(prop.get("time"), "m")
-                      : prop.className === "Absence"
-                      ? convertDate(prop.get("absenMasuk"), "m")
-                      : ""} */}
+                        ? convertDate(prop.get("time"), "m")
+                        : prop.className === "Absence"
+                        ? convertDate(prop.get("absenMasuk"), "m")
+                        : ""} */}
                               {prop.get('lateTimes') !== undefined
                                 ? convertDate(prop.get('lateTimes'), 'm')
-                                : convertDate(prop.get('absenMasuk'), 'm')}
+                                : prop.get('absenMasuk') !== undefined
+                                ? convertDate(prop.get('absenMasuk'), 'm')
+                                : ''}
                             </td>
 
                             {/* Dutty Off Hours */}
@@ -1075,15 +1886,17 @@ class TesEksport extends React.Component {
                               }}
                             >
                               {/* {prop.className === "Overtime"
-                      ? convertDate(prop.get("time"), "k")
-                      : prop.className === "EarlyLeave"
-                      ? convertDate(prop.get("time"), "k")
-                      : prop.className === "Absence"
-                      ? convertDate(prop.get("absenKeluar"), "k")
-                      : ""} */}
+                        ? convertDate(prop.get("time"), "k")
+                        : prop.className === "EarlyLeave"
+                        ? convertDate(prop.get("time"), "k")
+                        : prop.className === "Absence"
+                        ? convertDate(prop.get("absenKeluar"), "k")
+                        : ""} */}
                               {prop.get('earlyTimes') !== undefined
                                 ? convertDate(prop.get('earlyTimes'), 'k')
-                                : convertDate(prop.get('absenKeluar'), 'k')}
+                                : prop.get('absenKeluar') !== undefined
+                                ? convertDate(prop.get('absenKeluar'), 'k')
+                                : ''}
                             </td>
 
                             {/* Dutty off Minutes */}
@@ -1093,48 +1906,72 @@ class TesEksport extends React.Component {
                               }}
                             >
                               {/* {prop.className === "Overtime"
-                      ? convertDate(prop.get("time"), "m")
-                      : prop.className === "EarlyLeave"
-                      ? convertDate(prop.get("time"), "m")
-                      : prop.className === "Absence"
-                      ? convertDate(prop.get("absenKeluar"), "m")
-                      : ""} */}
+                        ? convertDate(prop.get("time"), "m")
+                        : prop.className === "EarlyLeave"
+                        ? convertDate(prop.get("time"), "m")
+                        : prop.className === "Absence"
+                        ? convertDate(prop.get("absenKeluar"), "m")
+                        : ""} */}
                               {prop.get('earlyTimes') !== undefined
                                 ? convertDate(prop.get('earlyTimes'), 'm')
-                                : convertDate(prop.get('absenKeluar'), 'm')}
+                                : prop.get('absenKeluar') !== undefined
+                                ? convertDate(prop.get('absenKeluar'), 'm')
+                                : ''}
                             </td>
 
                             {/* Late In Hours */}
-                            <td>
+                            <td className="lateInHours">
+                              {/* {prop.get("lateTimes") === undefined
+                                ? ""
+                                : this.subtractHourLate(
+                                    prop.get("user").attributes.jamMasuk,
+                                    convertDate(prop.get("lateTimes"), "k"),
+                                    "Late"
+                                  )} */}
                               {prop.get('lateTimes') === undefined
                                 ? ''
-                                : this.subtractHourLate(
-                                    prop.get('user').attributes.jamMasuk,
-                                    convertDate(prop.get('lateTimes'), 'k'),
-                                    'Late'
-                                  )}
+                                : moment
+                                    .duration(convertDate(prop.get('lateTimes'), 'HH:mm'), 'HH:mm')
+                                    .subtract(
+                                      moment.duration(
+                                        `${prop.get('user').attributes.jamMasuk}:00`,
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .hours()}
                             </td>
 
                             {/* Late In Minutes */}
                             <td>
-                              {prop.get('lateTimes') === undefined
-                                ? ''
+                              {/* {prop.get("lateTimes") === undefined
+                                ? ""
                                 : this.subtractHourLate(
                                     0,
-                                    convertDate(prop.get('lateTimes'), 'm'),
-                                    'Late'
-                                  )}
+                                    convertDate(prop.get("lateTimes"), "m"),
+                                    "Late"
+                                  )} */}
+                              {prop.get('lateTimes') === undefined
+                                ? ''
+                                : moment
+                                    .duration(convertDate(prop.get('lateTimes'), 'HH:mm'), 'HH:mm')
+                                    .subtract(
+                                      moment.duration(
+                                        `${prop.get('user').attributes.jamMasuk}:00`,
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .minutes()}
                             </td>
 
                             {/* Early Derparture Hours */}
                             <td>
                               {/* {prop.className === "EarlyLeave"
-                      ? this.subtractHourLate(
-                          17,
-                          convertDate(prop.get("time"), "k"),
-                          "EarlyLeave"
-                        )
-                      : ""} */}
+                        ? this.subtractHourLate(
+                            17,
+                            convertDate(prop.get("time"), "k"),
+                            "EarlyLeave"
+                          )
+                        : ""} */}
                               {prop.get('earlyTimes') === undefined
                                 ? ''
                                 : moment
@@ -1152,7 +1989,7 @@ class TesEksport extends React.Component {
                             </td>
 
                             {/* Early Derparture Minutes */}
-                            <td>
+                            <td className="earlyminutes">
                               {prop.get('earlyTimes') === undefined
                                 ? ''
                                 : moment
@@ -1171,85 +2008,84 @@ class TesEksport extends React.Component {
 
                             {/* Over Time Hours */}
                             <td>
-                              {prop.get('overtimeIn') === undefined &&
-                              prop.get('overtimeOut') === undefined
+                              {/* {prop.className === "Overtime"
+                        ? this.subtractHourLate(
+                            17,
+                            convertDate(prop.get("time"), "k"),
+                            "Overtime"
+                          )
+                        : ""} */}
+                              {prop.get('absenKeluar') === undefined
                                 ? ''
-                                : moment
+                                : prop.get('overtimeOut') !== undefined
+                                ? moment
                                     .duration(
                                       convertDate(prop.get('overtimeOut'), 'HH:mm'),
                                       'HH:mm'
                                     )
                                     .subtract(
                                       moment.duration(
-                                        convertDate(prop.get('overtimeIn'), 'HH:mm'),
+                                        `${prop.get('user').attributes.jamKeluar}:00`,
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .hours()
+                                : ''}
+                            </td>
+
+                            {/* Over Time Minutes */}
+                            <td>
+                              {/* {prop.className === "Overtime"
+                        ? this.subtractHourLate(
+                            0,
+                            convertDate(prop.get("time"), "m"),
+                            "Overtime"
+                          )
+                        : ""} */}
+                              {prop.get('absenKeluar') === undefined
+                                ? ''
+                                : prop.get('overtimeOut') !== undefined
+                                ? moment
+                                    .duration(
+                                      convertDate(prop.get('absenKeluar'), 'HH:mm'),
+                                      'HH:mm'
+                                    )
+                                    .subtract(
+                                      moment.duration(
+                                        `${prop.get('user').attributes.jamKeluar}:00`,
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .minutes()
+                                : ''}
+                            </td>
+
+                            {/* Total Hour Hours */}
+                            {/* <td>{prop.get("fullname")}</td> */}
+                            <td>
+                              {prop.get('absenKeluar') === undefined
+                                ? 0
+                                : moment
+                                    .duration(
+                                      convertDate(prop.get('absenKeluar'), 'HH:mm'),
+                                      'HH:mm'
+                                    )
+                                    .subtract(
+                                      moment.duration(
+                                        convertDate(prop.get('absenMasuk'), 'HH:mm'),
                                         'HH:mm'
                                       )
                                     )
                                     .hours()}
                             </td>
 
-                            {/* Over Time Minutes */}
-                            <td>
-                              {prop.get('overtimeIn') === undefined &&
-                              prop.get('overtimeOut') === undefined
-                                ? ''
-                                : moment
-                                    .duration(
-                                      convertDate(prop.get('overtimeOut'), 'HH:mm'),
-                                      'HH:mm'
-                                    )
-                                    .subtract(
-                                      moment.duration(
-                                        convertDate(prop.get('overtimeIn'), 'HH:mm'),
-                                        'HH:mm'
-                                      )
-                                    )
-                                    .minutes()}
-                            </td>
-
-                            {/* Total Hour Hours */}
-                            <td>
-                              {moment
-                                .duration(
-                                  prop.get('earlyTimes') !== undefined
-                                    ? convertDate(prop.get('earlyTimes'), 'HH:mm')
-                                    : prop.get('overtimeOut') !== undefined
-                                    ? convertDate(prop.get('overtimeOut'), 'HH:mm')
-                                    : prop.get('absenKeluar') !== undefined
-                                    ? convertDate(prop.get('absenKeluar'), 'HH:mm')
-                                    : '',
-                                  'HH:mm'
-                                )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get('lateTimes') !== undefined
-                                      ? convertDate(prop.get('lateTimes'), 'HH:mm')
-                                      : convertDate(prop.get('absenMasuk'), 'HH:mm'),
-                                    'HH:mm'
-                                  )
-                                )
-                                .hours()}
-                            </td>
-                            {/* <td>{prop.get("fullname")}</td> */}
-
                             {/* Total Hour Minutes */}
                             <td>
                               {moment
-                                .duration(
-                                  prop.get('earlyTimes') !== undefined
-                                    ? convertDate(prop.get('earlyTimes'), 'HH:mm')
-                                    : prop.get('overtimeOut') !== undefined
-                                    ? convertDate(prop.get('overtimeOut'), 'HH:mm')
-                                    : prop.get('absenKeluar') !== undefined
-                                    ? convertDate(prop.get('absenKeluar'), 'HH:mm')
-                                    : '',
-                                  'HH:mm'
-                                )
+                                .duration(convertDate(prop.get('absenKeluar'), 'HH:mm'), 'HH:mm')
                                 .subtract(
                                   moment.duration(
-                                    prop.get('lateTimes') !== undefined
-                                      ? convertDate(prop.get('lateTimes'), 'HH:mm')
-                                      : convertDate(prop.get('absenMasuk'), 'HH:mm'),
+                                    convertDate(prop.get('absenMasuk'), 'HH:mm'),
                                     'HH:mm'
                                   )
                                 )
@@ -1267,14 +2103,70 @@ class TesEksport extends React.Component {
                       )}
                       <tr>
                         <td colSpan="7">Total</td>
-                        <td />
-                        <td />
-                        <td />
-                        <td />
-                        <td />
-                        <td />
-                        <td />
-                        <td />
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "lateTimes"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.hoursLate[index]}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "minutes",
+                          "lateTimes"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.minutesLate[index]}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "earlyTimes"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.jamEarly[index]}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "minutes",
+                          "earlyTimes"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.minutesEarly[index]}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "overtimeOut"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.jamOvertime[index].toString()}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "minutes",
+                          "overtimeOut"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.minutesOvertime[index].toString()}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "totalHours"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.jamTotal[index]}
+                        </td>
+                        <td>
+                          {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "totalHours"
+                        ).reduce(this.getSum, 0)} */}
+                          {this.state.minutesTotal[index]}
+                        </td>
                         <td />
                       </tr>
                     </tbody>
