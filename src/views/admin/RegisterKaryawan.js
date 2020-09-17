@@ -605,6 +605,8 @@ class RegisterKaryawan extends React.Component {
       });
   };
 
+  hans = () => {};
+
   handleFace = (e) => {
     this.setState({ loadingReco: true, statusReco: 0, fotoWajah: e.target.files[0] });
     const formData = new FormData();
