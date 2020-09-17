@@ -1,0 +1,30 @@
+{
+  "files": {
+    "main.css": "/static/css/main.86167663.chunk.css",
+    "main.js": "/static/js/main.c6f9c258.chunk.js",
+    "main.js.map": "/static/js/main.c6f9c258.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.c7f5aab7.js",
+    "runtime-main.js.map": "/static/js/runtime-main.c7f5aab7.js.map",
+    "static/css/2.79838944.chunk.css": "/static/css/2.79838944.chunk.css",
+    "static/js/2.0468436d.chunk.js": "/static/js/2.0468436d.chunk.js",
+    "static/js/2.0468436d.chunk.js.map": "/static/js/2.0468436d.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.1e88923bc7d6701196a676e20f034d60.js": "/precache-manifest.1e88923bc7d6701196a676e20f034d60.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.79838944.chunk.css.map": "/static/css/2.79838944.chunk.css.map",
+    "static/css/main.86167663.chunk.css.map": "/static/css/main.86167663.chunk.css.map",
+    "static/js/2.0468436d.chunk.js.LICENSE.txt": "/static/js/2.0468436d.chunk.js.LICENSE.txt",
+    "static/js/main.c6f9c258.chunk.js.LICENSE.txt": "/static/js/main.c6f9c258.chunk.js.LICENSE.txt",
+    "static/media/argon-react.png": "/static/media/argon-react.f38ddea9.png",
+    "static/media/all.min.css": "/static/media/fa-solid-900.cdfec5cf.woff",
+    "static/media/nucleo.css": "/static/media/nucleo-icons.f82ec6ba.ttf",
+    "static/media/profile-cover.jpg": "/static/media/profile-cover.e2582654.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c7f5aab7.js",
+    "static/css/2.79838944.chunk.css",
+    "static/js/2.0468436d.chunk.js",
+    "static/css/main.86167663.chunk.css",
+    "static/js/main.c6f9c258.chunk.js"
+  ]
+}
