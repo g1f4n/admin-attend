@@ -99,12 +99,17 @@ class RegisterKaryawan extends React.Component {
       username: '',
       password: '',
       selectLeader: '',
+      selectSupervisor: '',
+      selectManager: '',
+      selectHead: '',
+      selectGM: '',
       statusReco: 0,
       email: '',
       fotoWajahObject: {},
       daftarShifting: [],
       shifting: {},
       leader: {},
+      absenPointObject: {},
       message: '',
       color: '',
       visible: false,
@@ -750,7 +755,7 @@ class RegisterKaryawan extends React.Component {
 
     user.set('absenPoint', {
       __type: 'Pointer',
-      className: '_User',
+      className: 'ValidGeopoint',
       objectId: this.state.idPoint
     });
     //user.set('shifting', Shifting.createWithoutData(this.state.shifting));
@@ -769,12 +774,12 @@ class RegisterKaryawan extends React.Component {
     if (this.state.jamMasuk === 0) {
       user.set('jamMasuk', 8);
     } else {
-      user.set('jamMasuk', this.state.jamMasuk);
+      user.set('jamMasuk', parseInt(this.state.jamMasuk));
     }
     if (this.state.jamKeluar === 0) {
       user.set('jamMasuk', 17);
     } else {
-      user.set('jamKeluar', this.state.jamKeluar);
+      user.set('jamKeluar', parseInt(this.state.jamKeluar));
     }
     user.set('jumlahCuti', parseInt(jumlahCuti));
     user.set('lembur', lembur);
@@ -903,7 +908,7 @@ class RegisterKaryawan extends React.Component {
         if (this.state.idPoint !== '')
           user.set('absenPoint', {
             __type: 'Pointer',
-            className: '_User',
+            className: 'ValidGeopoint',
             objectId: this.state.idPoint
           });
         // if (this.state.shifting !== '')
@@ -974,6 +979,7 @@ class RegisterKaryawan extends React.Component {
     query.include('managerID');
     query.include('headID');
     query.include('gmID');
+    query.include('absenPoint');
     query
       .get(id, { useMasterKey: true })
       .then(({ attributes }) => {
@@ -994,6 +1000,9 @@ class RegisterKaryawan extends React.Component {
           jamKerja: attributes.jamKerja,
           lokasiKerja: attributes.lokasiKerja,
           jumlahCuti: attributes.jumlahCuti,
+          jamMasuk: attributes.jamMasuk === undefined ? 0 : attributes.jamMasuk,
+          jamKeluar: attributes.jamKeluar === undefined ? 0 : attributes.jamKeluar,
+          absenPointObject: attributes.absenPoint === undefined ? '' : attributes.absenPoint,
           shifting: attributes.shifting === undefined ? '' : attributes.shifting,
           lembur: attributes.lembur,
           level: attributes.roles.toLowerCase(),
@@ -2182,23 +2191,39 @@ class RegisterKaryawan extends React.Component {
                 </Input>
               </FormGroup>
 
-              <FormGroup controlId="formShifting">
-                <Label>Shifting</Label>
-                <Input
-                  type="select"
-                  onChange={(e) =>
-                    this.setState({
-                      shifting: e.target.value
-                    })
-                  }
-                >
-                  {daftarShifting.map((x) => (
-                    <option selected={shifting.id === x.id} value={x.id}>
-                      {x.get('tipeShift')}
-                    </option>
-                  ))}
-                </Input>
-              </FormGroup>
+              {this.state.jamKerja !== '' && this.state.jamKerja !== 'Jam bebas' ? (
+                <FormGroup controlId="formJam">
+                  <Label>Jam masuk dan keluar</Label>
+                  <Row>
+                    <Col md={6}>
+                      <Input
+                        type="number"
+                        value={this.state.jamMasuk}
+                        placeholder="Jam Masuk"
+                        onChange={(e) =>
+                          this.setState({
+                            jamMasuk: e.target.value
+                          })
+                        }
+                      />
+                    </Col>
+                    <Col md={6}>
+                      <Input
+                        type="number"
+                        value={this.state.jamKeluar}
+                        placeholder="Jam Keluar"
+                        onChange={(e) =>
+                          this.setState({
+                            jamKeluar: e.target.value
+                          })
+                        }
+                      />
+                    </Col>
+                  </Row>
+                </FormGroup>
+              ) : (
+                ''
+              )}
 
               <FormGroup controlId="formLokasi">
                 <Label>Lokasi kerja</Label>
@@ -2220,6 +2245,33 @@ class RegisterKaryawan extends React.Component {
                   ))}
                 </Input>
               </FormGroup>
+
+              {this.state.lokasiKerja === 'Tetap' ? (
+                <FormGroup controlId="formPoint">
+                  <Label>Absen point</Label>
+                  <Input
+                    type="select"
+                    required={true}
+                    onChange={(e) =>
+                      this.setState({
+                        idPoint: e.target.value
+                      })
+                    }
+                  >
+                    {daftarPoint.map((x) => (
+                      <option
+                        selected={this.state.absenPointObject.id === x.id}
+                        key={x.id}
+                        value={x.id}
+                      >
+                        {x.get('placeName')}
+                      </option>
+                    ))}
+                  </Input>
+                </FormGroup>
+              ) : (
+                ''
+              )}
 
               <FormGroup controlId="formCuti">
                 <Label>Jumlah cuti</Label>

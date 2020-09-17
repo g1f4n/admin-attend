@@ -58,7 +58,19 @@ class AllAbsen extends React.Component {
       loading: false,
       startDate: '',
       employeeName: '',
-      employeeID: ''
+      employeeID: '',
+      sisaJam: 0,
+      sisaJamLate: 0,
+      sisaJamOvertime: 0,
+      sisaJamTotalMinutes: 0,
+      minutesEarly: 0,
+      minutesTotal: 0,
+      jamEarly: 0,
+      minutesLate: 0,
+      hoursLate: 0,
+      minutesOvertime: 0,
+      jamOvertime: 0,
+      jamTotal: 0
     };
   }
 
@@ -240,6 +252,7 @@ class AllAbsen extends React.Component {
       objectId: id
     });
     query.ascending('absenMasuk');
+    query.exists('absenMasuk');
     // query.greaterThanOrEqualTo('createdAt', start.toDate());
     // query.lessThan('createdAt', finish.toDate());
     query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
@@ -248,6 +261,452 @@ class AllAbsen extends React.Component {
       .find()
       .then((x) => {
         console.log('user', x);
+        let early = [];
+        let hours = [];
+        let lateTimesMinute = [];
+        let lateTimesHours = [];
+        let overtimeMinutes = [];
+        let overtimeHours = [];
+        let totalHours = [];
+        let totalMinutes = [];
+        x.filter((z) => {
+          if (z.get('earlyTimes') === undefined) {
+            return false;
+          }
+          // else if (z.get("lateTimes") === undefined) {
+          //   return false;
+          // } else if (z.get("overtimeOut") === undefined) {
+          //   return false;
+          // }
+          return true;
+        }).map((value, index) => {
+          early.push(
+            moment
+              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
+              .minutes()
+          );
+          hours.push(
+            moment
+              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
+              .hours()
+          );
+          console.log('early departure', early);
+        });
+        // late times map
+        x.filter((a) => {
+          if (a.get('lateTimes') === undefined) {
+            return false;
+          }
+          return true;
+        }).map((value, index) => {
+          // lateTime
+          lateTimesMinute.push(
+            moment
+              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
+              .minutes()
+          );
+          lateTimesHours.push(
+            moment
+              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
+              .hours()
+          );
+          console.log('value late', lateTimesMinute);
+        });
+
+        // overtime
+        x.filter((d) => {
+          if (d.get('overtimeOut') === undefined) {
+            return false;
+          }
+          return true;
+        }).map((value, index) => {
+          overtimeMinutes.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
+              .minutes()
+          );
+          overtimeHours.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
+              .hours()
+          );
+        });
+
+        // Total Hours
+        x.map((value, index) => {
+          totalMinutes.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('absenMasuk'), 'HH:mm'), 'HH:mm'))
+              .minutes()
+          );
+          totalHours.push(
+            moment
+              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
+              .subtract(moment.duration(convertDate(value.get('absenMasuk'), 'HH:mm'), 'HH:mm'))
+              .hours()
+          );
+        });
+
+        // console.log("total hours", totalMinutes);
+
+        // if (early.length < 1 || hours.length < 1) {
+        //   return false;
+        // }
+        // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
+        //   return false;
+        // }
+        if (early.length === 1) {
+          // early.reduce((acc, curr) => {
+          //   console.log(acc);
+          //   console.log(curr);
+          //   console.log("minutes", (parseInt(acc) + parseInt(curr)) % 60);
+          //   console.log(
+          //     "sisaJam",
+          //     Math.floor((parseInt(acc) + parseInt(curr)) / 60)
+          //   );
+          //   this.setState({
+          //     sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+          //     minutesEarly: (parseInt(acc) + parseInt(curr)) % 60,
+          //   });
+          // }, 0);
+          let jumlahEarly = early.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const minutesEarly = jumlahEarly % 60;
+          const sisaJam = Math.floor(jumlahEarly / 60);
+          this.setState({
+            sisaJam: sisaJam,
+            minutesEarly: minutesEarly
+          });
+          console.log('reduce baru menit', minutesEarly);
+          console.log('reduce baru jam sisa', sisaJam);
+        } else if (early.length > 1) {
+          let jumlahEarly = early.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const minutesEarly = jumlahEarly % 60;
+          const sisaJam = Math.floor(jumlahEarly / 60);
+          this.setState({
+            sisaJam: sisaJam,
+            minutesEarly: minutesEarly
+          });
+          // early.reduce((acc, curr) => {
+          //   console.log(acc);
+          //   console.log(curr);
+          //   console.log("minutes", parseFloat(acc) + parseFloat(curr));
+          //   console.log(
+          //     "sisaJam",
+          //     Math.floor((parseInt(acc) + parseInt(curr)) / 60)
+          //   );
+          //   return this.setState({
+          //     sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+          //     minutesEarly: (parseInt(acc) + parseInt(curr)) % 60,
+          //   });
+          // });
+          // console.log("minutes early", this.state.minutesEarly);
+          // console.log("sisa jam early", this.state.sisaJam);
+        } else {
+          this.setState({ minutesEarly: 0, sisaJam: 0 });
+        }
+
+        if (hours.length === 1) {
+          // hours
+          //   .filter((val) => {
+          //     if (val === "") {
+          //       return false;
+          //     }
+          //     return true;
+          //   })
+          //   .reduce((acc, curr) => {
+          //     console.log(
+          //       "hours",
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJam
+          //     );
+          //     this.setState({
+          //       jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam,
+          //     });
+          //   }, 0);
+          let jumlahHours = hours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const jamEarly = jumlahHours + this.state.sisaJam;
+          this.setState({
+            jamEarly: jamEarly
+          });
+        } else if (hours.length > 1) {
+          // hours
+          //   .filter((val) => {
+          //     if (val === "") {
+          //       return false;
+          //     }
+          //     return true;
+          //   })
+          //   .reduce((acc, curr) => {
+          //     console.log(
+          //       "hours sisa",
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJam
+          //     );
+          //     this.setState({
+          //       jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam,
+          //     });
+          //   });
+          // console.log("test jam", this.state.sisaJam);
+          let jumlahHours = hours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const jamEarly = jumlahHours + this.state.sisaJam;
+          this.setState({
+            jamEarly: jamEarly
+          });
+        } else {
+          this.setState({ jamEarly: 0 });
+        }
+        // late Times
+        console.log('late times ', lateTimesHours);
+        if (lateTimesMinute.length === 1) {
+          // lateTimesMinute.reduce((acc, curr) => {
+          //   this.setState({
+          //     sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+          //     minutesLate: (parseInt(acc) + parseInt(curr)) % 60,
+          //   });
+          //   console.log("sisa Jam Late", this.state.sisaJamLate);
+          //   console.log("menit Late", this.state.minutesLate);
+          // }, 0);
+          let jumlahLateMinutes = lateTimesMinute.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const minutesLate = jumlahLateMinutes % 60;
+          const sisaJamLate = Math.floor(jumlahLateMinutes / 60);
+          this.setState({
+            sisaJamLate: sisaJamLate,
+            minutesLate: minutesLate
+          });
+        } else if (lateTimesMinute.length > 1) {
+          // console.log("nilai", lateTimesMinute);
+          // // let coba = [52, 28];
+          // lateTimesMinute.reduce((acc, curr) => {
+          //   this.setState({
+          //     sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+          //     minutesLate: (parseInt(acc) + parseInt(curr)) % 60,
+          //   });
+          //   console.log("sisa Jam Late", this.state.sisaJamLate);
+          //   console.log("menit Late", this.state.coba);
+          // });
+          let jumlahLateMinutes = lateTimesMinute.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const minutesLate = jumlahLateMinutes % 60;
+          const sisaJamLate = Math.floor(jumlahLateMinutes / 60);
+          this.setState({
+            sisaJamLate: sisaJamLate,
+            minutesLate: minutesLate
+          });
+        } else {
+          this.setState({
+            sisaJamLate: 0,
+            minutesLate: 0
+          });
+        }
+        if (lateTimesHours.length === 1) {
+          // lateTimesHours.reduce((acc, curr) => {
+          //   this.setState({
+          //     hoursLate:
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJamLate,
+          //   });
+          //   console.log("jamLate", this.state.hoursLate);
+          // }, 0);
+          let jumlahHoursLate = lateTimesHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const jamLate = jumlahHoursLate + this.state.sisaJamLate;
+          this.setState({
+            hoursLate: jamLate
+          });
+        } else if (lateTimesHours.length > 1) {
+          // let coba = [8, 7, 2, 0];
+          // lateTimesHours.reduce((acc, curr) => {
+          //   this.setState({
+          //     hoursLate:
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJamLate,
+          //   });
+          //   console.log("jamLate", this.state.hoursLate);
+          //   console.log("sisaJamLate", parseInt(this.state.sisaJamLate));
+          // });
+          let jumlahHoursLate = lateTimesHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const jamLate = jumlahHoursLate + this.state.sisaJamLate;
+          this.setState({
+            hoursLate: jamLate
+          });
+        } else {
+          this.setState({ hoursLate: 0 });
+        }
+        // overtime
+        if (overtimeMinutes.length === 1) {
+          // overtimeMinutes.reduce((acc, curr) => {
+          //   this.setState(
+          //     {
+          //       sisaJamOvertime: Math.floor(
+          //         (parseInt(acc) + parseInt(curr)) / 60
+          //       ),
+          //       minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60,
+          //     },
+          //     () => console.log(this.state.minutesOvertime)
+          //   );
+          // }, 0);
+          let jumlahOvertimeOutMinutes = overtimeMinutes.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const minutesOvertime = jumlahOvertimeOutMinutes % 60;
+          const sisaJamOvertime = Math.floor(jumlahOvertimeOutMinutes / 60);
+          this.setState({
+            sisaJamOvertime: sisaJamOvertime,
+            minutesOvertime: minutesOvertime
+          });
+        } else if (overtimeMinutes.length > 1) {
+          // overtimeMinutes.reduce((acc, curr) => {
+          //   this.setState(
+          //     {
+          //       sisaJamOvertime: Math.floor(
+          //         (parseInt(acc) + parseInt(curr)) / 60
+          //       ),
+          //       minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60,
+          //     },
+          //     () => console.log(this.state.minutesOvertime)
+          //   );
+          // });
+          let jumlahOvertimeOutMinutes = overtimeMinutes.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const minutesOvertime = jumlahOvertimeOutMinutes % 60;
+          const sisaJamOvertime = Math.floor(jumlahOvertimeOutMinutes / 60);
+          this.setState({
+            sisaJamOvertime: sisaJamOvertime,
+            minutesOvertime: minutesOvertime
+          });
+        } else {
+          this.setState({ minutesOvertime: 0, sisaJam: 0 });
+        }
+        if (overtimeHours.length === 1) {
+          // overtimeHours.reduce((acc, curr) => {
+          //   this.setState({
+          //     jamOvertime:
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime,
+          //   });
+          // }, 0);
+          let jumlahHoursOvertime = overtimeHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const jamOvertime = jumlahHoursOvertime + this.state.sisaJamOvertime;
+          this.setState({
+            jamOvertime: jamOvertime
+          });
+        } else if (overtimeHours.length > 1) {
+          // overtimeHours.reduce((acc, curr) => {
+          //   this.setState({
+          //     jamOvertime:
+          //       parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime,
+          //   });
+          // });
+          let jumlahHoursOvertime = overtimeHours.reduce((acc, curr) => {
+            return acc + curr;
+          }, 0);
+          const jamOvertime = jumlahHoursOvertime + this.state.sisaJamOvertime;
+          this.setState({
+            jamOvertime: jamOvertime
+          });
+        } else {
+          this.setState({
+            jamOvertime: '0'
+          });
+        }
+        if (totalMinutes.length === 1) {
+          // totalMinutes.reduce((acc, curr) => {
+          //   this.setState({
+          //     sisaJamTotalMinutes: Math.floor(
+          //       (parseInt(acc) + parseInt(curr)) / 60
+          //     ),
+          //     minutesTotal: (parseFloat(acc) + parseFloat(curr)) % 60,
+          //   });
+          // }, 0);
+          // console.log("total minutes", totalMinutes);
+          // console.log("total minutes2", this.state.minutesTotal);
+
+          let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+            return parseInt(acc) + parseInt(currz);
+          }, 0);
+          const sisaJamTotalMinutes = Math.floor(totalJumlahMenit / 60);
+          const minutesTotal = totalJumlahMenit % 60;
+          this.setState({
+            sisaJamTotalMinutes: sisaJamTotalMinutes,
+            minutesTotal: minutesTotal
+          });
+        } else if (totalMinutes.length > 1) {
+          // totalMinutes.reduce((acc, curr) => {
+          //   this.setState({
+          //     sisaJamTotalMinutes: Math.floor(
+          //       (parseInt(acc) + parseInt(curr)) / 60
+          //     ),
+          //     minutesTotal: (parseFloat(acc) + parseFloat(curr)) % 60,
+          //   });
+          // });
+          let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+            return parseInt(acc) + parseInt(currz);
+          }, 0);
+          const sisaJamTotalMinutes = Math.floor(totalJumlahMenit / 60);
+          const minutesTotal = totalJumlahMenit % 60;
+          this.setState({
+            sisaJamTotalMinutes: sisaJamTotalMinutes,
+            minutesTotal: minutesTotal
+          });
+        } else {
+          this.setState({ minutesTotal: 0, sisaJamTotalMinutes: 0 });
+        }
+        if (totalHours.length === 1) {
+          // totalHours.reduce((acc, curr) => {
+          //   this.setState({
+          //     jamTotal:
+          //       parseInt(acc) +
+          //       parseInt(curr) +
+          //       this.state.sisaJamTotalMinutes,
+          //   });
+          // }, 0);
+          let totalJumlah = totalHours.reduce((exe, croz) => {
+            return exe + croz;
+          }, 0);
+          const jamTotal = totalJumlah + this.state.sisaJamTotalMinutes;
+          this.setState({
+            jamTotal: jamTotal
+          });
+        } else if (totalHours.length > 1) {
+          // totalHours.reduce((acc, curr) => {
+          //   this.setState({
+          //     jamTotal:
+          //       parseInt(acc) +
+          //       parseInt(curr) +
+          //       this.state.sisaJamTotalMinutes,
+          //   });
+          // });
+          let totalJumlah = totalHours.reduce((exe, croz) => {
+            return exe + croz;
+          }, 0);
+          const jamTotal = totalJumlah + this.state.sisaJamTotalMinutes;
+          this.setState({
+            jamTotal: jamTotal
+          });
+        } else {
+          this.setState({
+            jamTotal: '0'
+          });
+        }
         this.setState({
           absence: x,
           loading: false,
@@ -722,7 +1181,7 @@ class AllAbsen extends React.Component {
                         : prop.className === "EarlyLeave"
                         ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
                         : ""} */}
-                              {convertDate(prop.get('absenMasuk'), 'DD/MM/YYYY')}
+                              {convertDate(prop.get('createdAt'), 'DD/MM/YYYY')}
                             </td>
 
                             {/* Working Hour */}
@@ -747,7 +1206,9 @@ class AllAbsen extends React.Component {
                         : ""} */}
                               {prop.get('lateTimes') !== undefined
                                 ? convertDate(prop.get('lateTimes'), 'k')
-                                : convertDate(prop.get('absenMasuk'), 'k')}
+                                : prop.get('absenMasuk') !== undefined
+                                ? convertDate(prop.get('absenMasuk'), 'k')
+                                : ''}
                             </td>
 
                             {/* Dutty On Minutes */}
@@ -763,7 +1224,9 @@ class AllAbsen extends React.Component {
                         : ""} */}
                               {prop.get('lateTimes') !== undefined
                                 ? convertDate(prop.get('lateTimes'), 'm')
-                                : convertDate(prop.get('absenMasuk'), 'm')}
+                                : prop.get('absenMasuk') !== undefined
+                                ? convertDate(prop.get('absenMasuk'), 'm')
+                                : ''}
                             </td>
 
                             {/* Dutty Off Hours */}
@@ -781,7 +1244,9 @@ class AllAbsen extends React.Component {
                         : ""} */}
                               {prop.get('earlyTimes') !== undefined
                                 ? convertDate(prop.get('earlyTimes'), 'k')
-                                : convertDate(prop.get('absenKeluar'), 'k')}
+                                : prop.get('absenKeluar') !== undefined
+                                ? convertDate(prop.get('absenKeluar'), 'k')
+                                : ''}
                             </td>
 
                             {/* Dutty off Minutes */}
@@ -799,29 +1264,53 @@ class AllAbsen extends React.Component {
                         : ""} */}
                               {prop.get('earlyTimes') !== undefined
                                 ? convertDate(prop.get('earlyTimes'), 'm')
-                                : convertDate(prop.get('absenKeluar'), 'm')}
+                                : prop.get('absenKeluar') !== undefined
+                                ? convertDate(prop.get('absenKeluar'), 'm')
+                                : ''}
                             </td>
 
                             {/* Late In Hours */}
-                            <td>
+                            <td className="lateInHours">
+                              {/* {prop.get("lateTimes") === undefined
+                                ? ""
+                                : this.subtractHourLate(
+                                    prop.get("user").attributes.jamMasuk,
+                                    convertDate(prop.get("lateTimes"), "k"),
+                                    "Late"
+                                  )} */}
                               {prop.get('lateTimes') === undefined
                                 ? ''
-                                : this.subtractHourLate(
-                                    prop.get('user').attributes.jamMasuk,
-                                    convertDate(prop.get('lateTimes'), 'k'),
-                                    'Late'
-                                  )}
+                                : moment
+                                    .duration(convertDate(prop.get('lateTimes'), 'HH:mm'), 'HH:mm')
+                                    .subtract(
+                                      moment.duration(
+                                        `${prop.get('user').attributes.jamMasuk}:00`,
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .hours()}
                             </td>
 
                             {/* Late In Minutes */}
                             <td>
-                              {prop.get('lateTimes') === undefined
-                                ? ''
+                              {/* {prop.get("lateTimes") === undefined
+                                ? ""
                                 : this.subtractHourLate(
                                     0,
-                                    convertDate(prop.get('lateTimes'), 'm'),
-                                    'Late'
-                                  )}
+                                    convertDate(prop.get("lateTimes"), "m"),
+                                    "Late"
+                                  )} */}
+                              {prop.get('lateTimes') === undefined
+                                ? ''
+                                : moment
+                                    .duration(convertDate(prop.get('lateTimes'), 'HH:mm'), 'HH:mm')
+                                    .subtract(
+                                      moment.duration(
+                                        `${prop.get('user').attributes.jamMasuk}:00`,
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .minutes()}
                             </td>
 
                             {/* Early Derparture Hours */}
@@ -850,7 +1339,7 @@ class AllAbsen extends React.Component {
                             </td>
 
                             {/* Early Derparture Minutes */}
-                            <td>
+                            <td className="earlyminutes">
                               {prop.get('earlyTimes') === undefined
                                 ? ''
                                 : moment
@@ -869,491 +1358,84 @@ class AllAbsen extends React.Component {
 
                             {/* Over Time Hours */}
                             <td>
-                              {prop.get('overtimeIn') === undefined &&
-                              prop.get('overtimeOut') === undefined
-                                ? ''
-                                : moment
-                                    .duration(
-                                      convertDate(prop.get('overtimeOut'), 'HH:mm'),
-                                      'HH:mm'
-                                    )
-                                    .subtract(
-                                      moment.duration(
-                                        convertDate(prop.get('overtimeIn'), 'HH:mm'),
-                                        'HH:mm'
-                                      )
-                                    )
-                                    .hours()}
-                            </td>
-
-                            {/* Over Time Minutes */}
-                            <td>
-                              {prop.get('overtimeIn') === undefined &&
-                              prop.get('overtimeOut') === undefined
-                                ? ''
-                                : moment
-                                    .duration(
-                                      convertDate(prop.get('overtimeOut'), 'HH:mm'),
-                                      'HH:mm'
-                                    )
-                                    .subtract(
-                                      moment.duration(
-                                        convertDate(prop.get('overtimeIn'), 'HH:mm'),
-                                        'HH:mm'
-                                      )
-                                    )
-                                    .minutes()}
-                            </td>
-
-                            {/* Total Hour Hours */}
-                            <td>
-                              {moment
-                                .duration(
-                                  prop.get('earlyTimes') !== undefined
-                                    ? convertDate(prop.get('earlyTimes'), 'HH:mm')
-                                    : prop.get('overtimeOut') !== undefined
-                                    ? convertDate(prop.get('overtimeOut'), 'HH:mm')
-                                    : prop.get('absenKeluar') !== undefined
-                                    ? convertDate(prop.get('absenKeluar'), 'HH:mm')
-                                    : '',
-                                  'HH:mm'
-                                )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get('lateTimes') !== undefined
-                                      ? convertDate(prop.get('lateTimes'), 'HH:mm')
-                                      : convertDate(prop.get('absenMasuk'), 'HH:mm'),
-                                    'HH:mm'
-                                  )
-                                )
-                                .hours()}
-                            </td>
-                            {/* <td>{prop.get("fullname")}</td> */}
-
-                            {/* Total Hour Minutes */}
-                            <td>
-                              {moment
-                                .duration(
-                                  prop.get('earlyTimes') !== undefined
-                                    ? convertDate(prop.get('earlyTimes'), 'HH:mm')
-                                    : prop.get('overtimeOut') !== undefined
-                                    ? convertDate(prop.get('overtimeOut'), 'HH:mm')
-                                    : prop.get('absenKeluar') !== undefined
-                                    ? convertDate(prop.get('absenKeluar'), 'HH:mm')
-                                    : '',
-                                  'HH:mm'
-                                )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get('lateTimes') !== undefined
-                                      ? convertDate(prop.get('lateTimes'), 'HH:mm')
-                                      : convertDate(prop.get('absenMasuk'), 'HH:mm'),
-                                    'HH:mm'
-                                  )
-                                )
-                                .minutes()}
-                            </td>
-
-                            {/* Notes */}
-                            <td>
-                              {prop.get('overtimeIn') !== undefined
-                                ? 'Working Overtime'
-                                : 'Working Hour'}
-                            </td>
-                          </tr>
-                        ))
-                    )}
-                    <tr>
-                      <td colSpan="7">Total</td>
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                    </tr>
-                  </tbody>
-                </Table>
-                <Table
-                  className="align-items-center table-flush"
-                  id="ekspor1"
-                  responsive
-                  // hidden
-                >
-                  <thead>
-                    <tr>
-                      <th scope="col" style={{ border: 'none' }}>
-                        Fingerprint ID
-                      </th>
-                      <th scope="col" style={{ border: 'none' }}>
-                        {this.state.employeeID}
-                      </th>
-                    </tr>
-                  </thead>
-                  <thead className="border-0">
-                    <tr>
-                      <th scope="col" style={{ border: 'none' }}>
-                        Employee Name
-                      </th>
-                      <th scope="col" style={{ border: 'none' }}>
-                        {this.state.employeeName}
-                      </th>
-                    </tr>
-                  </thead>
-                  <thead className="border-0">
-                    <tr>
-                      <th scope="col" style={{ border: 'none' }}>
-                        Employee Title
-                      </th>
-                      <th scope="col" style={{ border: 'none' }}>
-                        {this.state.employeeTitle}
-                      </th>
-                    </tr>
-                  </thead>
-                  <thead className="border-0 mb-2">
-                    <tr>
-                      <th scope="col" style={{ border: 'none' }}>
-                        Department Title
-                      </th>
-                      <th scope="col" className="mb-2" style={{ border: 'none' }}>
-                        {this.state.employeeDepartment}
-                      </th>
-                    </tr>
-                  </thead>
-                  <thead className="thead-light" style={{ textAlign: 'center' }}>
-                    <tr>
-                      <th scope="col" rowSpan="2">
-                        Day
-                      </th>
-                      <th scope="col" rowSpan="2">
-                        Date
-                      </th>
-                      <th scope="col" rowSpan="2">
-                        Working Hour
-                      </th>
-                      <th scope="col" colSpan="2">
-                        Dutty On
-                      </th>
-                      <th scope="col" colSpan="2">
-                        Dutty Off
-                      </th>
-                      <th scope="col" colSpan="2">
-                        Late In
-                      </th>
-                      <th scope="col" colSpan="2">
-                        Early Derparture
-                      </th>
-                      <th scope="col" colSpan="2">
-                        Over Time
-                      </th>
-                      <th scope="col" colSpan="2">
-                        Total Hour
-                      </th>
-                      <th scope="col" rowSpan="2">
-                        Notes
-                      </th>
-                    </tr>
-                    <tr>
-                      <th scope="col">Hours</th>
-                      <th scope="col">Minutes</th>
-                      <th scope="col">Hours</th>
-                      <th scope="col">Minutes</th>
-                      <th scope="col">Hours</th>
-                      <th scope="col">Minutes</th>
-                      <th scope="col">Hours</th>
-                      <th scope="col">Minutes</th>
-                      <th scope="col">Hours</th>
-                      <th scope="col">Minutes</th>
-                      <th scope="col">Hours</th>
-                      <th scope="col">Minutes</th>
-                    </tr>
-                  </thead>
-                  <tbody style={{ textAlign: 'center' }}>
-                    {loading ? (
-                      <tr>
-                        <td colSpan={4} style={{ textAlign: 'center' }}>
-                          <Spinner
-                            as="span"
-                            animation="grow"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                          />{' '}
-                          <Spinner
-                            as="span"
-                            animation="grow"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                          />{' '}
-                          <Spinner
-                            as="span"
-                            animation="grow"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                          />
-                        </td>
-                      </tr>
-                    ) : absence.length < 1 ? (
-                      // .concat(dataLate)
-                      // .concat(dataOvertime)
-                      // .concat(dataEarlyLeave).length < 1 ? (
-                      <tr>
-                        <td colSpan={14} style={{ textAlign: 'center' }}>
-                          No data found...
-                        </td>
-                      </tr>
-                    ) : (
-                      absence
-                        // .concat(dataLate)
-                        // .concat(dataOvertime)
-                        // .concat(dataEarlyLeave)
-                        .map((prop, key) => (
-                          <tr>
-                            {/* Day */}
-                            <td>{convertDate(prop.get('absenMasuk'), 'ddd')}</td>
-
-                            {/* Date */}
-                            <td>
-                              {/* {prop.className === "Late"
-                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                        : prop.className === "Absence"
-                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                        : prop.className === "Overtime"
-                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                        : prop.className === "EarlyLeave"
-                        ? convertDate(prop.get("createdAt"), "DD/MM/YYYY")
-                        : ""} */}
-                              {convertDate(prop.get('absenMasuk'), 'DD/MM/YYYY')}
-                            </td>
-
-                            {/* Working Hour */}
-                            <td>
-                              {`${prop.get('user').attributes.jamMasuk < 10 ? '0' : ''}${
-                                prop.get('user').attributes.jamMasuk
-                              }:00` +
-                                ' - ' +
-                                `${prop.get('user').attributes.jamKeluar}:00`}
-                            </td>
-
-                            {/* Dutty On Hours */}
-                            <td
-                              style={{
-                                color: prop.get('lateTimes') !== undefined ? 'red' : ''
-                              }}
-                            >
-                              {/* {prop.className === "Late"
-                        ? convertDate(prop.get("time"), "k")
-                        : prop.className === "Absence"
-                        ? convertDate(prop.get("absenMasuk"), "k")
-                        : ""} */}
-                              {prop.get('lateTimes') !== undefined
-                                ? convertDate(prop.get('lateTimes'), 'k')
-                                : convertDate(prop.get('absenMasuk'), 'k')}
-                            </td>
-
-                            {/* Dutty On Minutes */}
-                            <td
-                              style={{
-                                color: prop.get('lateTimes') !== undefined ? 'red' : ''
-                              }}
-                            >
-                              {/* {prop.className === "Late"
-                        ? convertDate(prop.get("time"), "m")
-                        : prop.className === "Absence"
-                        ? convertDate(prop.get("absenMasuk"), "m")
-                        : ""} */}
-                              {prop.get('lateTimes') !== undefined
-                                ? convertDate(prop.get('lateTimes'), 'm')
-                                : convertDate(prop.get('absenMasuk'), 'm')}
-                            </td>
-
-                            {/* Dutty Off Hours */}
-                            <td
-                              style={{
-                                color: prop.get('earlyTimes') !== undefined ? 'red' : ''
-                              }}
-                            >
                               {/* {prop.className === "Overtime"
-                        ? convertDate(prop.get("time"), "k")
-                        : prop.className === "EarlyLeave"
-                        ? convertDate(prop.get("time"), "k")
-                        : prop.className === "Absence"
-                        ? convertDate(prop.get("absenKeluar"), "k")
-                        : ""} */}
-                              {prop.get('earlyTimes') !== undefined
-                                ? convertDate(prop.get('earlyTimes'), 'k')
-                                : convertDate(prop.get('absenKeluar'), 'k')}
-                            </td>
-
-                            {/* Dutty off Minutes */}
-                            <td
-                              style={{
-                                color: prop.get('earlyTimes') !== undefined ? 'red' : ''
-                              }}
-                            >
-                              {/* {prop.className === "Overtime"
-                        ? convertDate(prop.get("time"), "m")
-                        : prop.className === "EarlyLeave"
-                        ? convertDate(prop.get("time"), "m")
-                        : prop.className === "Absence"
-                        ? convertDate(prop.get("absenKeluar"), "m")
-                        : ""} */}
-                              {prop.get('earlyTimes') !== undefined
-                                ? convertDate(prop.get('earlyTimes'), 'm')
-                                : convertDate(prop.get('absenKeluar'), 'm')}
-                            </td>
-
-                            {/* Late In Hours */}
-                            <td>
-                              {prop.get('lateTimes') === undefined
-                                ? ''
-                                : this.subtractHourLate(
-                                    prop.get('user').attributes.jamMasuk,
-                                    convertDate(prop.get('lateTimes'), 'k'),
-                                    'Late'
-                                  )}
-                            </td>
-
-                            {/* Late In Minutes */}
-                            <td>
-                              {prop.get('lateTimes') === undefined
-                                ? ''
-                                : this.subtractHourLate(
-                                    0,
-                                    convertDate(prop.get('lateTimes'), 'm'),
-                                    'Late'
-                                  )}
-                            </td>
-
-                            {/* Early Derparture Hours */}
-                            <td>
-                              {/* {prop.className === "EarlyLeave"
                         ? this.subtractHourLate(
                             17,
                             convertDate(prop.get("time"), "k"),
-                            "EarlyLeave"
+                            "Overtime"
                           )
                         : ""} */}
-                              {prop.get('earlyTimes') === undefined
+                              {prop.get('absenKeluar') === undefined
                                 ? ''
-                                : moment
-                                    .duration(
-                                      `${prop.get('user').attributes.jamKeluar}:00`,
-                                      'HH:mm'
-                                    )
-                                    .subtract(
-                                      moment.duration(
-                                        convertDate(prop.get('earlyTimes'), 'HH:mm'),
-                                        'HH:mm'
-                                      )
-                                    )
-                                    .hours()}
-                            </td>
-
-                            {/* Early Derparture Minutes */}
-                            <td>
-                              {prop.get('earlyTimes') === undefined
-                                ? ''
-                                : moment
-                                    .duration(
-                                      `${prop.get('user').attributes.jamKeluar}:00`,
-                                      'HH:mm'
-                                    )
-                                    .subtract(
-                                      moment.duration(
-                                        convertDate(prop.get('earlyTimes'), 'HH:mm'),
-                                        'HH:mm'
-                                      )
-                                    )
-                                    .minutes()}
-                            </td>
-
-                            {/* Over Time Hours */}
-                            <td>
-                              {prop.get('overtimeIn') === undefined &&
-                              prop.get('overtimeOut') === undefined
-                                ? ''
-                                : moment
+                                : prop.get('overtimeOut') !== undefined
+                                ? moment
                                     .duration(
                                       convertDate(prop.get('overtimeOut'), 'HH:mm'),
                                       'HH:mm'
                                     )
                                     .subtract(
                                       moment.duration(
-                                        convertDate(prop.get('overtimeIn'), 'HH:mm'),
+                                        `${prop.get('user').attributes.jamKeluar}:00`,
                                         'HH:mm'
                                       )
                                     )
-                                    .hours()}
+                                    .hours()
+                                : ''}
                             </td>
 
                             {/* Over Time Minutes */}
                             <td>
-                              {prop.get('overtimeIn') === undefined &&
-                              prop.get('overtimeOut') === undefined
+                              {/* {prop.className === "Overtime"
+                        ? this.subtractHourLate(
+                            0,
+                            convertDate(prop.get("time"), "m"),
+                            "Overtime"
+                          )
+                        : ""} */}
+                              {prop.get('absenKeluar') === undefined
                                 ? ''
-                                : moment
+                                : prop.get('overtimeOut') !== undefined
+                                ? moment
                                     .duration(
-                                      convertDate(prop.get('overtimeOut'), 'HH:mm'),
+                                      convertDate(prop.get('absenKeluar'), 'HH:mm'),
                                       'HH:mm'
                                     )
                                     .subtract(
                                       moment.duration(
-                                        convertDate(prop.get('overtimeIn'), 'HH:mm'),
+                                        `${prop.get('user').attributes.jamKeluar}:00`,
                                         'HH:mm'
                                       )
                                     )
-                                    .minutes()}
+                                    .minutes()
+                                : ''}
                             </td>
 
                             {/* Total Hour Hours */}
-                            <td>
-                              {moment
-                                .duration(
-                                  prop.get('earlyTimes') !== undefined
-                                    ? convertDate(prop.get('earlyTimes'), 'HH:mm')
-                                    : prop.get('overtimeOut') !== undefined
-                                    ? convertDate(prop.get('overtimeOut'), 'HH:mm')
-                                    : prop.get('absenKeluar') !== undefined
-                                    ? convertDate(prop.get('absenKeluar'), 'HH:mm')
-                                    : '',
-                                  'HH:mm'
-                                )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get('lateTimes') !== undefined
-                                      ? convertDate(prop.get('lateTimes'), 'HH:mm')
-                                      : convertDate(prop.get('absenMasuk'), 'HH:mm'),
-                                    'HH:mm'
-                                  )
-                                )
-                                .hours()}
-                            </td>
                             {/* <td>{prop.get("fullname")}</td> */}
+                            <td>
+                              {prop.get('absenKeluar') === undefined
+                                ? 0
+                                : moment
+                                    .duration(
+                                      convertDate(prop.get('absenKeluar'), 'HH:mm'),
+                                      'HH:mm'
+                                    )
+                                    .subtract(
+                                      moment.duration(
+                                        convertDate(prop.get('absenMasuk'), 'HH:mm'),
+                                        'HH:mm'
+                                      )
+                                    )
+                                    .hours()}
+                            </td>
 
                             {/* Total Hour Minutes */}
                             <td>
                               {moment
-                                .duration(
-                                  prop.get('earlyTimes') !== undefined
-                                    ? convertDate(prop.get('earlyTimes'), 'HH:mm')
-                                    : prop.get('overtimeOut') !== undefined
-                                    ? convertDate(prop.get('overtimeOut'), 'HH:mm')
-                                    : prop.get('absenKeluar') !== undefined
-                                    ? convertDate(prop.get('absenKeluar'), 'HH:mm')
-                                    : '',
-                                  'HH:mm'
-                                )
+                                .duration(convertDate(prop.get('absenKeluar'), 'HH:mm'), 'HH:mm')
                                 .subtract(
                                   moment.duration(
-                                    prop.get('lateTimes') !== undefined
-                                      ? convertDate(prop.get('lateTimes'), 'HH:mm')
-                                      : convertDate(prop.get('absenMasuk'), 'HH:mm'),
+                                    convertDate(prop.get('absenMasuk'), 'HH:mm'),
                                     'HH:mm'
                                   )
                                 )
@@ -1371,18 +1453,75 @@ class AllAbsen extends React.Component {
                     )}
                     <tr>
                       <td colSpan="7">Total</td>
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "lateTimes"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.hoursLate}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "minutes",
+                          "lateTimes"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.minutesLate}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "earlyTimes"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.jamEarly}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "minutes",
+                          "earlyTimes"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.minutesEarly}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "overtimeOut"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.jamOvertime.toString()}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "minutes",
+                          "overtimeOut"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.minutesOvertime.toString()}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "totalHours"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.jamTotal}
+                      </td>
+                      <td>
+                        {/* {this.getTotalHours(
+                          absence,
+                          "hours",
+                          "totalHours"
+                        ).reduce(this.getSum, 0)} */}
+                        {this.state.minutesTotal}
+                      </td>
                       <td />
                     </tr>
                   </tbody>
                 </Table>
+
                 {/* <nav aria-label="Page navigation example">
                   <Pagination
                     className="pagination justify-content-end"
