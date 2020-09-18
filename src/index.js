@@ -69,6 +69,11 @@ ReactDOM.render(
           !checkUser() ? <AuthLayout {...props} /> : <Redirect to={`/${getUserRole()}/index`} />
         }
       />
+      {localStorage.getItem('roles') === null ? (
+        <Redirect from="/" to={`/auth/login`} />
+      ) : (
+        <Redirect from="/" to={`/${localStorage.getItem('roles')}/index`} />
+      )}
       {/* <Redirect from="/" to={`/${localStorage.getItem('roles')}/index`} /> */}
     </Switch>
   </BrowserRouter>,
