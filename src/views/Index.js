@@ -79,6 +79,7 @@ const MapWrapper = compose(
 )((props) => (
   <GoogleMap
     defaultZoom={12}
+    zoom={props.defaultZoom}
     defaultCenter={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
     center={{ lat: parseFloat(props.avgLat), lng: parseFloat(props.avgLng) }}
     defaultOptions={{
@@ -239,7 +240,8 @@ class Index extends React.Component {
       dataAbsen: [],
       late: [],
       avgLat: 0,
-      avgLng: 0
+      avgLng: 0,
+      defaultZoom: 12
     };
     if (window.Chart) {
       parseOptions(Chart, chartOptions());
@@ -498,6 +500,7 @@ class Index extends React.Component {
                     userPosition={this.state.dataAbsen.concat(this.state.late)}
                     avgLat={this.state.avgLat}
                     avgLng={this.state.avgLng}
+                    defaultZoom={this.state.defaultZoom}
                     googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q"
                     loadingElement={<div style={{ height: `100%` }} />}
                     containerElement={
@@ -656,6 +659,7 @@ class Index extends React.Component {
                         <tr
                           onClick={() => {
                             this.setCenterMaps(prop.get('latitude'), prop.get('longitude'));
+                            this.setState({ defaultZoom: 22 });
                             this.scrollToMyRef();
                           }}
                         >
