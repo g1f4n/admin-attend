@@ -56,6 +56,10 @@ class TesEksport extends React.Component {
       absence: [],
       tableData: [],
       fileData: [],
+      daftarLevel: [],
+      daftarPosisi: [],
+      searchBy: 'all',
+      searchValue: '',
       excelMode: false,
       loading: false,
       approvalMode: false,
@@ -96,7 +100,25 @@ class TesEksport extends React.Component {
 
   componentDidMount() {
     this.getData();
+    this.getPosisi();
   }
+
+  getPosisi = () => {
+    this.setState({ loading: true });
+    const Position = new Parse.Object.extend('Position');
+    const query = new Parse.Query(Position);
+
+    query.equalTo('status', 1);
+    query
+      .find()
+      .then((x) => {
+        this.setState({ daftarPosisi: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
 
   getData = (pageNumber = 1) => {
     this.setState({ loadingFilter: true });
@@ -213,72 +235,6 @@ class TesEksport extends React.Component {
     this.setState({ loadingModal: false });
   };
 
-  handleApproval = (e, approvalMode) => {
-    e.preventDefault();
-    this.setState({ loadingModal: true });
-    const Izin = Parse.Object.extend('Izin');
-    const query = new Parse.Query(Izin);
-
-    query
-      .get(this.state.userId)
-      .then((x) => {
-        x.set('status', approvalMode ? 1 : 0);
-        if (!approvalMode) x.set('alasanReject', this.state.reason);
-        x.save()
-          .then(() => {
-            let newArr = [...this.state.izin];
-            newArr.splice(this.state.userIndex, 1);
-            this.setState({
-              counter: this.state.counter + 1,
-              izin: newArr,
-              [approvalMode ? 'approvalMode' : 'rejectMode']: false,
-              loadingModal: false
-            });
-            alert(`Berhasil ${approvalMode ? 'approve' : 'reject'}`);
-            return;
-          })
-          .catch((err) => {
-            alert(err.message);
-            this.closeLoading();
-            return;
-          });
-      })
-      .catch((err) => {
-        alert(err.message);
-        this.closeLoading();
-        return;
-      });
-  };
-
-  toggle = (state) => {
-    this.setState({
-      [state]: !this.state[state]
-    });
-  };
-
-  handleAllCheck = (e) => {
-    let daftarStaff = this.state.daftarStaff;
-    let collecId = [];
-    let fileData = [];
-
-    daftarStaff.map((x, index) => {
-      x.select = e.target.checked;
-      if (x.select) {
-        collecId.push(x.id);
-        fileData.push({ fileName: x.get('fullname'), tableId: `ekspor${index}` });
-      } else {
-        collecId = [];
-        fileData = [];
-      }
-
-      return x;
-    });
-
-    this.setState({ daftarStaff: daftarStaff, checkId: collecId, fileData: fileData }, () =>
-      console.log(this.state.checkId)
-    );
-  };
-
   handleChildCheck = (e) => {
     let { daftarStaff } = this.state;
     const { checkId, fileData } = this.state;
@@ -330,402 +286,176 @@ class TesEksport extends React.Component {
     this.setState({ daftarStaff: daftarStaff });
   };
 
-  handleApproveAll = (e) => {
-    this.setState({ loading: true });
-    const Izin = Parse.Object.extend('Izin');
-    const query = new Parse.Query(Izin);
+  handleAllCheck = (e) => {
+    let daftarStaff = this.state.daftarStaff;
+    let collecId = [];
+    let fileData = [];
 
-    query.get(e).then((x) => {
-      x.set('status', 1);
-      x.save().then(() => {
-        const newArr = [...this.state.izin];
-        newArr.splice(this.state.userIndex, 1);
-        this.setState({
-          izin: newArr,
-          counter: this.state.counter + 1,
-          approvalMode: false,
-          loading: false
-        });
-      });
+    daftarStaff.map((x, index) => {
+      x.select = e.target.checked;
+      if (x.select) {
+        collecId.push(x.id);
+        fileData.push({ fileName: x.get('fullname'), tableId: `ekspor${index}` });
+      } else {
+        collecId = [];
+        fileData = [];
+      }
+
+      return x;
     });
+
+    this.setState({ daftarStaff: daftarStaff, checkId: collecId, fileData: fileData }, () =>
+      console.log(this.state.checkId)
+    );
   };
 
-  handleRejectAll = (e) => {
-    this.setState({ loading: true });
-    const Izin = Parse.Object.extend('Izin');
-    const query = new Parse.Query(Izin);
-
-    query.get(e).then((x) => {
-      x.set('status', 0);
-      x.set('alasanReject', this.state.reason);
-      x.save().then(() => {
-        const newArr = [...this.state.izin];
-        newArr.splice(this.state.userIndex, 1);
-        this.setState({
-          counter: this.state.counter + 1,
-          izin: newArr
-        });
-      });
-    });
-  };
-
-  approveChecked = (e) => {
+  handleApproval = (e, approvalMode) => {
+    e.preventDefault();
     this.setState({ loadingModal: true });
-    const { checkId } = this.state;
-    let totalData = 0;
+    const Izin = Parse.Object.extend('Izin');
+    const query = new Parse.Query(Izin);
 
-    checkId.map((id) => {
-      const Izin = Parse.Object.extend('Izin');
-      const query = new Parse.Query(Izin);
-
-      query.get(id).then((x) => {
-        x.set('status', 1);
-        x.save().then(() => {
-          totalData = totalData + 1;
-          if (totalData === checkId.length) {
-            alert('Berhasil reject');
-            return window.location.reload(false);
-          }
-        });
-      });
-    });
-
-    this.setState({ loadingModal: false });
-  };
-
-  getDaftarAbsen = () => {
-    this.setState({ loading: true });
-    const Absence = Parse.Object.extend('Absence');
-    const Leader = Parse.Object.extend('Leader');
-    const leader = new Leader();
-    const query = new Parse.Query(Absence);
-
-    const id = this.props.match.params.id;
-
-    const nullData = 'Data tidak ditemukan';
-
-    const d = new Date();
-    const start = new moment(d);
-    start.startOf('day');
-    const finish = new moment(start);
-    finish.add(1, 'day');
-
-    query.equalTo('user', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: id
-    });
-    query.descending('createdAt');
-    // query.greaterThanOrEqualTo('createdAt', start.toDate());
-    // query.lessThan('createdAt', finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
-    query.include('user');
     query
-      .find()
+      .get(this.state.userId)
       .then((x) => {
-        console.log('user', x);
-        let early = [];
-        let hours = [];
-        let lateTimesMinute = [];
-        let lateTimesHours = [];
-        let overtimeMinutes = [];
-        let overtimeHours = [];
-        let totalHours = [];
-        let totalMinutes = [];
-        x.filter((z) => {
-          if (z.get('earlyTimes') === undefined) {
-            return false;
-          }
-          // else if (z.get("lateTimes") === undefined) {
-          //   return false;
-          // } else if (z.get("overtimeOut") === undefined) {
-          //   return false;
-          // }
-          return true;
-        }).map((value, index) => {
-          early.push(
-            moment
-              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
-              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
-              .minutes()
-          );
-          hours.push(
-            moment
-              .duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm')
-              .subtract(moment.duration(convertDate(value.get('earlyTimes'), 'HH:mm'), 'HH:mm'))
-              .hours()
-          );
-          console.log('early departure', early);
-        });
-        // late times map
-        x.filter((a) => {
-          if (a.get('lateTimes') === undefined) {
-            return false;
-          }
-          return true;
-        }).map((value, index) => {
-          // lateTime
-          lateTimesMinute.push(
-            moment
-              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
-              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
-              .minutes()
-          );
-          lateTimesHours.push(
-            moment
-              .duration(convertDate(value.get('lateTimes'), 'HH:mm'), 'HH:mm')
-              .subtract(moment.duration(`${value.get('user').attributes.jamMasuk}:00`, 'HH:mm'))
-              .hours()
-          );
-          console.log('value late', lateTimesMinute);
-        });
-
-        // overtime
-        x.filter((d) => {
-          if (d.get('overtimeOut') === undefined) {
-            return false;
-          }
-          return true;
-        }).map((value, index) => {
-          overtimeMinutes.push(
-            moment
-              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
-              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
-              .minutes()
-          );
-          overtimeHours.push(
-            moment
-              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
-              .subtract(moment.duration(`${value.get('user').attributes.jamKeluar}:00`, 'HH:mm'))
-              .hours()
-          );
-        });
-
-        // Total Hours
-        x.map((value, index) => {
-          totalMinutes.push(
-            moment
-              .duration(
-                value.get('earlyTimes') !== undefined
-                  ? convertDate(value.get('earlyTimes'), 'HH:mm')
-                  : value.get('overtimeOut') !== undefined
-                  ? convertDate(value.get('overtimeOut'), 'HH:mm')
-                  : value.get('absenKeluar') !== undefined
-                  ? convertDate(value.get('absenKeluar'), 'HH:mm')
-                  : `00:00`,
-                'HH:mm'
-              )
-              .subtract(
-                moment.duration(
-                  value.get('lateTimes') !== undefined
-                    ? convertDate(value.get('lateTimes'), 'HH:mm')
-                    : value.get('absenMasuk') !== undefined
-                    ? convertDate(value.get('absenMasuk'), 'HH:mm')
-                    : `00:00`,
-                  'HH:mm'
-                )
-              )
-              .minutes()
-          );
-          totalHours.push(
-            moment
-              .duration(convertDate(value.get('absenKeluar'), 'HH:mm'), 'HH:mm')
-              .subtract(
-                moment.duration(
-                  value.get('lateTimes') !== undefined
-                    ? convertDate(value.get('lateTimes'), 'HH:mm')
-                    : convertDate(value.get('absenMasuk'), 'HH:mm'),
-                  'HH:mm'
-                )
-              )
-              .hours()
-          );
-        });
-        // console.log("total hours", totalMinutes);
-
-        // if (early.length < 1 || hours.length < 1) {
-        //   return false;
-        // }
-        // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
-        //   return false;
-        // }
-        if (early.length === 1) {
-          early.reduce((acc, curr) => {
-            console.log(!acc);
-            console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
-            console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
+        x.set('status', approvalMode ? 1 : 0);
+        if (!approvalMode) x.set('alasanReject', this.state.reason);
+        x.save()
+          .then(() => {
+            let newArr = [...this.state.izin];
+            newArr.splice(this.state.userIndex, 1);
             this.setState({
-              sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-              minutesEarly: (parseInt(acc) + parseInt(curr)) % 60
+              counter: this.state.counter + 1,
+              izin: newArr,
+              [approvalMode ? 'approvalMode' : 'rejectMode']: false,
+              loadingModal: false
             });
-          }, 0);
-        } else if (early.length > 1) {
-          early.reduce((acc, curr) => {
-            console.log(!acc);
-            console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
-            console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            this.setState({
-              sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-              minutesEarly: (parseInt(acc) + parseInt(curr)) % 60
-            });
+            alert(`Berhasil ${approvalMode ? 'approve' : 'reject'}`);
+            return;
+          })
+          .catch((err) => {
+            alert(err.message);
+            this.closeLoading();
+            return;
           });
-        } else {
-          this.setState({ minutesEarly: 0, sisaJam: 0 });
-        }
-
-        if (hours.length === 1) {
-          hours
-            .filter((val) => {
-              if (val === '') {
-                return false;
-              }
-              return true;
-            })
-            .reduce((acc, curr) => {
-              console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
-              this.setState({
-                jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam
-              });
-            }, 0);
-        } else if (hours.length > 1) {
-          hours
-            .filter((val) => {
-              if (val === '') {
-                return false;
-              }
-              return true;
-            })
-            .reduce((acc, curr) => {
-              console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
-              this.setState({
-                jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam
-              });
-            });
-        } else {
-          this.setState({ jamEarly: 0 });
-        }
-        // late Times
-        console.log('late times ', lateTimesHours);
-        if (lateTimesMinute.length === 1) {
-          lateTimesMinute.reduce((acc, curr) => {
-            this.setState({
-              sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-              minutesLate: (parseInt(acc) + parseInt(curr)) % 60
-            });
-            console.log('sisa Jam Late', this.state.sisaJamLate);
-            console.log('menit Late', this.state.minutesLate);
-          }, 0);
-        } else if (lateTimesMinute.length > 1) {
-          lateTimesMinute.reduce((acc, curr) => {
-            this.setState({
-              sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-              minutesLate: (parseInt(acc) + parseInt(curr)) % 60
-            });
-            console.log('sisa Jam Late', this.state.sisaJamLate);
-            console.log('menit Late', this.state.minutesLate);
-          });
-        } else {
-          this.setState({
-            sisaJamLate: 0,
-            minutesLate: 0
-          });
-        }
-        if (lateTimesHours.length === 1) {
-          lateTimesHours.reduce((acc, curr) => {
-            this.setState({
-              hoursLate: parseInt(acc) + parseInt(curr) + this.state.sisaJamLate
-            });
-            console.log('jamLate', this.state.hoursLate);
-          }, 0);
-        } else if (lateTimesHours.length > 1) {
-          lateTimesHours.reduce((acc, curr) => {
-            this.setState({
-              hoursLate: parseInt(acc) + parseInt(curr) + this.state.sisaJamLate
-            });
-            console.log('jamLate', this.state.hoursLate);
-          });
-        } else {
-          this.setState({ hoursLate: 0 });
-        }
-
-        console.log(overtimeMinutes);
-        // overtime
-        if (overtimeMinutes.length === 1) {
-          overtimeMinutes.reduce((acc, curr) => {
-            this.setState(
-              {
-                sisaJamOvertime: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-                minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60
-              },
-              () => console.log(this.state.minutesOvertime)
-            );
-          }, 0);
-        } else if (overtimeMinutes.length > 1) {
-          overtimeMinutes.reduce((acc, curr) => {
-            this.setState(
-              {
-                sisaJamOvertime: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-                minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60
-              },
-              () => console.log(this.state.minutesOvertime)
-            );
-          });
-        } else {
-          this.setState({ minutesOvertime: 0, sisaJam: 0 });
-        }
-        if (overtimeHours.length === 1) {
-          overtimeHours.reduce((acc, curr) => {
-            this.setState({
-              jamOvertime: parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime
-            });
-          }, 0);
-        } else if (overtimeHours.length > 1) {
-          overtimeHours.reduce((acc, curr) => {
-            this.setState({
-              jamOvertime: parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime
-            });
-          });
-        } else {
-          this.setState({
-            jamOvertime: 0
-          });
-        }
-        if (totalMinutes.length > 0) {
-          totalMinutes.reduce((acc, curr) => {
-            this.setState({
-              sisaJamTotalMinutes: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
-              minutesTotal: (parseInt(acc) + parseInt(curr)) % 60
-            });
-          });
-          console.log('total minutes', totalMinutes);
-          console.log('total minutes2', typeof this.state.minutesTotal);
-        } else {
-          this.setState({ minutesTotal: 0, sisaJamTotalMinutes: 0 });
-        }
-        if (totalHours.length > 0) {
-          totalHours.reduce((acc, curr) => {
-            this.setState({
-              jamTotal: parseInt(acc) + parseInt(curr) + this.state.sisaJamTotalMinutes
-            });
-          });
-        } else {
-          this.setState({
-            jamTotal: 0
-          });
-        }
-        this.setState({
-          absence: x,
-          loading: false,
-          employeeName: _.isEmpty(x) ? nullData : x[0].get('fullname'),
-          employeeID: _.isEmpty(x) ? nullData : x[0].get('user').attributes.nik,
-          employeeTitle: _.isEmpty(x) ? nullData : x[0].get('user').attributes.level,
-          employeeDepartment: _.isEmpty(x) ? nullData : x[0].get('user').attributes.posisi
-        });
       })
       .catch((err) => {
         alert(err.message);
-        this.setState({ loading: false });
+        this.closeLoading();
+        return;
       });
+  };
+
+  toggle = (state) => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+  };
+
+  handleFilter = (e, pageNumber = 1) => {
+    e.preventDefault();
+    this.setState({ loadingFilter: true });
+    const { searchBy, searchValue } = this.state;
+    const { resPerPage, page } = this.state;
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    query.notContainedIn('roles', ['admin', 'leader', 'Admin', 'Leader']);
+    query.skip(resPerPage * pageNumber - resPerPage);
+    query.limit(resPerPage);
+    query.withCount();
+    switch (searchBy) {
+      case 'all':
+        query
+          .find({ useMasterKey: true })
+          .then((x) => {
+            this.setState({
+              daftarStaff: x.results,
+              totalData: x.count,
+              loadingFilter: false
+            });
+          })
+          .catch((err) => {
+            this.setState({ loadingFilter: false });
+            alert('cek koneksi anda');
+          });
+        break;
+
+      case 'name':
+        query.matches('fullname', searchValue, 'i');
+        query
+          .find({ useMasterKey: true })
+          .then((x) => {
+            this.setState({
+              daftarStaff: x.results,
+              totalData: x.count,
+              loadingFilter: false
+            });
+          })
+          .catch((err) => {
+            this.setState({ loadingFilter: false });
+            alert('cek koneksi anda');
+          });
+        break;
+
+      case 'nik':
+        query.equalTo('nik', searchValue);
+        query
+          .find({ useMasterKey: true })
+          .then((x) => {
+            this.setState({
+              daftarStaff: x.results,
+              totalData: x.count,
+              loadingFilter: false
+            });
+          })
+          .catch((err) => {
+            this.setState({ loadingFilter: false });
+            alert('cek koneksi anda');
+          });
+        break;
+
+      case 'divisi':
+        query.matches('posisi', searchValue, 'i');
+        query
+          .find({ useMasterKey: true })
+          .then((x) => {
+            this.setState({
+              daftarStaff: x.results,
+              totalData: x.count,
+              loadingFilter: false
+            });
+          })
+          .catch((err) => {
+            this.setState({ loadingFilter: false });
+            alert('cek koneksi anda');
+          });
+        break;
+
+      case 'leader':
+        const leader = new Parse.User();
+        const leaderQuery = new Parse.Query(leader);
+        leaderQuery.matches('fullname', searchValue, 'i');
+
+        query.matchesQuery('leaderIdNew', leaderQuery);
+        query
+          .find({ useMasterKey: true })
+          .then((x) => {
+            this.setState({
+              daftarStaff: x.results,
+              totalData: x.count,
+              loadingFilter: false
+            });
+          })
+          .catch((err) => {
+            this.setState({ loadingFilter: false });
+            alert('cek koneksi anda');
+          });
+        break;
+      default:
+        break;
+    }
   };
 
   queryAbsen = (filterType, id, rangeType, totalData) => {
@@ -1566,6 +1296,8 @@ class TesEksport extends React.Component {
   render() {
     const {
       daftarStaff,
+      daftarLevel,
+      daftarPosisi,
       loading,
       approvalMode,
       rejectMode,
@@ -1575,6 +1307,52 @@ class TesEksport extends React.Component {
       approveAllMode,
       rejectAllMode
     } = this.state;
+
+    const selectForm = (
+      <FormGroup controlId="formlvl">
+        <Input
+          className="form-control-alternative"
+          type="select"
+          required={true}
+          onChange={(e) =>
+            this.setState({
+              searchValue: e.target.value
+            })
+          }
+        >
+          <option selected disabled hidden>
+            Pilih {this.state.searchBy}
+          </option>
+          {this.state.searchBy === 'leader'
+            ? daftarLevel.map((x, i) => (
+                <option key={i} value={x.get('level')}>
+                  {x.get('level')}
+                </option>
+              ))
+            : this.state.daftarPosisi.map((x, i) => (
+                <option key={i} value={x.get('position')}>
+                  {x.get('position')}
+                </option>
+              ))}
+        </Input>
+      </FormGroup>
+    );
+
+    const textForm = (
+      <FormGroup>
+        <Input
+          type="text"
+          className="form-control-alternative"
+          disabled={this.state.searchBy === 'all'}
+          placeholder={this.state.searchBy === 'all' ? '' : `Masukkan ${this.state.searchBy}`}
+          onChange={(e) =>
+            this.setState({
+              searchValue: e.target.value
+            })
+          }
+        />
+      </FormGroup>
+    );
 
     return (
       <React.Fragment>
@@ -1587,6 +1365,62 @@ class TesEksport extends React.Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <h3 className="mb-2">Export data karyawan</h3>
+                  <Form onSubmit={this.handleFilter} className>
+                    <Row>
+                      <Col lg={2}>Search by</Col>
+                      <Col lg={2}>
+                        <FormGroup controlId="formHorizontalEmails">
+                          <Input
+                            className="form-control-alternative"
+                            type="select"
+                            onChange={(e) =>
+                              this.setState({
+                                searchBy: e.target.value,
+                                searchValue: ''
+                              })
+                            }
+                          >
+                            {['all', 'nik', 'name', 'leader', 'divisi'].map((x) => (
+                              <option value={x}>{x}</option>
+                            ))}
+                          </Input>
+                        </FormGroup>
+                      </Col>
+                      <Col lg={4}>
+                        {this.state.searchBy == 'level' || this.state.searchBy == 'divisi'
+                          ? selectForm
+                          : textForm}
+                        {/* <FormGroup>
+											<Input
+												type="text"
+												className="form-control-alternative"
+												disabled={this.state.searchBy === 'all'}
+												placeholder={
+													this.state.searchBy === 'all' ? (
+														''
+													) : (
+														`Masukkan ${this.state.searchBy}`
+													)
+												}
+												onChange={(e) =>
+													this.setState({
+														searchValue: e.target.value
+													})}
+											/>
+										</FormGroup> */}
+                      </Col>
+                      <Col sm={2}>
+                        <Button
+                          color="primary"
+                          type="submit"
+                          disable={this.state.loadingFilter ? 'true' : 'false'}
+                        >
+                          <i className="fa fa-search" />{' '}
+                          {this.state.loadingFilter ? 'Fetching...' : 'Search'}
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
 
                   {daftarStaff.length === 0 ? (
                     ''
