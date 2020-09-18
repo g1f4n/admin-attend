@@ -1,30 +1,32 @@
 {
   "files": {
     "main.css": "/static/css/main.86167663.chunk.css",
-    "main.js": "/static/js/main.b931fe8e.chunk.js",
-    "main.js.map": "/static/js/main.b931fe8e.chunk.js.map",
+    "main.js": "/static/js/main.89abcc2a.chunk.js",
+    "main.js.map": "/static/js/main.89abcc2a.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.c7f5aab7.js",
     "runtime-main.js.map": "/static/js/runtime-main.c7f5aab7.js.map",
     "static/css/2.79838944.chunk.css": "/static/css/2.79838944.chunk.css",
-    "static/js/2.54106bdd.chunk.js": "/static/js/2.54106bdd.chunk.js",
-    "static/js/2.54106bdd.chunk.js.map": "/static/js/2.54106bdd.chunk.js.map",
+    "static/js/2.fe351165.chunk.js": "/static/js/2.fe351165.chunk.js",
+    "static/js/2.fe351165.chunk.js.map": "/static/js/2.fe351165.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.c7507ee96283724996cf1e264efd33c9.js": "/precache-manifest.c7507ee96283724996cf1e264efd33c9.js",
+    "precache-manifest.a03e2c377fcf169874cf0354bed0d9b0.js": "/precache-manifest.a03e2c377fcf169874cf0354bed0d9b0.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.79838944.chunk.css.map": "/static/css/2.79838944.chunk.css.map",
     "static/css/main.86167663.chunk.css.map": "/static/css/main.86167663.chunk.css.map",
-    "static/js/2.54106bdd.chunk.js.LICENSE.txt": "/static/js/2.54106bdd.chunk.js.LICENSE.txt",
-    "static/js/main.b931fe8e.chunk.js.LICENSE.txt": "/static/js/main.b931fe8e.chunk.js.LICENSE.txt",
+    "static/js/2.fe351165.chunk.js.LICENSE.txt": "/static/js/2.fe351165.chunk.js.LICENSE.txt",
+    "static/js/main.89abcc2a.chunk.js.LICENSE.txt": "/static/js/main.89abcc2a.chunk.js.LICENSE.txt",
     "static/media/argon-react.png": "/static/media/argon-react.f38ddea9.png",
     "static/media/all.min.css": "/static/media/fa-solid-900.cdfec5cf.woff",
+    "static/media/github.svg": "/static/media/github.4ffd4fe7.svg",
+    "static/media/google.svg": "/static/media/google.87be59a1.svg",
     "static/media/nucleo.css": "/static/media/nucleo-icons.f82ec6ba.ttf",
     "static/media/profile-cover.jpg": "/static/media/profile-cover.e2582654.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.c7f5aab7.js",
     "static/css/2.79838944.chunk.css",
-    "static/js/2.54106bdd.chunk.js",
+    "static/js/2.fe351165.chunk.js",
     "static/css/main.86167663.chunk.css",
-    "static/js/main.b931fe8e.chunk.js"
+    "static/js/main.89abcc2a.chunk.js"
   ]
 }

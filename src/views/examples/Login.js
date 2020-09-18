@@ -59,15 +59,21 @@ class Login extends React.Component {
     const { username, password } = this.state;
     Parse.User.logIn(username, md5(password))
       .then((x) => {
-        if (x.get('roles') !== 'admin') {
+        if (x.get('roles') === 'leader') {
+          console.log('leader');
+          window.localStorage.setItem('roles', 'leader');
+          this.setState({ loading: false });
+          window.location.replace('/leader/index');
+          this.props.history.push('/leader/index');
+        } else if (x.get('roles') === 'admin') {
+          window.localStorage.setItem('roles', 'admin');
+          this.setState({ loading: false });
+          window.location.replace('/admin/index');
+          this.props.history.push('/admin/index');
+        } else {
           Parse.User.logOut();
-          alert('Selain admin dilarang masuk');
-          window.location.reload();
-          return;
+          this.setState({ error: 'Maaf anda dilarang login ke sistem', loading: false });
         }
-
-        this.setState({ loading: false });
-        this.props.history.push('/admin/index');
       })
       .catch((err) => {
         console.log(err);

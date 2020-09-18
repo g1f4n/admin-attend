@@ -37,33 +37,40 @@ Parse.serverURL = env.SERVER_URL;
 Parse.masterKey = env.MASTER_KEY;
 
 ReactDOM.render(
-	<BrowserRouter>
-		<Switch>
-			{getUserRole() === 'admin' ? (
-				<Route
-					path="/admin"
-					render={(props) =>
-						checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />}
-				/>
-			) : (
-				<Route
-					path="/admin"
-					render={(props) =>
-						checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />}
-				/>
-			)}
+  <BrowserRouter>
+    <Switch>
+      {/* {window.localStorage.getItem('roles') === 'admin' ? (
+        <Route
+          path="/admin"
+          render={(props) => (checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />)}
+        />
+      ) : window.localStorage.getItem('roles') === 'leader' ? (
+        <Route
+          path="/leader"
+          render={(props) => (checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />)}
+        />
+      ) : (
+        ''
+      )} */}
+      <Route
+        path={`/${getUserRole()}`}
+        render={(props) => (checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />)}
+      />
 
-			<Route
-				path="/auth"
-				render={(props) =>
-					!checkUser() ? (
-						<AuthLayout {...props} />
-					) : (
-						<Redirect to={`/${getUserRole()}/index`} />
-					)}
-			/>
-			<Redirect from="/" to="/admin/index" />
-		</Switch>
-	</BrowserRouter>,
-	document.getElementById('root')
+      {/* {!checkUser() ? (
+        <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
+      ) : (
+        <Redirect to={`/${getUserRole()}/index`} />
+      )} */}
+
+      <Route
+        path="/auth"
+        render={(props) =>
+          !checkUser() ? <AuthLayout {...props} /> : <Redirect to={`/${getUserRole()}/index`} />
+        }
+      />
+      {/* <Redirect from="/" to={`/${localStorage.getItem('roles')}/index`} /> */}
+    </Switch>
+  </BrowserRouter>,
+  document.getElementById('root')
 );

@@ -6,8 +6,8 @@
 // };
 
 module.exports = {
-	APPLICATION_ID: '8ClTOObwo2ZXGQdsGiXB3Ex0v4GcmPJbRWZ0oMSz',
-	JAVASCRIPT_KEY: 'pGcwVz1nNvzETjBqfJudTOq3ReHo08fB2rMqdcbu',
-	MASTER_KEY: 'OP8TXrKlmE70CfI5HBcT4OGxC5V7YOQlXUCOSt8i',
-	SERVER_URL: 'https://parseapi.back4app.com/'
+  APPLICATION_ID: 'mOkNEULZwjFHcSNi7Q1BEjjHqbwYk8pa0AR40wJo',
+  JAVASCRIPT_KEY: 'bHGB2bC42Nf8imJ1tJ8VtD4UjWr8eIgYFFiEbohm',
+  MASTER_KEY: '9Ox8e37FxuQVJkS8S4hH3OUu1jrcaqNgUxKbasl6',
+  SERVER_URL: 'https://parseapi.back4app.com/'
 };
