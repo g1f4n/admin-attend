@@ -2268,7 +2268,7 @@ class TesEksport extends React.Component {
               </Card>
               <Card>
                 {this.state.absence.map((rowResult, index) => (
-                  <Table responsive className="mt-4" id={`ekspor${index}`}>
+                  <Table responsive className="mt-4" id={`ekspor${index}`} hidden>
                     <thead>
                       <tr>
                         <th scope="col" style={{ border: 'none' }}>
