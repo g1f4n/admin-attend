@@ -38,10 +38,10 @@ class Admin extends React.Component {
   }
 
   componentWillMount() {
-    this.setState({ roles: getUserRole() });
+    this.setState({ roles: window.localStorage.getItem('roles') });
   }
   componentDidMount() {
-    this.setState({ roles: getUserRole() });
+    this.setState({ roles: window.localStorage.getItem('roles') });
   }
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;

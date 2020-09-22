@@ -59,7 +59,8 @@ class Login extends React.Component {
     const { username, password } = this.state;
     Parse.User.logIn(username, md5(password))
       .then((x) => {
-        if (x.get('roles') === 'leader') {
+        console.log(x.get('roles'));
+        if (x.get('roles') !== 'admin') {
           console.log('leader');
           window.localStorage.setItem('roles', 'leader');
           this.setState({ loading: false });

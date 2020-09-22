@@ -53,7 +53,7 @@ ReactDOM.render(
         ''
       )} */}
       <Route
-        path={`/${getUserRole()}`}
+        path={`/${window.localStorage.getItem('roles')}`}
         render={(props) => (checkUser() ? <AdminLayout {...props} /> : <Redirect to="/auth" />)}
       />
 
@@ -66,7 +66,11 @@ ReactDOM.render(
       <Route
         path="/auth"
         render={(props) =>
-          !checkUser() ? <AuthLayout {...props} /> : <Redirect to={`/${getUserRole()}/index`} />
+          !checkUser() ? (
+            <AuthLayout {...props} />
+          ) : (
+            <Redirect to={`/${window.localStorage.getItem('roles')}/index`} />
+          )
         }
       />
       {localStorage.getItem('roles') === null ? (

@@ -1145,6 +1145,7 @@ class TesEksport extends React.Component {
     this.setState({
       absence: [],
       tableData: [],
+      tableData: [],
       sisaJam: [],
       sisaJamLate: [],
       sisaJamOvertime: [],
