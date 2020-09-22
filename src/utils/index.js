@@ -29,7 +29,7 @@ export const getUsername = () => {
   console.log(user);
 
   if (user) {
-    return user.get('fullname').split(' ')[0];
+    return user.get('username').split(' ')[0];
   }
 
   return false;
