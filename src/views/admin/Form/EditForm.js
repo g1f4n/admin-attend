@@ -708,11 +708,13 @@ class EditForm extends React.Component {
       email
     } = this.state;
 
+    const id = this.props.match.params.id;
+
     const user = new Parse.User();
     const query = new Parse.Query(user);
 
     query
-      .get(this.state.userId)
+      .get(id)
       .then((x) => {
         const setLeader = (columnName, leaderState) => {
           user.set(columnName, {
@@ -797,7 +799,7 @@ class EditForm extends React.Component {
         // 		className: 'Shifting',
         // 		objectId: this.state.shifting
         // 	});
-        x.set('fullname', this.state.fullname);
+        x.set('fullname', name);
         x.set('email', email);
         x.set('username', username);
         x.set('jamMasuk', this.state.jamMasuk);
@@ -1223,10 +1225,7 @@ class EditForm extends React.Component {
                   </Row>
                 </CardHeader>
                 <CardBody>
-                  <Form
-                    onSubmit={(e) => this.handleCheckImei(e, this.state.imei)}
-                    autoComplete="off"
-                  >
+                  <Form onSubmit={(e) => this.handleUpdate(e)} autoComplete="off">
                     <h6 className="heading-small text-muted mb-4">User information</h6>
                     <div className="pl-lg-4">
                       <Row>
