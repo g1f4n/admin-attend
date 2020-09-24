@@ -65,6 +65,10 @@ class RegisterKaryawan extends React.Component {
       daftarTipe: [],
       daftarPosisi: [],
       daftarLevel: [],
+      daftarSupervisor: [],
+      daftarManager: [],
+      daftarHead: [],
+      daftarGM: [],
       resPerPage: 20,
       first: {},
       loading: false,
@@ -75,6 +79,7 @@ class RegisterKaryawan extends React.Component {
       fullnames: '',
       fullname: '',
       userId: '',
+      name: '',
       userIndex: 0,
       reason: '',
       checkId: [],
@@ -83,11 +88,10 @@ class RegisterKaryawan extends React.Component {
       deleteCounter: 0,
       loadingReco: false,
       message: '',
-      level: 'Leader',
+      level: '',
       fotoWajah: '',
       message: '',
       loadingReco: false,
-      nama: '',
       nik: '',
       tipeKaryawan: '',
       posisi: '',
@@ -130,6 +134,10 @@ class RegisterKaryawan extends React.Component {
     //this.getStaff();
     this.handleFilterPagination();
     this.getLeader();
+    this.getSupervisor();
+    this.getManager();
+    this.getHead();
+    this.getGM();
     this.getLevel();
     this.getPosisi();
     this.getTipe();
@@ -759,7 +767,7 @@ class RegisterKaryawan extends React.Component {
       objectId: this.state.idPoint
     });
     //user.set('shifting', Shifting.createWithoutData(this.state.shifting));
-    user.set('fullname', name);
+    user.set('fullname', this.state.fullname);
     user.set('email', email);
     user.set('username', username);
     user.set('password', md5(password));
@@ -917,7 +925,7 @@ class RegisterKaryawan extends React.Component {
         // 		className: 'Shifting',
         // 		objectId: this.state.shifting
         // 	});
-        x.set('fullname', this.state.fullname);
+        x.set('fullname', name);
         x.set('email', email);
         x.set('username', username);
         x.set('jamMasuk', this.state.jamMasuk);
@@ -1071,315 +1079,332 @@ class RegisterKaryawan extends React.Component {
       editMode
     } = this.state;
 
-    // const staffSelectDropdown = (
-    //   <React.Fragment>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih leader</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectLeader: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih leader
-    //         </option>
-    //         {this.state.daftarLeader.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih supervisor</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectSupervisor: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih supervisor
-    //         </option>
-    //         {this.state.daftarSupervisor.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih manager</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectManager: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih manager
-    //         </option>
-    //         {this.state.daftarManager.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih head</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectHead: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih head
-    //         </option>
-    //         {this.state.daftarHead.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih GM</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectGM: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih GM
-    //         </option>
-    //         {this.state.daftarGM.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //   </React.Fragment>
-    // );
+    const staffSelectDropdown = (
+      <React.Fragment>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih leader</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectLeader: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih leader
+            </option>
+            {this.state.daftarLeader.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih supervisor</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectSupervisor: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih supervisor
+            </option>
+            {this.state.daftarSupervisor.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname') === undefined ? '' : x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih manager</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectManager: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih manager
+            </option>
+            {this.state.daftarManager.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih head</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectHead: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih head
+            </option>
+            {this.state.daftarHead.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih GM</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectGM: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih GM
+            </option>
+            {this.state.daftarGM.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+      </React.Fragment>
+    );
 
-    // const leaderSelectDropdown = (
-    //   <React.Fragment>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih supervisor</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectSupervisor: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih supervisor
-    //         </option>
-    //         {this.state.daftarSupervisor.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih manager</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectManager: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih manager
-    //         </option>
-    //         {this.state.daftarManager.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih head</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectHead: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih head
-    //         </option>
-    //         {this.state.daftarHead.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih GM</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectGM: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih GM
-    //         </option>
-    //         {this.state.daftarGM.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //   </React.Fragment>
-    // );
+    const leaderSelectDropdown = (
+      <React.Fragment>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih supervisor</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectSupervisor: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih supervisor
+            </option>
+            {this.state.daftarSupervisor.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih manager</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectManager: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih manager
+            </option>
+            {this.state.daftarManager.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih head</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectHead: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih head
+            </option>
+            {this.state.daftarHead.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih GM</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectGM: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih GM
+            </option>
+            {this.state.daftarGM.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+      </React.Fragment>
+    );
 
-    // const supervisorSelectDropdown = (
-    //   <React.Fragment>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih manager</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectManager: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih manager
-    //         </option>
-    //         {this.state.daftarManager.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih head</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectHead: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih head
-    //         </option>
-    //         {this.state.daftarHead.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih GM</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectGM: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih GM
-    //         </option>
-    //         {this.state.daftarGM.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //   </React.Fragment>
-    // );
+    const supervisorSelectDropdown = (
+      <React.Fragment>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih manager</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectManager: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih manager
+            </option>
+            {this.state.daftarManager.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih head</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectHead: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih head
+            </option>
+            {this.state.daftarHead.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih GM</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectGM: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih GM
+            </option>
+            {this.state.daftarGM.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+      </React.Fragment>
+    );
 
-    // const managerSelectDropdown = (
-    //   <React.Fragment>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih head</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectHead: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih head
-    //         </option>
-    //         {this.state.daftarHead.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih GM</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectGM: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih GM
-    //         </option>
-    //         {this.state.daftarGM.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //   </React.Fragment>
-    // );
+    const managerSelectDropdown = (
+      <React.Fragment>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih head</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectHead: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih head
+            </option>
+            {this.state.daftarHead.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih GM</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectGM: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih GM
+            </option>
+            {this.state.daftarGM.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+      </React.Fragment>
+    );
 
-    // const headSelectDropdown = (
-    //   <React.Fragment>
-    //     <FormGroup controlId="formLeaders">
-    //       <Label>Pilih GM</Label>
-    //       <Input
-    //         type="select"
-    //         required={true}
-    //         onChange={(e) => {
-    //           this.setState({ selectGM: e.target.value });
-    //         }}
-    //       >
-    //         <option selected disabled hidden>
-    //           Pilih GM
-    //         </option>
-    //         {this.state.daftarGM.map((x, i) => (
-    //           <option key={i} value={x.id}>
-    //             {x.get('fullname')}
-    //           </option>
-    //         ))}
-    //       </Input>
-    //     </FormGroup>
-    //   </React.Fragment>
-    // );
+    const headSelectDropdown = (
+      <React.Fragment>
+        <FormGroup controlId="formLeaders">
+          <Label>Pilih GM</Label>
+          <Input
+            type="select"
+            required={true}
+            onChange={(e) => {
+              this.setState({ selectGM: e.target.value });
+            }}
+          >
+            <option selected disabled hidden>
+              Pilih GM
+            </option>
+            {this.state.daftarGM.map((x, i) => (
+              <option key={i} value={x.id}>
+                {x.get('fullname')}
+              </option>
+            ))}
+          </Input>
+        </FormGroup>
+      </React.Fragment>
+    );
+
+    const getDropdownByLevel = (userSelectLevel) => {
+      switch (userSelectLevel.toLowerCase()) {
+        case 'staff':
+          return staffSelectDropdown;
+        case 'leader':
+          return leaderSelectDropdown;
+        case 'supervisor':
+          return supervisorSelectDropdown;
+        case 'manager':
+          return managerSelectDropdown;
+        case 'head':
+          return headSelectDropdown;
+        default:
+          return;
+      }
+    };
 
     const selectForm = (
       <FormGroup controlId="formlvl">
@@ -1686,7 +1711,9 @@ class RegisterKaryawan extends React.Component {
                 </Input>
               </FormGroup>
 
-              {this.state.level !== 'Leader' && this.state.level !== 'Admin' ? (
+              {this.state.level !== '' ? getDropdownByLevel(this.state.level.toLowerCase()) : ''}
+
+              {/* {this.state.level.toLowerCase() !== 'leader' && this.state.level.toLowerCase() !== 'admin' ? (
                 <FormGroup controlId="formLeaders">
                   <Label>Pilih leader</Label>
                   <Input
@@ -1708,7 +1735,7 @@ class RegisterKaryawan extends React.Component {
                 </FormGroup>
               ) : (
                 ''
-              )}
+              )} */}
 
               <FormGroup controlId="formEmail">
                 <Label>Email</Label>
@@ -2032,10 +2059,10 @@ class RegisterKaryawan extends React.Component {
                 <Input
                   autoCapitalize="true"
                   autoComplete="false"
-                  value={fullname}
+                  value={this.state.name}
                   type="text"
                   placeholder="Masukkan nama"
-                  onChange={(e) => this.setState({ fullname: e.target.value })}
+                  onChange={(e) => this.setState({ name: e.target.value })}
                 />
               </FormGroup>
 

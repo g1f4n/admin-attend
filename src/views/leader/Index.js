@@ -46,7 +46,7 @@ import {
 // core components
 import { chartOptions, parseOptions, chartExample1, chartExample2 } from 'variables/charts.js';
 
-import Header from 'components/Headers/Header.js';
+import LeaderHeader from 'components/Headers/LeaderHeader.js';
 import { getUsername } from 'utils';
 import { getLeaderId } from 'utils';
 import { Link } from 'react-router-dom';
@@ -285,7 +285,7 @@ class Index extends React.Component {
 
     return (
       <React.Fragment>
-        <Header />
+        <LeaderHeader />
         {/* Page content */}
         <Container className="mt--8" fluid>
           <Row className="mt-5">

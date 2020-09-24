@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React from 'react';
 
 // reactstrap components
 import {
@@ -37,17 +37,17 @@ import {
   Col,
   Label,
   FormText,
-  InputGroup,
-} from "reactstrap";
+  InputGroup
+} from 'reactstrap';
 // core components
-import Header from "components/Headers/Header.js";
-import Parse from "parse";
-import moment from "moment";
-import { getLeaderId } from "utils";
-import ModalHandler from "components/Modal/Modal";
-import Axios from "axios";
-import HeaderNormal from "components/Headers/HeaderNormal";
-import Alerts from "components/Alert/Alert";
+import Header from 'components/Headers/Header.js';
+import Parse from 'parse';
+import moment from 'moment';
+import { getLeaderId } from 'utils';
+import ModalHandler from 'components/Modal/Modal';
+import Axios from 'axios';
+import HeaderNormal from 'components/Headers/HeaderNormal';
+import Alerts from 'components/Alert/Alert';
 
 class ChangeRequest extends React.Component {
   constructor(props) {
@@ -60,26 +60,28 @@ class ChangeRequest extends React.Component {
       rejectMode: false,
       userIndex: 0,
       loadingModal: false,
-      userId: "",
-      fullnames: "",
-      reason: "",
+      userId: '',
+      fullnames: '',
+      reason: '',
       checkId: [],
       loadingReco: false,
-      message: "",
-      searchBy: "all",
-      searchValue: "",
+      message: '',
+      searchBy: 'all',
+      searchValue: '',
       statusReco: 0,
-      fotoWajah: "",
-      jumlahCuti: "",
-      shifting: "",
-      jamKerja: "",
-      lembur: "",
-      email: "",
-      posisi: "",
-      tipe: "",
-      level: "",
-      messageApprove: "",
+      fotoWajah: '',
+      jumlahCuti: '',
+      shifting: '',
+      jamKerja: '',
+      lembur: '',
+      email: '',
+      posisi: '',
+      tipe: '',
+      level: '',
+      messageApprove: '',
       alerts: 2,
+      daftarPoint: [],
+      absenPoint: ''
     };
   }
 
@@ -98,15 +100,15 @@ class ChangeRequest extends React.Component {
     //   className: "Leader",
     //   objectId: getLeaderId(),
     // });
-    query.equalTo("leaderIdNew", {
-      __type: "Pointer",
-      className: "_User",
-      objectId: getLeaderId(),
+    query.equalTo('leaderIdNew', {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: getLeaderId()
     });
-    query.notContainedIn("roles", ["admin", "Admin", "Leader", "leader"]);
-    query.include("shifting");
-    query.include("userId");
-    query.descending("createdAt");
+    query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
+    query.include('shifting');
+    query.include('userId');
+    query.descending('createdAt');
 
     query
       .find({ useMasterKey: true })
@@ -120,35 +122,25 @@ class ChangeRequest extends React.Component {
       });
   }
 
-  getShift() {
-    this.setState({ loading: true });
-    const User = new Parse.User();
-    const Shifting = new Parse.Object.extend("Shifting");
-    const query = new Parse.Query(Shifting);
+  getPoint = () => {
+    const ValidGeopoint = new Parse.Object.extend('ValidGeopoint');
+    const query = new Parse.Query(ValidGeopoint);
 
-    // query.equalTo("leaderId", {
-    //   __type: "Pointer",
-    //   className: "Leader",
-    //   objectId: getLeaderId(),
-    // });
-    // query.notContainedIn("roles", ["admin", "leader"]);
-    query.equalTo("status", 1);
-
+    query.equalTo('status', 1);
     query
       .find()
       .then((x) => {
-        console.log(x);
-        this.setState({ shift: x, loading: false });
+        this.setState({ daftarPoint: x, loading: false });
       })
       .catch((err) => {
         alert(err.message);
         this.setState({ loading: false });
       });
-  }
+  };
 
   toggle = (state) => {
     this.setState({
-      [state]: !this.state[state],
+      [state]: !this.state[state]
     });
   };
 
@@ -157,11 +149,11 @@ class ChangeRequest extends React.Component {
     this.setState({ loading: true });
     const { searchBy, searchValue } = this.state;
 
-    if (searchBy === "name") {
+    if (searchBy === 'name') {
       const User = new Parse.User();
       const query = new Parse.Query(User);
-      query.matches("fullname", searchValue, "i");
-      query.equalTo("roles", "staff");
+      query.matches('fullname', searchValue, 'i');
+      query.equalTo('roles', 'staff');
       query
         .find()
         .then((name) => {
@@ -171,11 +163,11 @@ class ChangeRequest extends React.Component {
       return;
     }
 
-    if (searchBy === "all") {
+    if (searchBy === 'all') {
       const User = new Parse.User();
       const query = new Parse.Query(User);
-      query.equalTo("roles", "staff");
-      query.descending("createdAt");
+      query.equalTo('roles', 'staff');
+      query.descending('createdAt');
       query
         .find()
         .then((name) => {
@@ -187,8 +179,8 @@ class ChangeRequest extends React.Component {
 
     const User = new Parse.User();
     const query = new Parse.Query(User);
-    query.equalTo("nik", searchValue.toUpperCase());
-    query.equalTo("roles", "staff");
+    query.equalTo('nik', searchValue.toUpperCase());
+    query.equalTo('roles', 'staff');
     query
       .find()
       .then((x) => {
@@ -213,21 +205,22 @@ class ChangeRequest extends React.Component {
       posisi,
       tipe,
       level,
+      absenPoint
     } = this.state;
 
-    const ChangeRequest = Parse.Object.extend("ChangeRequest");
-    const Shifting = Parse.Object.extend("Shifting");
+    const ChangeRequest = Parse.Object.extend('ChangeRequest');
+    const Shifting = Parse.Object.extend('Shifting');
+    const ValidGeopoint = Parse.Object.extend('ValidGeopoint');
     const cr = new ChangeRequest();
 
-    cr.set("userId", Parse.User.createWithoutData(userId));
-    cr.set("leaderId", Parse.User.createWithoutData(getLeaderId()));
-    if (fotoWajah !== "")
-      cr.set("fotoWajah", new Parse.File("foto_wajah.jpg", fotoWajah));
+    cr.set('userId', Parse.User.createWithoutData(userId));
+    cr.set('leaderId', Parse.User.createWithoutData(getLeaderId()));
+    if (fotoWajah !== '') cr.set('fotoWajah', new Parse.File('foto_wajah.jpg', fotoWajah));
     // if (imei !== "") cr.set("imei", imei);
-    if (shifting !== "")
-      cr.set("shifting", Shifting.createWithoutData(shifting));
-    if (jumlahCuti !== "") cr.set("jumlahCuti", parseInt(jumlahCuti));
-    if (lembur !== "") cr.set("lembur", lembur);
+    if (shifting !== '') cr.set('shifting', Shifting.createWithoutData(shifting));
+    if (absenPoint !== '') cr.set('absenPoint', ValidGeopoint.createWithoutData(absenPoint));
+    if (jumlahCuti !== '') cr.set('jumlahCuti', parseInt(jumlahCuti));
+    if (lembur !== '') cr.set('lembur', lembur);
     // if (jamKerja !== "") cr.set("jamKerja", jamKerja);
     // if (email !== "") cr.set("email", email);
     // if (posisi !== "") cr.set("posisi", posisi);
@@ -238,9 +231,9 @@ class ChangeRequest extends React.Component {
       .then((x) => {
         // alert("Succes melakukan request!");
         this.setState({
-          messageApprove: "Success melakukan request",
+          messageApprove: 'Success melakukan request',
           alerts: 1,
-          requestMode: false,
+          requestMode: false
         });
       })
       .catch((err) => {
@@ -253,31 +246,31 @@ class ChangeRequest extends React.Component {
     this.setState({
       loadingReco: true,
       statusReco: 0,
-      fotoWajah: e.target.files[0],
+      fotoWajah: e.target.files[0]
     });
 
     const formData = new FormData();
-    formData.append("knax", e.target.files[0]);
+    formData.append('knax', e.target.files[0]);
 
-    Axios.post("http://34.126.96.126:4000/api/face-check", formData, {
+    Axios.post('http://34.126.96.126:4000/api/face-check', formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     })
       .then(({ data }) => {
         if (data.status === 1)
           return this.setState({
             statusReco: 1,
             message: `✔️ ${data.message}`,
-            loadingReco: false,
+            loadingReco: false
           });
         return this.setState({
           statusReco: 0,
           message: `✖️ ${data.message}`,
-          loadingReco: false,
+          loadingReco: false
         });
       })
-      .catch((err) => alert("Terjadi error..."));
+      .catch((err) => alert('Terjadi error...'));
   };
 
   render() {
@@ -290,7 +283,7 @@ class ChangeRequest extends React.Component {
       requestMode,
       rejectMode,
       message,
-      statusReco,
+      statusReco
     } = this.state;
 
     return (
@@ -305,7 +298,7 @@ class ChangeRequest extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Data staff</h3>
                   {parseInt(this.state.alerts) === 2 ? (
-                    ""
+                    ''
                   ) : (
                     <Alerts
                       show={true}
@@ -314,11 +307,7 @@ class ChangeRequest extends React.Component {
                       message={`${this.state.messageApprove}`}
                     />
                   )}
-                  <Form
-                    role="form"
-                    onSubmit={this.handleSearchBy}
-                    className="mt-3"
-                  >
+                  <Form role="form" onSubmit={this.handleSearchBy} className="mt-3">
                     <div className="row">
                       <div className="col-md-2 col-sm-12">
                         <p>Search By</p>
@@ -334,7 +323,7 @@ class ChangeRequest extends React.Component {
                                 this.setState({ searchBy: e.target.value });
                               }}
                             >
-                              {["all", "nik", "name"].map((x) => (
+                              {['all', 'nik', 'name'].map((x) => (
                                 <option value={x}>{x}</option>
                               ))}
                             </Input>
@@ -351,23 +340,14 @@ class ChangeRequest extends React.Component {
                                 this.setState({ searchValue: e.target.value });
                               }}
                               placeholder={`Masukan ${this.state.searchBy}`}
-                              disabled={
-                                this.state.searchBy === "all" ? true : false
-                              }
-                              required={
-                                this.state.searchBy === "all" ? false : true
-                              }
+                              disabled={this.state.searchBy === 'all' ? true : false}
+                              required={this.state.searchBy === 'all' ? false : true}
                             ></Input>
                           </InputGroup>
                         </FormGroup>
                       </div>
                       <div className="text-center mt--4">
-                        <Button
-                          className="my-4"
-                          color="primary"
-                          type="submit"
-                          disabled={loading}
-                        >
+                        <Button className="my-4" color="primary" type="submit" disabled={loading}>
                           {loading ? (
                             <div>
                               <Spinner
@@ -376,43 +356,41 @@ class ChangeRequest extends React.Component {
                                 size="sm"
                                 role="status"
                                 aria-hidden="true"
-                              />{" "}
+                              />{' '}
                               Loading
                             </div>
                           ) : (
-                            "Search"
+                            'Search'
                           )}
                         </Button>
                       </div>
                     </div>
                   </Form>
                   {staff.length === 0 ? (
-                    ""
+                    ''
                   ) : this.state.checkId.length === 0 ? (
-                    ""
+                    ''
                   ) : (
                     <Col sm={{ span: 0 }} className="float-none">
                       <Button
                         color="primary"
                         size="sm"
                         type="submit"
-                        disable={loading ? "true" : "false"}
+                        disable={loading ? 'true' : 'false'}
                         className="mr-2 m-1"
                         onClick={() => this.setState({ approveAllMode: true })}
                       >
-                        <i className="fa fa-check" />{" "}
-                        {loading ? "Fetching..." : "Approve"}
+                        <i className="fa fa-check" /> {loading ? 'Fetching...' : 'Approve'}
                       </Button>
                       <Button
                         color="primary"
                         type="submit"
                         size="sm"
                         className="m-1"
-                        disable={loading ? "true" : "false"}
+                        disable={loading ? 'true' : 'false'}
                         onClick={this.setState({ rejectAllMode: true })}
                       >
-                        <i className="fa fa-times" />{" "}
-                        {loading ? "Fetching..." : "Reject"}
+                        <i className="fa fa-times" /> {loading ? 'Fetching...' : 'Reject'}
                       </Button>
                     </Col>
                   )}
@@ -431,21 +409,21 @@ class ChangeRequest extends React.Component {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <td colSpan={7} style={{ textAlign: "center" }}>
+                      <td colSpan={7} style={{ textAlign: 'center' }}>
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{" "}
+                        />{' '}
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{" "}
+                        />{' '}
                         <Spinner
                           as="span"
                           animation="grow"
@@ -455,21 +433,21 @@ class ChangeRequest extends React.Component {
                         />
                       </td>
                     ) : staff.length < 1 ? (
-                      <td colSpan={7} style={{ textAlign: "center" }}>
+                      <td colSpan={7} style={{ textAlign: 'center' }}>
                         No data found...
                       </td>
                     ) : (
                       staff.map((prop, key) => (
                         <tr>
-                          <td>{prop.get("nik")}</td>
-                          <td>{prop.get("fullname")}</td>
+                          <td>{prop.get('nik')}</td>
+                          <td>{prop.get('fullname')}</td>
                           <td>
-                            {prop.get("shifting") === undefined
-                              ? "-"
-                              : prop.get("shifting").attributes.tipeShift}
+                            {prop.get('shifting') === undefined
+                              ? '-'
+                              : prop.get('shifting').attributes.tipeShift}
                           </td>
-                          <td>{prop.get("jumlahCuti")}</td>
-                          <td>{prop.get("lembur")}</td>
+                          <td>{prop.get('jumlahCuti')}</td>
+                          <td>{prop.get('lembur')}</td>
                           <td>
                             <Button
                               id="t1"
@@ -480,17 +458,13 @@ class ChangeRequest extends React.Component {
                                   requestMode: true,
                                   userId: prop.id,
                                   userIndex: key,
-                                  fullnames: prop.get("fullname"),
+                                  fullnames: prop.get('fullname')
                                 });
                               }}
                             >
                               <i className="fa fa-edit" />
                             </Button>
-                            <UncontrolledTooltip
-                              delay={0}
-                              placement="top"
-                              target="t1"
-                            >
+                            <UncontrolledTooltip delay={0} placement="top" target="t1">
                               Ubah data
                             </UncontrolledTooltip>
                           </td>
@@ -559,23 +533,19 @@ class ChangeRequest extends React.Component {
           show={requestMode}
           loading={loadingModal}
           footer={false}
-          handleHide={() => this.toggle("requestMode")}
+          handleHide={() => this.toggle('requestMode')}
           title="Change Request Form"
           body={
             <div>
               <Form onSubmit={this.handleSubmit} className="text-dark">
                 <FormGroup>
                   <Label>Foto Wajah</Label>
-                  <Input
-                    id="exampleFormControlInput1"
-                    type="file"
-                    onChange={this.handleFace}
-                  />
+                  <Input id="exampleFormControlInput1" type="file" onChange={this.handleFace} />
                   <FormText
-                    className={loadingReco ? "text-muted" : ""}
-                    style={{ color: `${statusReco == 0 ? "red" : "green"}` }}
+                    className={loadingReco ? 'text-muted' : ''}
+                    style={{ color: `${statusReco == 0 ? 'red' : 'green'}` }}
                   >
-                    {loadingReco ? "Processing..." : message}
+                    {loadingReco ? 'Processing...' : message}
                   </FormText>
                 </FormGroup>
 
@@ -673,21 +643,23 @@ class ChangeRequest extends React.Component {
                 </FormGroup> */}
 
                 <FormGroup controlId="formLokasi">
-                  <Label>Shift</Label>
+                  <Label>Absen point</Label>
                   <Input
                     type="select"
                     required={true}
                     onChange={(e) =>
                       this.setState({
-                        shifting: e.target.value,
+                        absenPoint: e.target.value
                       })
                     }
                   >
                     <option selected disabled hidden>
-                      Pilih Shift
+                      Pilih Absen Point
                     </option>
-                    {shift.map((prop, key) => (
-                      <option value={prop.id}>{prop.get("tipeShift")}</option>
+                    {this.state.daftarPoint.map((prop, key) => (
+                      <option key={prop.id} value={prop.id}>
+                        {prop.get('placeName')}
+                      </option>
                     ))}
                   </Input>
                 </FormGroup>
@@ -699,7 +671,7 @@ class ChangeRequest extends React.Component {
                     placeholder="Masukkan jumlah cuti"
                     onChange={(e) =>
                       this.setState({
-                        jumlahCuti: parseInt(e.target.value),
+                        jumlahCuti: parseInt(e.target.value)
                       })
                     }
                   />
@@ -712,14 +684,14 @@ class ChangeRequest extends React.Component {
                     type="select"
                     onChange={(e) =>
                       this.setState({
-                        lembur: e.target.value,
+                        lembur: e.target.value
                       })
                     }
                   >
                     <option selected disabled hidden>
                       Pilih Lembur
                     </option>
-                    {["Ya", "Tidak"].map((x) => (
+                    {['Ya', 'Tidak'].map((x) => (
                       <option value={x}>{x}</option>
                     ))}
                   </Input>
@@ -728,7 +700,7 @@ class ChangeRequest extends React.Component {
                   color="secondary"
                   data-dismiss="modal"
                   type="button"
-                  onClick={() => this.toggle("requestMode")}
+                  onClick={() => this.toggle('requestMode')}
                 >
                   Close
                 </Button>
@@ -741,11 +713,11 @@ class ChangeRequest extends React.Component {
                         size="sm"
                         role="status"
                         aria-hidden="true"
-                      />{" "}
+                      />{' '}
                       Submitting...
                     </div>
                   ) : (
-                    "Submit"
+                    'Submit'
                   )}
                 </Button>
               </Form>

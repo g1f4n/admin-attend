@@ -36,6 +36,8 @@ import { AllAbsenz } from 'views/admin/AllAbsen';
 import DaftarHariCuti from 'views/admin/DaftarHariCuti';
 import { Reportingz } from 'views/admin/Reporting';
 import TesEksport from 'views/admin/TesEksport';
+import FormRegister from 'views/admin/Form/FormRegister';
+import EditForm from 'views/admin/Form/EditForm';
 
 var routes = [
   {
@@ -56,9 +58,24 @@ var routes = [
   {
     path: '/leader',
     name: 'Leader',
-    icon: 'ni ni-pin-3 text-yellow',
+    icon: 'ni ni-badge text-yellow',
     component: LeaderList,
     layout: '/admin'
+  },
+  {
+    path: '/form-registration',
+    name: 'Form Registration',
+    icon: 'ni ni-align-center text-info',
+    component: FormRegister,
+    layout: '/admin'
+  },
+  {
+    path: '/edit/:id',
+    name: 'Edit Karyawan Info',
+    icon: 'ni ni-align-center text-danger',
+    component: EditForm,
+    layout: '/admin',
+    invisible: true
   },
   {
     path: '/export-absen/:id',
@@ -85,14 +102,14 @@ var routes = [
   {
     path: '/tes-eksport',
     name: 'Reporting karyawan',
-    icon: 'ni ni-bullet-list-67 text-green',
+    icon: 'ni ni-folder-17 text-green',
     component: TesEksport,
     layout: '/admin'
   },
   {
     path: '/self-regist',
     name: 'Self Registration',
-    icon: 'ni ni-bullet-list-67 text-primary',
+    icon: 'ni ni-circle-08 text-primary',
     component: SelfRegistration,
     layout: '/admin'
   },
@@ -106,35 +123,35 @@ var routes = [
   {
     path: '/tipe',
     name: 'Manage Tipe',
-    icon: 'ni ni-archive-2 text-danger',
+    icon: 'ni ni-settings-gear-65 text-danger',
     component: TipeKaryawan,
     layout: '/admin'
   },
   {
     path: '/haricuti',
     name: 'Manage Hari Cuti',
-    icon: 'ni ni-calendar-grid-58 text-primary',
+    icon: 'ni ni-settings-gear-65 text-yellow',
     component: DaftarHariCuti,
     layout: '/admin'
   },
   {
     path: '/point',
     name: 'Manage Absen Point',
-    icon: 'ni ni-bullet-list-67 text-primary',
+    icon: 'ni ni-settings-gear-65 text-primary',
     component: ManajemenPoint,
     layout: '/admin'
   },
   {
     path: '/posisi',
     name: 'Manage Posisi',
-    icon: 'ni ni-archive-2 text-green',
+    icon: 'ni ni-settings-gear-65 text-green',
     component: ManajemenPosisi,
     layout: '/admin'
   },
   {
     path: '/level',
     name: 'Manage Level',
-    icon: 'ni ni-spaceship text-red',
+    icon: 'ni ni-settings-gear-65 text-info',
     component: ManajemenLevel,
     layout: '/admin'
   },
@@ -152,20 +169,20 @@ var routes = [
     component: ManajemenDepartemen,
     layout: '/admin'
   },
-  {
-    path: '/reporting',
-    name: 'Reporting',
-    icon: 'ni ni-key-25 text-danger',
-    component: Reportingz,
-    layout: '/admin'
-  },
-  {
-    path: '/eksport',
-    name: 'Eksport Data',
-    icon: 'ni ni-key-25 text-primary',
-    component: ExportData,
-    layout: '/admin'
-  },
+  // {
+  //   path: '/reporting',
+  //   name: 'Reporting',
+  //   icon: 'ni ni-key-25 text-danger',
+  //   component: Reportingz,
+  //   layout: '/admin'
+  // },
+  // {
+  //   path: '/eksport',
+  //   name: 'Eksport Data',
+  //   icon: 'ni ni-key-25 text-primary',
+  //   component: ExportData,
+  //   layout: '/admin'
+  // },
   // {
   // 	path: '/data-absen',
   // 	name: 'Absen',

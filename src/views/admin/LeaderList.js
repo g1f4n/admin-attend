@@ -119,12 +119,12 @@ class LeaderList extends React.Component {
 	}
 
 	componentDidMount() {
-		this.getStaff();
+		//this.getStaff();
 		this.getLeader();
-		this.getLevel();
-		this.getPosisi();
-		this.getTipe();
-		this.getShifting();
+		//this.getLevel();
+		//this.getPosisi();
+		//this.getTipe();
+		//this.getShifting();
 		//this.testRelasi();
 	}
 
@@ -359,7 +359,7 @@ class LeaderList extends React.Component {
 		const User = new Parse.User();
 		const query = new Parse.Query(User);
 
-		query.equalTo('roles', 'leader' || 'Leader');
+		query.notContainedIn('roles', ['staff', 'Staff', 'admin', 'Admin']);
 
 		query
 			.find({ useMasterKey: true })

@@ -96,7 +96,7 @@ class ManajemenSetting extends React.Component {
       .find()
       .then((x) => {
         console.log(x);
-        this.setState({ posisi: x, loading: false });
+        this.setState({ posisi: x, livenessToggle: x[0].get('liveness'), loading: false });
       })
       .catch((err) => {
         alert(err.message);
