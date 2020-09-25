@@ -297,7 +297,7 @@ class Index extends React.Component {
                       <h3 className="mb-0">Staff saya</h3>
                     </div>
                     <div className="col text-right">
-                      <Link to="/admin/staff">
+                      <Link to="/leader/staff">
                         <Button color="primary" size="sm">
                           See all
                         </Button>

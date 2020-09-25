@@ -177,7 +177,7 @@ class Header extends React.Component {
                   </Link>
                 </Col>
                 <Col lg="6" xl="4">
-                  <Link to="/admin/request-izin" style={{ color: 'inherit' }}>
+                  <Link to="/admin/status-request" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>

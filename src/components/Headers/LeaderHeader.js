@@ -354,7 +354,7 @@ class LeaderHeader extends React.Component {
               {/* Card stats */}
               <Row>
                 <Col lg="6" xl="3">
-                  <Link to="/admin/data-absen" style={{ color: 'inherit' }}>
+                  <Link to="/leader/data-absen" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
@@ -379,7 +379,7 @@ class LeaderHeader extends React.Component {
                   </Link>
                 </Col>
                 <Col lg="6" xl="3">
-                  <Link to="/admin/request-cuti" style={{ color: 'inherit' }}>
+                  <Link to="/leader/request-cuti" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
@@ -402,7 +402,7 @@ class LeaderHeader extends React.Component {
                   </Link>
                 </Col>
                 <Col lg="6" xl="3">
-                  <Link to="/admin/request-izin" style={{ color: 'inherit' }}>
+                  <Link to="/leader/request-izin" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
@@ -425,7 +425,7 @@ class LeaderHeader extends React.Component {
                   </Link>
                 </Col>
                 <Col lg="6" xl="3">
-                  <Link to="/admin/request-lembur" style={{ color: 'inherit' }}>
+                  <Link to="/leader/request-lembur" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
@@ -450,7 +450,7 @@ class LeaderHeader extends React.Component {
               </Row>
               <Row className="mt-4">
                 <Col lg="6" xl="4">
-                  <Link to="/admin/request-pulang" style={{ color: 'inherit' }}>
+                  <Link to="/leader/request-pulang" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
@@ -473,7 +473,7 @@ class LeaderHeader extends React.Component {
                   </Link>
                 </Col>
                 <Col lg="6" xl="4">
-                  <Link to="/admin/request-terlambat" style={{ color: 'inherit' }}>
+                  <Link to="/leader/request-terlambat" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
@@ -496,7 +496,7 @@ class LeaderHeader extends React.Component {
                   </Link>
                 </Col>
                 <Col lg="6" xl="4">
-                  <Link to="/admin/staff" style={{ color: 'inherit' }}>
+                  <Link to="/leader/staff" style={{ color: 'inherit' }}>
                     <Card className="card-stats mb-4 mb-xl-0">
                       <CardBody>
                         <Row>
