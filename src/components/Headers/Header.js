@@ -38,6 +38,9 @@ class Header extends React.Component {
       leave: 0,
       totalLeader: 0,
       totalStaff: 0,
+      totalSupervisor: 0,
+      totalManager: 0,
+      totalHead: 0,
       message: '',
       visible: false,
       color: 'danger'
@@ -48,6 +51,9 @@ class Header extends React.Component {
     this.getTotalLeader();
     this.getTotalRequest();
     this.getTotalStaff();
+    this.getTotalSupervisor();
+    this.getTotalManager();
+    this.getTotalHead();
   }
 
   getTotalStaff = () => {
@@ -90,6 +96,54 @@ class Header extends React.Component {
       });
   };
 
+  getTotalSupervisor = () => {
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    query.containedIn('roles', ['supervisor', 'Supervisor']);
+
+    query
+      .count()
+      .then((x) => {
+        this.setState({ totalSupervisor: x });
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
+  getTotalManager = () => {
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    query.containedIn('roles', ['manager', 'Manager']);
+
+    query
+      .count()
+      .then((x) => {
+        this.setState({ totalManager: x });
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
+  getTotalHead = () => {
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    query.containedIn('roles', ['head', 'Head']);
+
+    query
+      .count()
+      .then((x) => {
+        this.setState({ totalHead: x });
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
   getTotalRequest = () => {
     const ChangeRequest = Parse.Object.extend('ChangeRequest');
     const query = new Parse.Query(ChangeRequest);
@@ -119,7 +173,14 @@ class Header extends React.Component {
   render() {
     const percentage = (this.props.totalAbsen / this.props.totalStaff) * 100;
 
-    const { totalLeader, totalRequest, totalStaff, daftarLeader } = this.state;
+    const {
+      totalLeader,
+      totalRequest,
+      totalStaff,
+      totalSupervisor,
+      totalManager,
+      totalHead
+    } = this.state;
 
     return (
       <React.Fragment>
@@ -186,6 +247,71 @@ class Header extends React.Component {
                               Change request
                             </CardTitle>
                             <span className="h2 font-weight-bold mb-0">{totalRequest}</span>
+                          </div>
+                          <Col className="col-auto">
+                            <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                              <i className="fas fa-users" />
+                            </div>
+                          </Col>
+                        </Row>
+                      </CardBody>
+                    </Card>
+                  </Link>
+                </Col>
+              </Row>
+              <Row className="mt-4">
+                <Col lg="6" xl="4">
+                  <Link to="/admin/leader" style={{ color: 'inherit' }}>
+                    <Card className="card-stats mb-4 mb-xl-0">
+                      <CardBody>
+                        <Row>
+                          <div className="col">
+                            <CardTitle tag="h5" className="text-uppercase text-muted mb-0">
+                              Supervisor
+                            </CardTitle>
+                            <span className="h2 font-weight-bold mb-0">{totalSupervisor}</span>
+                          </div>
+                          <Col className="col-auto">
+                            <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
+                              <i className="fas fa-chart-bar" />
+                            </div>
+                          </Col>
+                        </Row>
+                      </CardBody>
+                    </Card>
+                  </Link>
+                </Col>
+                <Col lg="6" xl="4">
+                  <Link to="/admin/leader" style={{ color: 'inherit' }}>
+                    <Card className="card-stats mb-4 mb-xl-0">
+                      <CardBody>
+                        <Row>
+                          <div className="col">
+                            <CardTitle tag="h5" className="text-uppercase text-muted mb-0">
+                              Manager
+                            </CardTitle>
+                            <span className="h2 font-weight-bold mb-0">{totalManager}</span>
+                          </div>
+                          <Col className="col-auto">
+                            <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
+                              <i className="fas fa-chart-pie" />
+                            </div>
+                          </Col>
+                        </Row>
+                      </CardBody>
+                    </Card>
+                  </Link>
+                </Col>
+                <Col lg="6" xl="4">
+                  <Link to="/admin/leader" style={{ color: 'inherit' }}>
+                    <Card className="card-stats mb-4 mb-xl-0">
+                      <CardBody>
+                        <Row>
+                          <div className="col">
+                            <CardTitle tag="h5" className="text-uppercase text-muted mb-0">
+                              Head
+                            </CardTitle>
+                            <span className="h2 font-weight-bold mb-0">{totalHead}</span>
                           </div>
                           <Col className="col-auto">
                             <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
