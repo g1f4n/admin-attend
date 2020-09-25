@@ -161,12 +161,12 @@ class Profile extends React.Component {
                         {/* <i className="ni business_briefcase-24 mr-2" /> */}
                         {!_.isEmpty(staff.get('email')) ? staff.get('email') : '-'}
                       </div>
-                      <Link to={`/admin/view-history/${staff.id}`}>
+                      <Link to={`/leader/view-history/${staff.id}`}>
                         <Button outline color="primary" size="sm" className="">
                           <i className="ni ni-spaceship" /> View History
                         </Button>
                       </Link>
-                      <Link to={`/admin/exportexcelid/${staff.id}`}>
+                      <Link to={`/leader/exportexcelid/${staff.id}`}>
                         <Button outline color="primary" size="sm" className="ml-1">
                           <i className="ni ni-single-copy-04" /> Report Data
                         </Button>
