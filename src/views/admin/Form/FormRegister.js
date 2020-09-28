@@ -673,7 +673,7 @@ class FormRegister extends React.Component {
         this.setState({
           addMode: false,
           loadingModal: false,
-          message: 'Gagal tambah data, coba lagi',
+          message: err.message,
           visible: true
         });
         console.log(err.message);
@@ -1561,7 +1561,9 @@ class FormRegister extends React.Component {
                       )}
                     </div>
 
-                    {this.state.level !== '' && this.state.level.toLowerCase() !== 'gm' ? (
+                    {this.state.level !== '' &&
+                    this.state.level.toLowerCase() !== 'gm' &&
+                    this.state.level.toLowerCase() !== 'admin' ? (
                       <React.Fragment>
                         <hr className="my-4" />
                         <h6 className="heading-small text-muted mb-4">Choose leader</h6>
