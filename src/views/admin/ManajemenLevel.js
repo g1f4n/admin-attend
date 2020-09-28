@@ -165,7 +165,10 @@ class ManajemenLevel extends React.Component {
           .then((x) => {
             this.setState({
               editMode: false,
-              loadingModal: false
+              loadingModal: false,
+              message: 'Berhasil update data',
+              visible: true,
+              color: 'success'
             });
           })
           .catch((err) => {
@@ -206,7 +209,10 @@ class ManajemenLevel extends React.Component {
             this.setState({
               deleteMode: false,
               loadingModal: false,
-              level: newArr
+              level: newArr,
+              message: 'Berhasil hapus data',
+              visible: true,
+              color: 'success'
             });
           })
           .catch((err) => {

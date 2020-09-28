@@ -125,7 +125,10 @@ class ManajemenPoint extends React.Component {
         this.setState({
           addMode: false,
           loadingModal: false,
-          point: this.state.point.concat(z)
+          point: this.state.point.concat(z),
+          message: 'Berhasil tambah data',
+          visible: true,
+          color: 'success'
         });
       })
       .catch((err) => {
@@ -178,7 +181,9 @@ class ManajemenPoint extends React.Component {
           .then((x) => {
             this.setState({
               editMode: false,
-              loadingModal: false
+              loadingModal: false,
+              message: 'Gagal hapus data, coba lagi',
+              visible: true
             });
           })
           .catch((err) => {
@@ -219,7 +224,10 @@ class ManajemenPoint extends React.Component {
             this.setState({
               deleteMode: false,
               loadingModal: false,
-              point: newArr
+              point: newArr,
+              message: 'Berhail hapus data',
+              visible: true,
+              color: 'success'
             });
           })
           .catch((err) => {

@@ -127,7 +127,10 @@ class DaftarHariCuti extends React.Component {
         this.setState({
           addMode: false,
           loadingModal: false,
-          data: this.state.data.concat(z)
+          data: this.state.data.concat(z),
+          message: 'Berhasil tambah data',
+          visible: true,
+          color: 'success'
         });
       })
       .catch((err) => {
@@ -176,7 +179,10 @@ class DaftarHariCuti extends React.Component {
           .then((x) => {
             this.setState({
               editMode: false,
-              loadingModal: false
+              loadingModal: false,
+              message: 'Berhasil update data',
+              visible: true,
+              color: 'success'
             });
           })
           .catch((err) => {
@@ -216,7 +222,10 @@ class DaftarHariCuti extends React.Component {
             this.setState({
               deleteMode: false,
               loadingModal: false,
-              data: newArr
+              data: newArr,
+              message: 'Berhasil hapus data',
+              visible: true,
+              color: 'success'
             });
           })
           .catch((err) => {
@@ -530,7 +539,10 @@ class DaftarHariCuti extends React.Component {
           title="Remove Confirmation"
           body={
             <div>
-              <h3 className="mb-4">{`Remove tanggal cuti ${fullnames} ?`}</h3>
+              <h3 className="mb-4">{`Remove tanggal cuti ${convertDate(
+                fullnames,
+                'DD/MM/YYYY'
+              )} ?`}</h3>
             </div>
           }
           handleSubmit={(e) => this.handleRemove(e)}
