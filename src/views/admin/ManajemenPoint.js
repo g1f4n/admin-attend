@@ -116,8 +116,8 @@ class ManajemenPoint extends React.Component {
     const ValidGeopoint = Parse.Object.extend('ValidGeopoint');
     const query = new ValidGeopoint();
     query.set('placeName', placeName);
-    query.set('latitude', latitude);
-    query.set('longitude', longitude);
+    query.set('latitude', latitude.toString());
+    query.set('longitude', longitude.toString());
 
     query
       .save()
@@ -172,8 +172,8 @@ class ManajemenPoint extends React.Component {
       .get(this.state.userId)
       .then((z) => {
         z.set('placeName', placeName);
-        z.set('latitude', latitude);
-        z.set('longitude', longitude);
+        z.set('latitude', latitude.toString());
+        z.set('longitude', longitude.toString());
         z.save()
           .then((x) => {
             this.setState({
@@ -285,6 +285,12 @@ class ManajemenPoint extends React.Component {
           {/* Table */}
           <Row>
             <div className="col">
+              <Alertz
+                color={this.state.color}
+                message={this.state.message}
+                open={this.state.visible}
+                togglez={() => this.toggle('visible')}
+              />
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row>
@@ -298,12 +304,6 @@ class ManajemenPoint extends React.Component {
                       <i className="fa fa-plus" /> Tambah
                     </Button>
                   </Row>
-                  <Alertz
-                    color={this.state.color}
-                    message={this.state.message}
-                    open={this.state.visible}
-                    togglez={() => this.toggle('visible')}
-                  />
 
                   {/* <input type="text" placeholder="input" /> */}
                 </CardHeader>
@@ -429,7 +429,6 @@ class ManajemenPoint extends React.Component {
                     placeholder="Ex: DIKA 1"
                     className="form-control-alternitive"
                     type="text"
-                    required={true}
                     onChange={(e) => this.setState({ inputAddress: e.target.value })}
                   />
                 </FormGroup>

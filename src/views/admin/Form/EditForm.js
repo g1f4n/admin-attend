@@ -657,7 +657,7 @@ class EditForm extends React.Component {
       user.set('jamMasuk', parseInt(this.state.jamMasuk));
     }
     if (this.state.jamKeluar === 0) {
-      user.set('jamMasuk', 17);
+      user.set('jamKeluar', 17);
     } else {
       user.set('jamKeluar', parseInt(this.state.jamKeluar));
     }
@@ -1232,12 +1232,7 @@ class EditForm extends React.Component {
                         <Col lg="6">
                           <FormGroup controlId="formCategory">
                             <Label className="form-control-label">Foto wajah</Label>
-                            <Input
-                              type="file"
-                              label="Foto wajah"
-                              required={true}
-                              onChange={this.handleFace}
-                            />
+                            <Input type="file" label="Foto wajah" onChange={this.handleFace} />
                             <FormText
                               className={loadingReco ? 'text-muted' : ''}
                               style={{
@@ -1625,7 +1620,9 @@ class EditForm extends React.Component {
                       )}
                     </div>
 
-                    {this.state.level !== '' && this.state.level.toLowerCase() !== 'gm' ? (
+                    {this.state.level !== '' &&
+                    this.state.level.toLowerCase() !== 'gm' &&
+                    this.state.level.toLowerCase() !== 'admin' ? (
                       <React.Fragment>
                         <hr className="my-4" />
                         <h6 className="heading-small text-muted mb-4">Choose leader</h6>

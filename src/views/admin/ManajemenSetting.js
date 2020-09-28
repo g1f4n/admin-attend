@@ -313,6 +313,12 @@ class ManajemenSetting extends React.Component {
           {/* Table */}
           <Row>
             <div className="col">
+              <Alertz
+                color={this.state.color}
+                message={this.state.message}
+                open={this.state.visible}
+                togglez={() => this.toggle('visible')}
+              />
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row>
@@ -327,12 +333,7 @@ class ManajemenSetting extends React.Component {
 											<i className="fa fa-plus" /> Tambah
 										</Button> */}
                   </Row>
-                  <Alertz
-                    color={this.state.color}
-                    message={this.state.message}
-                    open={this.state.visible}
-                    togglez={() => this.toggle('visible')}
-                  />
+
                   {/* <input type="text" placeholder="input" /> */}
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>

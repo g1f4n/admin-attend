@@ -649,7 +649,7 @@ class FormRegister extends React.Component {
       user.set('jamMasuk', parseInt(this.state.jamMasuk));
     }
     if (this.state.jamKeluar === 0) {
-      user.set('jamMasuk', 17);
+      user.set('jamKeluar', 17);
     } else {
       user.set('jamKeluar', parseInt(this.state.jamKeluar));
     }
@@ -1380,7 +1380,7 @@ class FormRegister extends React.Component {
                                 })
                               }
                             >
-                              <option selected disabled hidden>
+                              <option disabled hidden>
                                 Pilih level
                               </option>
                               {daftarLevel.map((x, i) => (
