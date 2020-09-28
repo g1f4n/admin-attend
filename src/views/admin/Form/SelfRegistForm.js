@@ -31,7 +31,10 @@ import {
   Col,
   Label,
   FormText,
-  Spinner
+  Spinner,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup
 } from 'reactstrap';
 // core components
 import UserHeader from 'components/Headers/UserHeader.js';
@@ -41,8 +44,9 @@ import Axios from 'axios';
 import md5 from 'md5';
 import Alertz from 'components/Alert/Alertz';
 import { Link } from 'react-router-dom';
+import emailjs from 'emailjs-com';
 
-class FormRegister extends React.Component {
+class SelfRegistForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,6 +61,7 @@ class FormRegister extends React.Component {
       daftarGM: [],
       resPerPage: 20,
       first: {},
+      fotoWajahObj: {},
       loading: false,
       approvalMode: false,
       rejectMode: false,
@@ -77,7 +82,7 @@ class FormRegister extends React.Component {
       fotoWajah: '',
       message: '',
       loadingReco: false,
-      nama: '',
+      name: '',
       nik: '',
       tipeKaryawan: '',
       posisi: '',
@@ -99,6 +104,10 @@ class FormRegister extends React.Component {
       daftarShifting: [],
       shifting: {},
       leader: {},
+      supervisor: {},
+      manager: {},
+      head: {},
+      gm: {},
       absenPointObject: {},
       message: '',
       color: '',
@@ -112,13 +121,20 @@ class FormRegister extends React.Component {
       searchBy: 'all',
       searchValue: '',
       jamMasuk: 0,
-      jamKeluar: 0
+      jamKeluar: 0,
+      visibleToggle: false
     };
+  }
+
+  componentWillMount() {
+    //this.getDetail();
+    this.getUserDetail();
   }
 
   componentDidMount() {
     //this.getStaff();
     //this.handleFilterPagination();
+
     this.getLeader();
     this.getSupervisor();
     this.getManager();
@@ -129,6 +145,7 @@ class FormRegister extends React.Component {
     this.getTipe();
     //this.getShifting();
     this.getPoint();
+    emailjs.init('user_h2fWwDoztgEPcKNQ9vadt');
     //this.testRelasi();
   }
 
@@ -508,14 +525,14 @@ class FormRegister extends React.Component {
       .catch((err) => alert('Terjadi error...'));
   };
 
-  handleCheckImei = (e, imei) => {
+  handleCheckImei = (e) => {
     e.preventDefault();
     this.setState({ loadingModal: true });
 
     const user = new Parse.User();
     const query = new Parse.Query(user);
 
-    query.equalTo('imei', imei);
+    query.equalTo('imei', this.state.imei);
     query
       .first()
       .then((x) => {
@@ -537,6 +554,7 @@ class FormRegister extends React.Component {
 
   handleSubmit = () => {
     this.setState({ loading: true });
+    const id = this.props.match.params.id;
     const {
       name,
       nik,
@@ -624,12 +642,11 @@ class FormRegister extends React.Component {
       }
     }
 
-    if (this.state.idPoint !== '')
-      user.set('absenPoint', {
-        __type: 'Pointer',
-        className: 'ValidGeopoint',
-        objectId: this.state.idPoint
-      });
+    user.set('absenPoint', {
+      __type: 'Pointer',
+      className: 'ValidGeopoint',
+      objectId: this.state.idPoint
+    });
     //user.set('shifting', Shifting.createWithoutData(this.state.shifting));
     user.set('fullname', name);
     user.set('email', email);
@@ -656,27 +673,94 @@ class FormRegister extends React.Component {
     user.set('jumlahCuti', parseInt(jumlahCuti));
     user.set('lembur', lembur);
     user.set('roles', level.toLowerCase());
-    user.set('fotoWajah', new Parse.File('profile.jpg', fotoWajah));
+    user.set('fotoWajah', this.state.fotoWajahObj);
     user
       .save()
       .then((x) => {
-        this.setState({
-          // daftarStaff: this.state.daftarStaff.concat(x),
-          addMode: false,
-          loadingModal: false,
-          message: 'Berhasil tambah data',
-          visible: true,
-          color: 'success'
+        const SelfRegist = Parse.Object.extend('SelfRegist');
+        const query = new Parse.Query(SelfRegist);
+
+        query.get(id).then((x) => {
+          x.set('status', 1);
+          x.save()
+            .then(() => {
+              this.handleSendEmail(
+                this.state.email,
+                'KTA Team',
+                this.state.name,
+                'Selamat kamu berhasil melakukan self registration! Silahkan login menggunakan NIK dan password yang sudah kamu buat, terimakasih!',
+                '',
+                'addMode',
+                'Berhasil approve data'
+              );
+            })
+            .catch((err) => {
+              console.log(err.message);
+              this.setState({
+                loadingModal: false,
+                rejectMode: false,
+                message: 'Gagal tambah data, coba lagi',
+                visible: true
+              });
+            });
         });
+        // this.setState({
+        //   // daftarStaff: this.state.daftarStaff.concat(x),
+        //   addMode: false,
+        //   loadingModal: false,
+        //   message: 'Berhasil tambah data',
+        //   visible: true,
+        //   color: 'success'
+        // });
       })
       .catch((err) => {
         this.setState({
           addMode: false,
           loadingModal: false,
-          message: 'Gagal tambah data, coba lagi',
+          message: err.message,
           visible: true
         });
         console.log(err.message);
+      });
+  };
+
+  handleSendEmail = (email, from, to, message, alasan, state, alertMessage) => {
+    var template_params = {
+      to_email: email,
+      from_name: from,
+      to_name: to,
+      message_html: message,
+      alasan: alasan
+    };
+
+    var service_id = 'gmail';
+    var template_id = 'template_N8cRQk3D';
+    emailjs
+      .send(service_id, template_id, template_params)
+      .then(() => {
+        this.setState({
+          [state]: false,
+          loadingModal: false,
+          message: alertMessage,
+          visible: true,
+          color: 'success'
+        });
+        //alert(`Berhasil ${state === 'addMode' ? 'registrasi' : 'reject'}`);
+        console.log('sukses');
+
+        // window.location.reload(false);
+        // return;
+      })
+      .catch((err) => {
+        this.setState({
+          [state]: false,
+          loadingModal: false,
+          message: 'Gagal tambah data, coba lagi',
+          visible: true
+        });
+        //alert('Something went wrong, please try again');
+        console.log(err);
+        window.location.reload(false);
       });
   };
 
@@ -700,11 +784,13 @@ class FormRegister extends React.Component {
       email
     } = this.state;
 
+    const id = this.props.match.params.id;
+
     const user = new Parse.User();
     const query = new Parse.Query(user);
 
     query
-      .get(this.state.userId)
+      .get(id)
       .then((x) => {
         const setLeader = (columnName, leaderState) => {
           user.set(columnName, {
@@ -789,7 +875,7 @@ class FormRegister extends React.Component {
         // 		className: 'Shifting',
         // 		objectId: this.state.shifting
         // 	});
-        x.set('fullname', this.state.fullname);
+        x.set('fullname', name);
         x.set('email', email);
         x.set('username', username);
         x.set('jamMasuk', this.state.jamMasuk);
@@ -841,10 +927,42 @@ class FormRegister extends React.Component {
       });
   };
 
-  getDetail = (e, id) => {
-    e.preventDefault();
+  getUserDetail = () => {
+    const id = this.props.match.params.id;
+
+    const SelfRegist = Parse.Object.extend('SelfRegist');
+    const query = new Parse.Query(SelfRegist);
+
+    query
+      .get(id)
+      .then(({ attributes }) => {
+        console.log(attributes);
+        this.setState(
+          {
+            nik: attributes.nik,
+            name: attributes.fullname,
+            username: attributes.usernameClone,
+            imei: attributes.imei,
+            email: attributes.email,
+            fotoWajah: attributes.fotoWajah === undefined ? '' : attributes.fotoWajah.url(),
+            fotoWajahObj: attributes.fotoWajah,
+            password: attributes.passwordClone,
+            loading: false
+          },
+          () => console.log(this.state.fotoWajah)
+        );
+      })
+      .catch((err) => {
+        this.setState({ loading: false });
+        alert('cek koneksi anda');
+      });
+  };
+
+  getDetail = () => {
     const user = new Parse.User();
     const query = new Parse.Query(user);
+
+    const id = this.props.match.params.id;
 
     query.include('leaderIdNew');
     query.include('supervisorID');
@@ -913,6 +1031,7 @@ class FormRegister extends React.Component {
 
   render() {
     const {
+      name,
       daftarStaff,
       loading,
       loadingReco,
@@ -940,7 +1059,11 @@ class FormRegister extends React.Component {
       daftarLevel,
       daftarPosisi,
       daftarTipe,
-      editMode
+      editMode,
+      supervisor,
+      manager,
+      head,
+      gm
     } = this.state;
 
     const leaderForm = (
@@ -1212,7 +1335,7 @@ class FormRegister extends React.Component {
                 <CardHeader className="bg-white border-0">
                   <Row className="align-items-center">
                     <Col xs="8">
-                      <h3 className="mb-0">Daftarin anggota karyawanmu disini!</h3>
+                      <h3 className="mb-0">{`Ubah data ${this.state.name}`}</h3>
                     </Col>
                     <Col className="text-right" xs="4">
                       <Link color="inherit" to="/admin/staff">
@@ -1224,21 +1347,31 @@ class FormRegister extends React.Component {
                   </Row>
                 </CardHeader>
                 <CardBody>
-                  <Form
-                    onSubmit={(e) => this.handleCheckImei(e, this.state.imei)}
-                    autoComplete="off"
-                  >
+                  <Form onSubmit={(e) => this.handleCheckImei(e)} autoComplete="off">
                     <h6 className="heading-small text-muted mb-4">User information</h6>
                     <div className="pl-lg-4">
                       <Row>
                         <Col lg="6">
-                          <FormGroup controlId="formCategory">
+                          {this.state.fotoWajah !== '' ? (
+                            <FormGroup>
+                              <Label>Foto Wajah</Label>
+                              <Row className="ml-1">
+                                <img
+                                  height={100}
+                                  width={100}
+                                  src={this.state.fotoWajah === '' ? '' : this.state.fotoWajah}
+                                  alt="foto"
+                                />
+                              </Row>
+                            </FormGroup>
+                          ) : (
+                            ''
+                          )}
+                          {/* <FormGroup controlId="formCategory">
                             <Label className="form-control-label">Foto wajah</Label>
                             <Input
                               type="file"
                               label="Foto wajah"
-                              required={true}
-                              onChange={this.handleFace}
                             />
                             <FormText
                               className={loadingReco ? 'text-muted' : ''}
@@ -1248,11 +1381,11 @@ class FormRegister extends React.Component {
                             >
                               {loadingReco ? 'processing...' : message}
                             </FormText>
-                          </FormGroup>
+                          </FormGroup> */}
                         </Col>
                       </Row>
                       <Row>
-                        <Col lg="6">
+                        {/* <Col lg="6">
                           <FormGroup>
                             <label className="form-control-label" htmlFor="input-username">
                               Username
@@ -1262,11 +1395,12 @@ class FormRegister extends React.Component {
                               autoComplete="off"
                               id="input-username"
                               placeholder="Username"
+                              value={username}
                               type="text"
                               onChange={(e) => this.setState({ username: e.target.value })}
                             />
                           </FormGroup>
-                        </Col>
+                        </Col> */}
                         <Col lg="6">
                           <FormGroup>
                             <label className="form-control-label" htmlFor="input-email">
@@ -1277,6 +1411,7 @@ class FormRegister extends React.Component {
                               id="input-email"
                               placeholder="email@kamu.com"
                               type="email"
+                              value={email}
                               onChange={(e) => this.setState({ email: e.target.value })}
                             />
                           </FormGroup>
@@ -1293,6 +1428,7 @@ class FormRegister extends React.Component {
                               id="input-first-name"
                               placeholder="Nama lengkap"
                               type="text"
+                              value={name}
                               onChange={(e) => this.setState({ name: e.target.value })}
                             />
                           </FormGroup>
@@ -1318,15 +1454,27 @@ class FormRegister extends React.Component {
                             <label className="form-control-label" htmlFor="input-password">
                               Password
                             </label>
-                            <Input
-                              className="form-control-alternative"
-                              autoComplete="off"
-                              id="input-password"
-                              placeholder="Password kamu"
-                              type="password"
-                              minLength={8}
-                              onChange={(e) => this.setState({ password: e.target.value })}
-                            />
+                            <InputGroup className="input-group-alternative mb-4">
+                              <Input
+                                className="form-control-alternative"
+                                autoComplete="off"
+                                id="input-password"
+                                placeholder="Masukkan password jika ingin mengubah"
+                                type={this.state.visibleToggle ? 'text' : 'password'}
+                                value={this.state.password}
+                                minLength={8}
+                                onChange={(e) => this.setState({ password: e.target.value })}
+                              />
+                              <InputGroupAddon addonType="append">
+                                <Button onClick={() => this.toggle('visibleToggle')}>
+                                  <i
+                                    className={
+                                      this.state.visibleToggle ? 'fas fa-eye-slash' : 'fas fa-eye'
+                                    }
+                                  />
+                                </Button>
+                              </InputGroupAddon>
+                            </InputGroup>
                           </FormGroup>
                         </Col>
                         <Col lg="6">
@@ -1339,6 +1487,7 @@ class FormRegister extends React.Component {
                               id="input-imei"
                               placeholder="IMEI Hp"
                               type="text"
+                              value={imei}
                               onChange={(e) => this.setState({ imei: e.target.value })}
                             />
                           </FormGroup>
@@ -1361,6 +1510,7 @@ class FormRegister extends React.Component {
                               id="input-nik"
                               placeholder="NIK Karyawan"
                               type="text"
+                              value={nik}
                               onChange={(e) => this.setState({ nik: e.target.value })}
                             />
                           </FormGroup>
@@ -1433,7 +1583,7 @@ class FormRegister extends React.Component {
                               }
                             >
                               <option selected disabled hidden>
-                                Pilih posisi
+                                Pilih posisi pekerjaan
                               </option>
                               {daftarPosisi.map((x, i) => (
                                 <option key={i} value={x.get('position')}>
@@ -1459,7 +1609,7 @@ class FormRegister extends React.Component {
                               }
                             >
                               <option selected disabled hidden>
-                                Pilih jam kerja
+                                Pilih tipe jam kerja
                               </option>
                               {['Jam tetap', 'Jam fleksibel', 'Jam bebas'].map((x) => (
                                 <option value={x}>{x}</option>
@@ -1492,6 +1642,50 @@ class FormRegister extends React.Component {
                           </FormGroup>
                         </Col>
                       </Row>
+                      <Row>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label className="form-control-label" htmlFor="input-lembur">
+                              Lembur ?
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-lembur"
+                              type="select"
+                              onChange={(e) =>
+                                this.setState({
+                                  lembur: e.target.value
+                                })
+                              }
+                            >
+                              <option selected disabled hidden>
+                                Pilih tipe lembur
+                              </option>
+                              {['Ya', 'Tidak'].map((x) => (
+                                <option value={x}>{x}</option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label className="form-control-label" htmlFor="input-cuti">
+                              Jumlah Cuti
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-lokasi"
+                              type="number"
+                              value={jumlahCuti}
+                              onChange={(e) =>
+                                this.setState({
+                                  jumlahCuti: e.target.value
+                                })
+                              }
+                            ></Input>
+                          </FormGroup>
+                        </Col>
+                      </Row>
                       {this.state.jamKerja !== '' && this.state.jamKerja !== 'Jam bebas' ? (
                         <Row>
                           <Col lg="12">
@@ -1503,6 +1697,7 @@ class FormRegister extends React.Component {
                                     className="form-control-alternative"
                                     type="number"
                                     required={true}
+                                    value={this.state.jamMasuk}
                                     placeholder="Jam Masuk"
                                     onChange={(e) =>
                                       this.setState({
@@ -1517,6 +1712,7 @@ class FormRegister extends React.Component {
                                     type="number"
                                     placeholder="Jam Keluar"
                                     required={true}
+                                    value={this.state.jamKeluar}
                                     onChange={(e) =>
                                       this.setState({
                                         jamKeluar: e.target.value
@@ -1576,15 +1772,8 @@ class FormRegister extends React.Component {
                     <div className="pl-lg-4">
                       <Row className="mt-2">
                         <Col lg="12">
-                          <Button
-                            block
-                            color={this.state.statusReco === 0 ? 'primary' : 'primary'}
-                            type="submit"
-                            disabled={this.state.statusReco === 0 ? true : false}
-                          >
-                            {this.state.statusReco === 0 ? (
-                              'upload foto dahulu'
-                            ) : this.state.loadingModal ? (
+                          <Button block color={'primary'} type="submit">
+                            {this.state.loadingModal ? (
                               <div>
                                 <Spinner
                                   as="span"
@@ -1629,4 +1818,4 @@ class FormRegister extends React.Component {
   }
 }
 
-export default FormRegister;
+export default SelfRegistForm;

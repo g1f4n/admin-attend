@@ -38,6 +38,7 @@ import { Reportingz } from 'views/admin/Reporting';
 import TesEksport from 'views/admin/TesEksport';
 import FormRegister from 'views/admin/Form/FormRegister';
 import EditForm from 'views/admin/Form/EditForm';
+import SelfRegistForm from 'views/admin/Form/SelfRegistForm';
 
 var routes = [
   {
@@ -74,6 +75,14 @@ var routes = [
     name: 'Edit Karyawan Info',
     icon: 'ni ni-align-center text-danger',
     component: EditForm,
+    layout: '/admin',
+    invisible: true
+  },
+  {
+    path: '/self-regist/:id',
+    name: 'Self Registration Form',
+    icon: 'ni ni-align-center text-info',
+    component: SelfRegistForm,
     layout: '/admin',
     invisible: true
   },
