@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from 'react';
+import React from "react";
 
 // reactstrap components
 import {
@@ -31,16 +31,16 @@ import {
   Col,
   Label,
   FormText,
-  Spinner
-} from 'reactstrap';
+  Spinner,
+} from "reactstrap";
 // core components
-import UserHeader from 'components/Headers/UserHeader.js';
-import HeaderNormal from 'components/Headers/HeaderNormal';
-import Parse from 'parse';
-import Axios from 'axios';
-import md5 from 'md5';
-import Alertz from 'components/Alert/Alertz';
-import { Link } from 'react-router-dom';
+import UserHeader from "components/Headers/UserHeader.js";
+import HeaderNormal from "components/Headers/HeaderNormal";
+import Parse from "parse";
+import Axios from "axios";
+import md5 from "md5";
+import Alertz from "components/Alert/Alertz";
+import { Link } from "react-router-dom";
 
 class EditForm extends React.Component {
   constructor(props) {
@@ -62,39 +62,39 @@ class EditForm extends React.Component {
       rejectMode: false,
       counter: 0,
       loadingModal: false,
-      fullnames: '',
-      fullname: '',
-      userId: '',
+      fullnames: "",
+      fullname: "",
+      userId: "",
       userIndex: 0,
-      reason: '',
+      reason: "",
       checkId: [],
       addMode: false,
       editMode: false,
       deleteCounter: 0,
       loadingReco: false,
-      message: '',
-      level: '',
-      fotoWajah: '',
-      message: '',
+      message: "",
+      level: "",
+      fotoWajah: "",
+      message: "",
       loadingReco: false,
-      name: '',
-      nik: '',
-      tipeKaryawan: '',
-      posisi: '',
-      imei: '',
-      jamKerja: '',
-      lokasiKerja: '',
+      name: "",
+      nik: "",
+      tipeKaryawan: "",
+      posisi: "",
+      imei: "",
+      jamKerja: "",
+      lokasiKerja: "",
       jumlahCuti: 0,
-      lembur: 'ya',
-      username: '',
-      password: '',
-      selectLeader: '',
-      selectSupervisor: '',
-      selectManager: '',
-      selectHead: '',
-      selectGM: '',
+      lembur: "ya",
+      username: "",
+      password: "",
+      selectLeader: "",
+      selectSupervisor: "",
+      selectManager: "",
+      selectHead: "",
+      selectGM: "",
       statusReco: 0,
-      email: '',
+      email: "",
       fotoWajahObject: {},
       daftarShifting: [],
       shifting: {},
@@ -104,19 +104,19 @@ class EditForm extends React.Component {
       head: {},
       gm: {},
       absenPointObject: {},
-      message: '',
-      color: '',
+      message: "",
+      color: "",
       visible: false,
-      message: '',
-      color: 'danger',
+      message: "",
+      color: "danger",
       absenPoint: [],
       daftarPoint: [],
-      idPoint: '',
-      imeiMessage: '',
-      searchBy: 'all',
-      searchValue: '',
+      idPoint: "",
+      imeiMessage: "",
+      searchBy: "all",
+      searchValue: "",
       jamMasuk: 0,
-      jamKeluar: 0
+      jamKeluar: 0,
     };
   }
 
@@ -142,10 +142,10 @@ class EditForm extends React.Component {
   }
 
   getPoint = () => {
-    const ValidGeopoint = new Parse.Object.extend('ValidGeopoint');
+    const ValidGeopoint = new Parse.Object.extend("ValidGeopoint");
     const query = new Parse.Query(ValidGeopoint);
 
-    query.equalTo('status', 1);
+    query.equalTo("status", 1);
     query
       .find()
       .then((x) => {
@@ -159,10 +159,10 @@ class EditForm extends React.Component {
 
   getTipe = () => {
     this.setState({ loading: true });
-    const EmployeeType = new Parse.Object.extend('EmployeeType');
+    const EmployeeType = new Parse.Object.extend("EmployeeType");
     const query = new Parse.Query(EmployeeType);
 
-    query.equalTo('status', 1);
+    query.equalTo("status", 1);
     query
       .find()
       .then((x) => {
@@ -197,10 +197,10 @@ class EditForm extends React.Component {
 
   getPosisi = () => {
     this.setState({ loading: true });
-    const Position = new Parse.Object.extend('Position');
+    const Position = new Parse.Object.extend("Position");
     const query = new Parse.Query(Position);
 
-    query.equalTo('status', 1);
+    query.equalTo("status", 1);
     query
       .find()
       .then((x) => {
@@ -214,10 +214,10 @@ class EditForm extends React.Component {
 
   getLevel = () => {
     this.setState({ loading: true });
-    const Level = new Parse.Object.extend('Level');
+    const Level = new Parse.Object.extend("Level");
     const query = new Parse.Query(Level);
 
-    query.equalTo('status', 1);
+    query.equalTo("status", 1);
     query
       .find()
       .then((x) => {
@@ -241,7 +241,7 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -257,7 +257,7 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -276,108 +276,108 @@ class EditForm extends React.Component {
     query.withCount();
 
     switch (searchBy) {
-      case 'all':
+      case "all":
         query
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
               daftarStaff: x.results,
               totalData: x.count,
-              loadingFilter: false
+              loadingFilter: false,
             });
           })
           .catch((err) => {
             this.setState({ loadingFilter: false });
-            alert('cek koneksi anda');
+            alert("cek koneksi anda");
           });
         break;
 
-      case 'name':
-        query.matches('fullname', searchValue, 'i');
+      case "name":
+        query.matches("fullname", searchValue, "i");
         query
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
               daftarStaff: x.results,
               totalData: x.count,
-              loadingFilter: false
+              loadingFilter: false,
             });
           })
           .catch((err) => {
             this.setState({ loadingFilter: false });
-            alert('cek koneksi anda');
+            alert("cek koneksi anda");
           });
         break;
 
-      case 'nik':
-        query.equalTo('nik', searchValue);
+      case "nik":
+        query.equalTo("nik", searchValue);
         query
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
               daftarStaff: x.results,
               totalData: x.count,
-              loadingFilter: false
+              loadingFilter: false,
             });
           })
           .catch((err) => {
             this.setState({ loadingFilter: false });
-            alert('cek koneksi anda');
+            alert("cek koneksi anda");
           });
         break;
 
-      case 'divisi':
-        query.matches('posisi', searchValue, 'i');
+      case "divisi":
+        query.matches("posisi", searchValue, "i");
         query
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
               daftarStaff: x.results,
               totalData: x.count,
-              loadingFilter: false
+              loadingFilter: false,
             });
           })
           .catch((err) => {
             this.setState({ loading: false });
-            alert('cek koneksi anda');
+            alert("cek koneksi anda");
           });
         break;
 
-      case 'level':
-        query.matches('level', searchValue, 'i');
+      case "level":
+        query.matches("level", searchValue, "i");
         query
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
               daftarStaff: x.results,
               totalData: x.count,
-              loadingFilter: false
+              loadingFilter: false,
             });
           })
           .catch((err) => {
             this.setState({ loadingFilter: false });
-            alert('cek koneksi anda');
+            alert("cek koneksi anda");
           });
         break;
 
-      case 'leader':
+      case "leader":
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
-        leaderQuery.matches('fullname', searchValue, 'i');
+        leaderQuery.matches("fullname", searchValue, "i");
 
-        query.matchesQuery('leaderIdNew', leaderQuery);
+        query.matchesQuery("leaderIdNew", leaderQuery);
         query
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
               daftarStaff: x.results,
               totalData: x.count,
-              loadingFilter: false
+              loadingFilter: false,
             });
           })
           .catch((err) => {
             this.setState({ loadingFilter: false });
-            alert('cek koneksi anda');
+            alert("cek koneksi anda");
           });
         break;
       default:
@@ -386,17 +386,17 @@ class EditForm extends React.Component {
   };
 
   getShifting = () => {
-    const Shifting = Parse.Object.extend('Shifting');
+    const Shifting = Parse.Object.extend("Shifting");
     const query = new Parse.Query(Shifting);
 
-    query.equalTo('status', 1);
+    query.equalTo("status", 1);
     query
       .find()
       .then((x) => {
         this.setState({ daftarShifting: x });
       })
       .catch((err) => {
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -405,7 +405,7 @@ class EditForm extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('roles', 'leader' || 'Leader');
+    query.equalTo("roles", "leader" || "Leader");
 
     query
       .find({ useMasterKey: true })
@@ -414,7 +414,7 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -423,7 +423,7 @@ class EditForm extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('roles', 'supervisor');
+    query.equalTo("roles", "supervisor");
 
     query
       .find({ useMasterKey: true })
@@ -432,7 +432,7 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -441,7 +441,7 @@ class EditForm extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('roles', 'manager');
+    query.equalTo("roles", "manager");
 
     query
       .find({ useMasterKey: true })
@@ -450,7 +450,7 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -459,7 +459,7 @@ class EditForm extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('roles', 'head');
+    query.equalTo("roles", "head");
 
     query
       .find({ useMasterKey: true })
@@ -468,7 +468,7 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
@@ -477,7 +477,7 @@ class EditForm extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('roles', 'gm');
+    query.equalTo("roles", "gm");
 
     query
       .find({ useMasterKey: true })
@@ -486,35 +486,39 @@ class EditForm extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        alert('cek koneksi anda');
+        alert("cek koneksi anda");
       });
   };
 
   hans = () => {};
 
   handleFace = (e) => {
-    this.setState({ loadingReco: true, statusReco: 0, fotoWajah: e.target.files[0] });
+    this.setState({
+      loadingReco: true,
+      statusReco: 0,
+      fotoWajah: e.target.files[0],
+    });
     const formData = new FormData();
-    formData.append('knax', e.target.files[0]);
-    Axios.post('http://34.126.96.126:4000/api/face-check', formData, {
+    formData.append("knax", e.target.files[0]);
+    Axios.post("http://34.126.96.126:4000/api/face-check", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        "Content-Type": "multipart/form-data",
+      },
     })
       .then(({ data }) => {
         if (data.status === 1)
           return this.setState({
             statusReco: 1,
             message: `✔️ ${data.message}`,
-            loadingReco: false
+            loadingReco: false,
           });
         return this.setState({
           statusReco: 0,
           message: `✖️ ${data.message}`,
-          loadingReco: false
+          loadingReco: false,
         });
       })
-      .catch((err) => alert('Terjadi error...'));
+      .catch((err) => alert("Terjadi error..."));
   };
 
   handleCheckImei = (e, imei) => {
@@ -524,14 +528,14 @@ class EditForm extends React.Component {
     const user = new Parse.User();
     const query = new Parse.Query(user);
 
-    query.equalTo('imei', imei);
+    query.equalTo("imei", imei);
     query
       .first()
       .then((x) => {
         if (x) {
           this.setState({
-            imeiMessage: 'Imei telah terdaftar',
-            loadingModal: false
+            imeiMessage: "Imei telah terdaftar",
+            loadingModal: false,
           });
           return;
         } else {
@@ -560,111 +564,111 @@ class EditForm extends React.Component {
       fotoWajah,
       username,
       password,
-      email
+      email,
     } = this.state;
 
     const user = new Parse.User();
 
     const setLeader = (columnName, leaderState) => {
       user.set(columnName, {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: this.state[leaderState]
+        __type: "Pointer",
+        className: "_User",
+        objectId: this.state[leaderState],
       });
     };
 
-    if (level.toLowerCase() === 'staff') {
-      if (this.state.selectLeader !== '') {
-        setLeader('leaderIdNew', 'selectLeader');
+    if (level.toLowerCase() === "staff") {
+      if (this.state.selectLeader !== "") {
+        setLeader("leaderIdNew", "selectLeader");
       }
-      if (this.state.selectSupervisor !== '') {
-        setLeader('supervisorID', 'selectSupervisor');
+      if (this.state.selectSupervisor !== "") {
+        setLeader("supervisorID", "selectSupervisor");
       }
-      if (this.state.selectManager !== '') {
-        setLeader('managerID', 'selectManager');
+      if (this.state.selectManager !== "") {
+        setLeader("managerID", "selectManager");
       }
-      if (this.state.selectHead !== '') {
-        setLeader('headID', 'selectHead');
+      if (this.state.selectHead !== "") {
+        setLeader("headID", "selectHead");
       }
-      if (this.state.selectGM !== '') {
-        setLeader('gmID', 'selectGM');
-      }
-    }
-
-    if (level.toLowerCase() === 'leader') {
-      if (this.state.selectSupervisor !== '') {
-        setLeader('supervisorID', 'selectSupervisor');
-      }
-      if (this.state.selectManager !== '') {
-        setLeader('managerID', 'selectManager');
-      }
-      if (this.state.selectHead !== '') {
-        setLeader('headID', 'selectHead');
-      }
-      if (this.state.selectGM !== '') {
-        setLeader('gmID', 'selectGM');
+      if (this.state.selectGM !== "") {
+        setLeader("gmID", "selectGM");
       }
     }
 
-    if (level.toLowerCase() === 'supervisor') {
-      if (this.state.selectManager !== '') {
-        setLeader('managerID', 'selectManager');
+    if (level.toLowerCase() === "leader") {
+      if (this.state.selectSupervisor !== "") {
+        setLeader("supervisorID", "selectSupervisor");
       }
-      if (this.state.selectHead !== '') {
-        setLeader('headID', 'selectHead');
+      if (this.state.selectManager !== "") {
+        setLeader("managerID", "selectManager");
       }
-      if (this.state.selectGM !== '') {
-        setLeader('gmID', 'selectGM');
+      if (this.state.selectHead !== "") {
+        setLeader("headID", "selectHead");
       }
-    }
-
-    if (level.toLowerCase() === 'manager') {
-      if (this.state.selectHead !== '') {
-        setLeader('headID', 'selectHead');
-      }
-      if (this.state.selectGM !== '') {
-        setLeader('gmID', 'selectGM');
+      if (this.state.selectGM !== "") {
+        setLeader("gmID", "selectGM");
       }
     }
 
-    if (level.toLowerCase() === 'head') {
-      if (this.state.selectGM !== '') {
-        setLeader('gmID', 'selectGM');
+    if (level.toLowerCase() === "supervisor") {
+      if (this.state.selectManager !== "") {
+        setLeader("managerID", "selectManager");
+      }
+      if (this.state.selectHead !== "") {
+        setLeader("headID", "selectHead");
+      }
+      if (this.state.selectGM !== "") {
+        setLeader("gmID", "selectGM");
       }
     }
 
-    user.set('absenPoint', {
-      __type: 'Pointer',
-      className: 'ValidGeopoint',
-      objectId: this.state.idPoint
+    if (level.toLowerCase() === "manager") {
+      if (this.state.selectHead !== "") {
+        setLeader("headID", "selectHead");
+      }
+      if (this.state.selectGM !== "") {
+        setLeader("gmID", "selectGM");
+      }
+    }
+
+    if (level.toLowerCase() === "head") {
+      if (this.state.selectGM !== "") {
+        setLeader("gmID", "selectGM");
+      }
+    }
+
+    user.set("absenPoint", {
+      __type: "Pointer",
+      className: "ValidGeopoint",
+      objectId: this.state.idPoint,
     });
     //user.set('shifting', Shifting.createWithoutData(this.state.shifting));
-    user.set('fullname', name);
-    user.set('email', email);
-    user.set('username', username);
-    user.set('password', md5(password));
-    user.set('passwordClone', md5(password));
-    user.set('nik', nik.toUpperCase());
-    user.set('tipe', tipeKaryawan);
-    user.set('posisi', posisi);
-    user.set('level', level.toLowerCase());
-    user.set('imei', imei);
-    user.set('jamKerja', jamKerja);
-    user.set('lokasiKerja', lokasiKerja);
+    user.set("fullname", name);
+    user.set("email", email);
+    user.set("username", username);
+    user.set("password", md5(password));
+    user.set("passwordClone", md5(password));
+    user.set("nik", nik.toUpperCase());
+    user.set("tipe", tipeKaryawan);
+    user.set("posisi", posisi);
+    user.set("level", level.toLowerCase());
+    user.set("imei", imei);
+    user.set("jamKerja", jamKerja);
+    user.set("lokasiKerja", lokasiKerja);
     if (this.state.jamMasuk === 0) {
-      user.set('jamMasuk', 8);
+      user.set("jamMasuk", 8);
     } else {
-      user.set('jamMasuk', parseInt(this.state.jamMasuk));
+      user.set("jamMasuk", parseInt(this.state.jamMasuk));
     }
     if (this.state.jamKeluar === 0) {
-      user.set('jamKeluar', 17);
+      user.set("jamKeluar", 17);
     } else {
-      user.set('jamKeluar', parseInt(this.state.jamKeluar));
+      user.set("jamKeluar", parseInt(this.state.jamKeluar));
     }
-    user.set('jumlahCuti', parseInt(jumlahCuti));
-    user.set('lembur', lembur);
-    user.set('roles', level.toLowerCase());
-    user.set('fotoWajah', new Parse.File('profile.jpg', fotoWajah));
+    user.set("jumlahCuti", parseInt(jumlahCuti));
+    user.set("lembur", lembur);
+    user.set("roles", level.toLowerCase());
+    user.set("fotoWajah", new Parse.File("profile.jpg", fotoWajah));
     user
       .save()
       .then((x) => {
@@ -672,17 +676,17 @@ class EditForm extends React.Component {
           // daftarStaff: this.state.daftarStaff.concat(x),
           addMode: false,
           loadingModal: false,
-          message: 'Berhasil tambah data',
+          message: "Berhasil tambah data",
           visible: true,
-          color: 'success'
+          color: "success",
         });
       })
       .catch((err) => {
         this.setState({
           addMode: false,
           loadingModal: false,
-          message: 'Gagal tambah data, coba lagi',
-          visible: true
+          message: "Gagal tambah data, coba lagi",
+          visible: true,
         });
         console.log(err.message);
       });
@@ -705,7 +709,7 @@ class EditForm extends React.Component {
       fotoWajah,
       username,
       password,
-      email
+      email,
     } = this.state;
 
     const id = this.props.match.params.id;
@@ -717,81 +721,81 @@ class EditForm extends React.Component {
       .get(id)
       .then((x) => {
         const setLeader = (columnName, leaderState) => {
-          user.set(columnName, {
-            __type: 'Pointer',
-            className: '_User',
-            objectId: this.state[leaderState]
+          x.set(columnName, {
+            __type: "Pointer",
+            className: "_User",
+            objectId: this.state[leaderState],
           });
         };
 
         // if (this.state.selectLeader !== '')
         // 	setLeader('leaderIdNew', 'selectLeader')
 
-        if (level.toLowerCase() === 'staff') {
-          if (this.state.selectLeader !== '') {
-            setLeader('leaderIdNew', 'selectLeader');
+        if (level.toLowerCase() === "staff") {
+          if (this.state.selectLeader !== "") {
+            setLeader("leaderIdNew", "selectLeader");
           }
-          if (this.state.selectSupervisor !== '') {
-            setLeader('supervisorID', 'selectSupervisor');
+          if (this.state.selectSupervisor !== "") {
+            setLeader("supervisorID", "selectSupervisor");
           }
-          if (this.state.selectManager !== '') {
-            setLeader('managerID', 'selectManager');
+          if (this.state.selectManager !== "") {
+            setLeader("managerID", "selectManager");
           }
-          if (this.state.selectHead !== '') {
-            setLeader('headID', 'selectHead');
+          if (this.state.selectHead !== "") {
+            setLeader("headID", "selectHead");
           }
-          if (this.state.selectGM !== '') {
-            setLeader('gmID', 'selectGM');
-          }
-        }
-
-        if (level.toLowerCase() === 'leader') {
-          if (this.state.selectSupervisor !== '') {
-            setLeader('supervisorID', 'selectSupervisor');
-          }
-          if (this.state.selectManager !== '') {
-            setLeader('managerID', 'selectManager');
-          }
-          if (this.state.selectHead !== '') {
-            setLeader('headID', 'selectHead');
-          }
-          if (this.state.selectGM !== '') {
-            setLeader('gmID', 'selectGM');
+          if (this.state.selectGM !== "") {
+            setLeader("gmID", "selectGM");
           }
         }
 
-        if (level.toLowerCase() === 'supervisor') {
-          if (this.state.selectManager !== '') {
-            setLeader('managerID', 'selectManager');
+        if (level.toLowerCase() === "leader") {
+          if (this.state.selectSupervisor !== "") {
+            setLeader("supervisorID", "selectSupervisor");
           }
-          if (this.state.selectHead !== '') {
-            setLeader('headID', 'selectHead');
+          if (this.state.selectManager !== "") {
+            setLeader("managerID", "selectManager");
           }
-          if (this.state.selectGM !== '') {
-            setLeader('gmID', 'selectGM');
+          if (this.state.selectHead !== "") {
+            setLeader("headID", "selectHead");
           }
-        }
-
-        if (level.toLowerCase() === 'manager') {
-          if (this.state.selectHead !== '') {
-            setLeader('headID', 'selectHead');
-          }
-          if (this.state.selectGM !== '') {
-            setLeader('gmID', 'selectGM');
+          if (this.state.selectGM !== "") {
+            setLeader("gmID", "selectGM");
           }
         }
 
-        if (level.toLowerCase() === 'head') {
-          if (this.state.selectGM !== '') {
-            setLeader('gmID', 'selectGM');
+        if (level.toLowerCase() === "supervisor") {
+          if (this.state.selectManager !== "") {
+            setLeader("managerID", "selectManager");
+          }
+          if (this.state.selectHead !== "") {
+            setLeader("headID", "selectHead");
+          }
+          if (this.state.selectGM !== "") {
+            setLeader("gmID", "selectGM");
           }
         }
 
-        if (this.state.idPoint !== '')
-          user.set('absenPoint', {
-            __type: 'Pointer',
-            className: 'ValidGeopoint',
-            objectId: this.state.idPoint
+        if (level.toLowerCase() === "manager") {
+          if (this.state.selectHead !== "") {
+            setLeader("headID", "selectHead");
+          }
+          if (this.state.selectGM !== "") {
+            setLeader("gmID", "selectGM");
+          }
+        }
+
+        if (level.toLowerCase() === "head") {
+          if (this.state.selectGM !== "") {
+            setLeader("gmID", "selectGM");
+          }
+        }
+
+        if (this.state.idPoint !== "")
+          user.set("absenPoint", {
+            __type: "Pointer",
+            className: "ValidGeopoint",
+            objectId: this.state.idPoint,
           });
         // if (this.state.shifting !== '')
         // 	x.set('shifting', {
@@ -799,43 +803,44 @@ class EditForm extends React.Component {
         // 		className: 'Shifting',
         // 		objectId: this.state.shifting
         // 	});
-        x.set('fullname', name);
-        x.set('email', email);
-        x.set('username', username);
-        x.set('jamMasuk', this.state.jamMasuk);
-        x.set('jamKeluar', this.state.jamKeluar);
-        x.set('username', username);
-        if (password !== '') {
-          x.set('password', md5(password));
-          x.set('passwordClone', md5(password));
+        x.set("fullname", name);
+        x.set("email", email);
+        x.set("username", username);
+        x.set("jamMasuk", parseInt(this.state.jamMasuk));
+        x.set("jamKeluar", parseInt(this.state.jamKeluar));
+        x.set("username", username);
+        if (password !== "") {
+          x.set("password", md5(password));
+          x.set("passwordClone", md5(password));
         }
-        x.set('nik', nik.toUpperCase());
-        x.set('tipe', tipeKaryawan);
-        x.set('posisi', posisi);
-        x.set('level', level.toLowerCase());
-        x.set('imei', imei);
-        x.set('jamKerja', jamKerja);
-        x.set('lokasiKerja', lokasiKerja);
-        x.set('jumlahCuti', parseInt(jumlahCuti));
-        x.set('lembur', lembur);
-        x.set('roles', level.toLowerCase());
-        if (fotoWajah !== '') x.set('fotoWajah', new Parse.File('profile.jpg', fotoWajah));
+        x.set("nik", nik.toUpperCase());
+        x.set("tipe", tipeKaryawan);
+        x.set("posisi", posisi);
+        x.set("level", level.toLowerCase());
+        x.set("imei", imei);
+        x.set("jamKerja", jamKerja);
+        x.set("lokasiKerja", lokasiKerja);
+        x.set("jumlahCuti", parseInt(jumlahCuti));
+        x.set("lembur", lembur);
+        x.set("roles", level.toLowerCase());
+        if (fotoWajah !== "")
+          x.set("fotoWajah", new Parse.File("profile.jpg", fotoWajah));
         x.save(null, { useMasterKey: true })
           .then((x) => {
             this.setState({
               editMode: false,
               loadingModal: false,
-              message: 'Berhasil update data',
+              message: "Berhasil update data",
               visible: true,
-              color: 'success'
+              color: "success",
             });
           })
           .catch((err) => {
             this.setState({
               editMode: false,
               loadingModal: false,
-              message: 'Gagal update data, coba lagi',
-              visible: true
+              message: "Gagal update data, coba lagi",
+              visible: true,
             });
             console.log(err.message);
           });
@@ -845,7 +850,7 @@ class EditForm extends React.Component {
           editMode: false,
           loadingModal: false,
           message: err.message,
-          visible: true
+          visible: true,
         });
         console.log(err.message);
       });
@@ -857,12 +862,12 @@ class EditForm extends React.Component {
 
     const id = this.props.match.params.id;
 
-    query.include('leaderIdNew');
-    query.include('supervisorID');
-    query.include('managerID');
-    query.include('headID');
-    query.include('gmID');
-    query.include('absenPoint');
+    query.include("leaderIdNew");
+    query.include("supervisorID");
+    query.include("managerID");
+    query.include("headID");
+    query.include("gmID");
+    query.include("absenPoint");
     query
       .get(id, { useMasterKey: true })
       .then(({ attributes }) => {
@@ -884,17 +889,25 @@ class EditForm extends React.Component {
           lokasiKerja: attributes.lokasiKerja,
           jumlahCuti: attributes.jumlahCuti,
           jamMasuk: attributes.jamMasuk === undefined ? 0 : attributes.jamMasuk,
-          jamKeluar: attributes.jamKeluar === undefined ? 0 : attributes.jamKeluar,
-          absenPointObject: attributes.absenPoint === undefined ? '' : attributes.absenPoint,
-          shifting: attributes.shifting === undefined ? '' : attributes.shifting,
+          jamKeluar:
+            attributes.jamKeluar === undefined ? 0 : attributes.jamKeluar,
+          absenPointObject:
+            attributes.absenPoint === undefined ? "" : attributes.absenPoint,
+          shifting:
+            attributes.shifting === undefined ? "" : attributes.shifting,
           lembur: attributes.lembur,
           level: attributes.roles.toLowerCase(),
-          leader: attributes.leaderIdNew === undefined ? '' : attributes.leaderIdNew,
-          supervisor: attributes.supervisorID === undefined ? '' : attributes.supervisorID,
-          manager: attributes.managerID === undefined ? '' : attributes.managerID,
-          head: attributes.headID === undefined ? '' : attributes.headID,
-          gm: attributes.gmID === undefined ? '' : attributes.gmID,
-          editMode: true
+          leader:
+            attributes.leaderIdNew === undefined ? "" : attributes.leaderIdNew,
+          supervisor:
+            attributes.supervisorID === undefined
+              ? ""
+              : attributes.supervisorID,
+          manager:
+            attributes.managerID === undefined ? "" : attributes.managerID,
+          head: attributes.headID === undefined ? "" : attributes.headID,
+          gm: attributes.gmID === undefined ? "" : attributes.gmID,
+          editMode: true,
         });
       })
       .catch((err) => {
@@ -904,20 +917,22 @@ class EditForm extends React.Component {
 
   toggle = (state) => {
     this.setState({
-      [state]: !this.state[state]
+      [state]: !this.state[state],
     });
   };
 
   handleIdAbsen = (e) => {
-    var element_input = document.getElementById('myoptions');
-    var element_datalist = document.getElementById('data');
-    var opSelected = element_datalist.querySelector(`[value="${element_input.value}"]`);
-    if (opSelected.getAttribute('data-key') !== null) {
-      var id = opSelected.getAttribute('data-key');
+    var element_input = document.getElementById("myoptions");
+    var element_datalist = document.getElementById("data");
+    var opSelected = element_datalist.querySelector(
+      `[value="${element_input.value}"]`
+    );
+    if (opSelected.getAttribute("data-key") !== null) {
+      var id = opSelected.getAttribute("data-key");
       console.log(id);
       console.log(e.target.value);
       this.setState({
-        selectLeader: id
+        selectLeader: id,
       });
     }
   };
@@ -956,7 +971,7 @@ class EditForm extends React.Component {
       supervisor,
       manager,
       head,
-      gm
+      gm,
     } = this.state;
 
     const leaderForm = (
@@ -972,7 +987,7 @@ class EditForm extends React.Component {
         >
           {this.state.daftarLeader.map((x, i) => (
             <option selected={leader.id === x.id} key={i} value={x.id}>
-              {x.get('fullname')}
+              {x.get("fullname")}
             </option>
           ))}
         </Input>
@@ -992,7 +1007,7 @@ class EditForm extends React.Component {
         >
           {this.state.daftarSupervisor.map((x, i) => (
             <option selected={supervisor.id === x.id} key={i} value={x.id}>
-              {x.get('fullname') === undefined ? '' : x.get('fullname')}
+              {x.get("fullname") === undefined ? "" : x.get("fullname")}
             </option>
           ))}
         </Input>
@@ -1012,7 +1027,7 @@ class EditForm extends React.Component {
         >
           {this.state.daftarManager.map((x, i) => (
             <option selected={manager.id === x.id} key={i} value={x.id}>
-              {x.get('fullname')}
+              {x.get("fullname")}
             </option>
           ))}
         </Input>
@@ -1032,7 +1047,7 @@ class EditForm extends React.Component {
         >
           {this.state.daftarHead.map((x, i) => (
             <option selected={head.id === x.id} key={i} value={x.id}>
-              {x.get('fullname')}
+              {x.get("fullname")}
             </option>
           ))}
         </Input>
@@ -1052,7 +1067,7 @@ class EditForm extends React.Component {
         >
           {this.state.daftarGM.map((x, i) => (
             <option selected={gm.id === x.id} key={i} value={x.id}>
-              {x.get('fullname')}
+              {x.get("fullname")}
             </option>
           ))}
         </Input>
@@ -1124,7 +1139,7 @@ class EditForm extends React.Component {
             </option>
             {this.state.daftarGM.map((x, i) => (
               <option key={i} value={x.id}>
-                {x.get('fullname')}
+                {x.get("fullname")}
               </option>
             ))}
           </Input>
@@ -1134,15 +1149,15 @@ class EditForm extends React.Component {
 
     const getDropdownByLevel = (userSelectLevel) => {
       switch (userSelectLevel.toLowerCase()) {
-        case 'staff':
+        case "staff":
           return staffSelectDropdown;
-        case 'leader':
+        case "leader":
           return leaderSelectDropdown;
-        case 'supervisor':
+        case "supervisor":
           return supervisorSelectDropdown;
-        case 'manager':
+        case "manager":
           return managerSelectDropdown;
-        case 'head':
+        case "head":
           return headSelectDropdown;
         default:
           return;
@@ -1157,22 +1172,22 @@ class EditForm extends React.Component {
           required={true}
           onChange={(e) =>
             this.setState({
-              searchValue: e.target.value
+              searchValue: e.target.value,
             })
           }
         >
           <option selected disabled hidden>
             Pilih {this.state.searchBy}
           </option>
-          {this.state.searchBy === 'leader'
+          {this.state.searchBy === "leader"
             ? daftarLevel.map((x, i) => (
-                <option key={i} value={x.get('level')}>
-                  {x.get('level')}
+                <option key={i} value={x.get("level")}>
+                  {x.get("level")}
                 </option>
               ))
             : this.state.daftarPosisi.map((x, i) => (
-                <option key={i} value={x.get('position')}>
-                  {x.get('position')}
+                <option key={i} value={x.get("position")}>
+                  {x.get("position")}
                 </option>
               ))}
         </Input>
@@ -1184,11 +1199,15 @@ class EditForm extends React.Component {
         <Input
           type="text"
           className="form-control-alternative"
-          disabled={this.state.searchBy === 'all'}
-          placeholder={this.state.searchBy === 'all' ? '' : `Masukkan ${this.state.searchBy}`}
+          disabled={this.state.searchBy === "all"}
+          placeholder={
+            this.state.searchBy === "all"
+              ? ""
+              : `Masukkan ${this.state.searchBy}`
+          }
           onChange={(e) =>
             this.setState({
-              searchValue: e.target.value
+              searchValue: e.target.value,
             })
           }
         />
@@ -1207,7 +1226,7 @@ class EditForm extends React.Component {
                 color={this.state.color}
                 message={this.state.message}
                 open={this.state.visible}
-                togglez={() => this.toggle('visible')}
+                togglez={() => this.toggle("visible")}
               />
               <Card className="bg-secondary shadow">
                 <CardHeader className="bg-white border-0">
@@ -1225,21 +1244,34 @@ class EditForm extends React.Component {
                   </Row>
                 </CardHeader>
                 <CardBody>
-                  <Form onSubmit={(e) => this.handleUpdate(e)} autoComplete="off">
-                    <h6 className="heading-small text-muted mb-4">User information</h6>
+                  <Form
+                    onSubmit={(e) => this.handleUpdate(e)}
+                    autoComplete="off"
+                  >
+                    <h6 className="heading-small text-muted mb-4">
+                      User information
+                    </h6>
                     <div className="pl-lg-4">
                       <Row>
                         <Col lg="6">
                           <FormGroup controlId="formCategory">
-                            <Label className="form-control-label">Foto wajah</Label>
-                            <Input type="file" label="Foto wajah" onChange={this.handleFace} />
+                            <Label className="form-control-label">
+                              Foto wajah
+                            </Label>
+                            <Input
+                              type="file"
+                              label="Foto wajah"
+                              onChange={this.handleFace}
+                            />
                             <FormText
-                              className={loadingReco ? 'text-muted' : ''}
+                              className={loadingReco ? "text-muted" : ""}
                               style={{
-                                color: `${this.state.statusReco == 0 ? 'red' : 'green'}`
+                                color: `${
+                                  this.state.statusReco == 0 ? "red" : "green"
+                                }`,
                               }}
                             >
-                              {loadingReco ? 'processing...' : message}
+                              {loadingReco ? "processing..." : message}
                             </FormText>
                           </FormGroup>
                         </Col>
@@ -1263,7 +1295,10 @@ class EditForm extends React.Component {
                         </Col> */}
                         <Col lg="6">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-email">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-email"
+                            >
                               Email address
                             </label>
                             <Input
@@ -1272,7 +1307,9 @@ class EditForm extends React.Component {
                               placeholder="email@kamu.com"
                               type="email"
                               value={email}
-                              onChange={(e) => this.setState({ email: e.target.value })}
+                              onChange={(e) =>
+                                this.setState({ email: e.target.value })
+                              }
                             />
                           </FormGroup>
                         </Col>
@@ -1280,7 +1317,10 @@ class EditForm extends React.Component {
                       <Row>
                         <Col lg="12">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-first-name">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-first-name"
+                            >
                               Full Name
                             </label>
                             <Input
@@ -1289,7 +1329,9 @@ class EditForm extends React.Component {
                               placeholder="Nama lengkap"
                               type="text"
                               value={name}
-                              onChange={(e) => this.setState({ name: e.target.value })}
+                              onChange={(e) =>
+                                this.setState({ name: e.target.value })
+                              }
                             />
                           </FormGroup>
                         </Col>
@@ -1311,7 +1353,10 @@ class EditForm extends React.Component {
                       <Row>
                         <Col lg="6">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-password">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-password"
+                            >
                               Password
                             </label>
                             <Input
@@ -1321,13 +1366,18 @@ class EditForm extends React.Component {
                               placeholder="Masukkan password jika ingin mengubah"
                               type="password"
                               minLength={8}
-                              onChange={(e) => this.setState({ password: e.target.value })}
+                              onChange={(e) =>
+                                this.setState({ password: e.target.value })
+                              }
                             />
                           </FormGroup>
                         </Col>
                         <Col lg="6">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-imei">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-imei"
+                            >
                               IMEI
                             </label>
                             <Input
@@ -1336,7 +1386,9 @@ class EditForm extends React.Component {
                               placeholder="IMEI Hp"
                               type="text"
                               value={imei}
-                              onChange={(e) => this.setState({ imei: e.target.value })}
+                              onChange={(e) =>
+                                this.setState({ imei: e.target.value })
+                              }
                             />
                           </FormGroup>
                         </Col>
@@ -1344,12 +1396,17 @@ class EditForm extends React.Component {
                     </div>
                     <hr className="my-4" />
                     {/* Address */}
-                    <h6 className="heading-small text-muted mb-4">Job information</h6>
+                    <h6 className="heading-small text-muted mb-4">
+                      Job information
+                    </h6>
                     <div className="pl-lg-4">
                       <Row>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-address">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-address"
+                            >
                               NIK
                             </label>
                             <Input
@@ -1359,13 +1416,18 @@ class EditForm extends React.Component {
                               placeholder="NIK Karyawan"
                               type="text"
                               value={nik}
-                              onChange={(e) => this.setState({ nik: e.target.value })}
+                              onChange={(e) =>
+                                this.setState({ nik: e.target.value })
+                              }
                             />
                           </FormGroup>
                         </Col>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-address">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-address"
+                            >
                               Level
                             </label>
                             <Input
@@ -1374,17 +1436,20 @@ class EditForm extends React.Component {
                               required={true}
                               onChange={(e) =>
                                 this.setState({
-                                  level: e.target.value
+                                  level: e.target.value,
                                 })
                               }
                             >
                               {daftarLevel.map((x, i) => (
                                 <option
-                                  selected={level.toLowerCase() === x.get('level').toLowerCase()}
+                                  selected={
+                                    level.toLowerCase() ===
+                                    x.get("level").toLowerCase()
+                                  }
                                   key={i}
-                                  value={x.get('level')}
+                                  value={x.get("level")}
                                 >
-                                  {x.get('level')}
+                                  {x.get("level")}
                                 </option>
                               ))}
                             </Input>
@@ -1392,7 +1457,10 @@ class EditForm extends React.Component {
                         </Col>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-address">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-address"
+                            >
                               Tipe karyawan
                             </label>
                             <Input
@@ -1401,19 +1469,20 @@ class EditForm extends React.Component {
                               required={true}
                               onChange={(e) =>
                                 this.setState({
-                                  tipeKaryawan: e.target.value
+                                  tipeKaryawan: e.target.value,
                                 })
                               }
                             >
                               {daftarTipe.map((x, i) => (
                                 <option
                                   selected={
-                                    tipeKaryawan.toLowerCase() === x.get('tipe').toLowerCase()
+                                    tipeKaryawan.toLowerCase() ===
+                                    x.get("tipe").toLowerCase()
                                   }
                                   key={i}
-                                  value={x.get('tipe')}
+                                  value={x.get("tipe")}
                                 >
-                                  {x.get('tipe')}
+                                  {x.get("tipe")}
                                 </option>
                               ))}
                             </Input>
@@ -1423,7 +1492,10 @@ class EditForm extends React.Component {
                       <Row>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-posisi">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-posisi"
+                            >
                               Posisi kerja
                             </label>
                             <Input
@@ -1431,18 +1503,21 @@ class EditForm extends React.Component {
                               id="input-posisi"
                               type="select"
                               onChange={(e) =>
-                                this.setState({ posisi: e.target.value.toUpperCase() })
+                                this.setState({
+                                  posisi: e.target.value.toUpperCase(),
+                                })
                               }
                             >
                               {daftarPosisi.map((x, i) => (
                                 <option
                                   selected={
-                                    posisi.toLowerCase() === x.get('position').toLowerCase()
+                                    posisi.toLowerCase() ===
+                                    x.get("position").toLowerCase()
                                   }
                                   key={i}
-                                  value={x.get('position')}
+                                  value={x.get("position")}
                                 >
-                                  {x.get('position')}
+                                  {x.get("position")}
                                 </option>
                               ))}
                             </Input>
@@ -1450,7 +1525,10 @@ class EditForm extends React.Component {
                         </Col>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-jam-kerja">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-jam-kerja"
+                            >
                               Jam kerja
                             </label>
                             <Input
@@ -1459,24 +1537,31 @@ class EditForm extends React.Component {
                               type="select"
                               onChange={(e) =>
                                 this.setState({
-                                  jamKerja: e.target.value
+                                  jamKerja: e.target.value,
                                 })
                               }
                             >
-                              {['Jam tetap', 'Jam fleksibel', 'Jam bebas'].map((x) => (
-                                <option
-                                  selected={jamKerja.toLowerCase() === x.toLowerCase()}
-                                  value={x}
-                                >
-                                  {x}
-                                </option>
-                              ))}
+                              {["Jam tetap", "Jam fleksibel", "Jam bebas"].map(
+                                (x) => (
+                                  <option
+                                    selected={
+                                      jamKerja.toLowerCase() === x.toLowerCase()
+                                    }
+                                    value={x}
+                                  >
+                                    {x}
+                                  </option>
+                                )
+                              )}
                             </Input>
                           </FormGroup>
                         </Col>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-lokasi">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-lokasi"
+                            >
                               Lokasi kerja
                             </label>
                             <Input
@@ -1485,13 +1570,16 @@ class EditForm extends React.Component {
                               type="select"
                               onChange={(e) =>
                                 this.setState({
-                                  lokasiKerja: e.target.value
+                                  lokasiKerja: e.target.value,
                                 })
                               }
                             >
-                              {['Tetap', 'Bebas (mobile)'].map((x) => (
+                              {["Tetap", "Bebas (mobile)"].map((x) => (
                                 <option
-                                  selected={lokasiKerja.toLowerCase() === x.toLowerCase()}
+                                  selected={
+                                    lokasiKerja.toLowerCase() ===
+                                    x.toLowerCase()
+                                  }
                                   value={x}
                                 >
                                   {x}
@@ -1504,7 +1592,10 @@ class EditForm extends React.Component {
                       <Row>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-lembur">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-lembur"
+                            >
                               Lembur ?
                             </label>
                             <Input
@@ -1513,13 +1604,15 @@ class EditForm extends React.Component {
                               type="select"
                               onChange={(e) =>
                                 this.setState({
-                                  lembur: e.target.value
+                                  lembur: e.target.value,
                                 })
                               }
                             >
-                              {['Ya', 'Tidak'].map((x) => (
+                              {["Ya", "Tidak"].map((x) => (
                                 <option
-                                  selected={lembur.toLowerCase() === x.toLowerCase()}
+                                  selected={
+                                    lembur.toLowerCase() === x.toLowerCase()
+                                  }
                                   value={x}
                                 >
                                   {x}
@@ -1530,7 +1623,10 @@ class EditForm extends React.Component {
                         </Col>
                         <Col lg="4">
                           <FormGroup>
-                            <label className="form-control-label" htmlFor="input-cuti">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-cuti"
+                            >
                               Jumlah Cuti
                             </label>
                             <Input
@@ -1540,18 +1636,21 @@ class EditForm extends React.Component {
                               value={jumlahCuti}
                               onChange={(e) =>
                                 this.setState({
-                                  jumlahCuti: e.target.value
+                                  jumlahCuti: e.target.value,
                                 })
                               }
                             ></Input>
                           </FormGroup>
                         </Col>
                       </Row>
-                      {this.state.jamKerja !== '' && this.state.jamKerja !== 'Jam bebas' ? (
+                      {this.state.jamKerja !== "" &&
+                      this.state.jamKerja !== "Jam bebas" ? (
                         <Row>
                           <Col lg="12">
                             <FormGroup controlId="formJam">
-                              <Label className="form-control-label">Jam masuk dan keluar</Label>
+                              <Label className="form-control-label">
+                                Jam masuk dan keluar
+                              </Label>
                               <Row>
                                 <Col md={4}>
                                   <Input
@@ -1562,7 +1661,7 @@ class EditForm extends React.Component {
                                     placeholder="Jam Masuk"
                                     onChange={(e) =>
                                       this.setState({
-                                        jamMasuk: e.target.value
+                                        jamMasuk: e.target.value,
                                       })
                                     }
                                   />
@@ -1576,7 +1675,7 @@ class EditForm extends React.Component {
                                     value={this.state.jamKeluar}
                                     onChange={(e) =>
                                       this.setState({
-                                        jamKeluar: e.target.value
+                                        jamKeluar: e.target.value,
                                       })
                                     }
                                   />
@@ -1586,29 +1685,33 @@ class EditForm extends React.Component {
                           </Col>
                         </Row>
                       ) : (
-                        ''
+                        ""
                       )}
-                      {this.state.lokasiKerja === 'Tetap' ? (
+                      {this.state.lokasiKerja === "Tetap" ? (
                         <Row>
                           <Col lg="4">
                             <FormGroup controlId="formPoint">
-                              <Label className="form-control-label">Absen point</Label>
+                              <Label className="form-control-label">
+                                Absen point
+                              </Label>
                               <Input
                                 className="form-control-alternative"
                                 type="select"
                                 required={true}
                                 onChange={(e) =>
                                   this.setState({
-                                    idPoint: e.target.value
+                                    idPoint: e.target.value,
                                   })
                                 }
                               >
                                 {daftarPoint.map((x) => (
                                   <option
-                                    selected={this.state.absenPointObject.id === x.id}
+                                    selected={
+                                      this.state.absenPointObject.id === x.id
+                                    }
                                     value={x.id}
                                   >
-                                    {x.get('placeName')}
+                                    {x.get("placeName")}
                                   </option>
                                 ))}
                               </Input>
@@ -1616,28 +1719,30 @@ class EditForm extends React.Component {
                           </Col>
                         </Row>
                       ) : (
-                        ''
+                        ""
                       )}
                     </div>
 
-                    {this.state.level !== '' &&
-                    this.state.level.toLowerCase() !== 'gm' &&
-                    this.state.level.toLowerCase() !== 'admin' ? (
+                    {this.state.level !== "" &&
+                    this.state.level.toLowerCase() !== "gm" &&
+                    this.state.level.toLowerCase() !== "admin" ? (
                       <React.Fragment>
                         <hr className="my-4" />
-                        <h6 className="heading-small text-muted mb-4">Choose leader</h6>
+                        <h6 className="heading-small text-muted mb-4">
+                          Choose leader
+                        </h6>
                         <div className="pl-lg-4">
                           {getDropdownByLevel(this.state.level.toLowerCase())}
                         </div>
                       </React.Fragment>
                     ) : (
-                      ''
+                      ""
                     )}
 
                     <div className="pl-lg-4">
                       <Row className="mt-2">
                         <Col lg="12">
-                          <Button block color={'primary'} type="submit">
+                          <Button block color={"primary"} type="submit">
                             {this.state.loadingModal ? (
                               <div>
                                 <Spinner
@@ -1646,11 +1751,11 @@ class EditForm extends React.Component {
                                   size="sm"
                                   role="status"
                                   aria-hidden="true"
-                                />{' '}
+                                />{" "}
                                 Submitting...
                               </div>
                             ) : (
-                              'Submit'
+                              "Submit"
                             )}
                           </Button>
                         </Col>

@@ -15,16 +15,16 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from 'react';
+import React from "react";
 // node.js library that concatenates classes (strings)
-import classnames from 'classnames';
+import classnames from "classnames";
 // javascipt plugin for creating charts
-import Chart from 'chart.js';
+import Chart from "chart.js";
 // react plugin used to create charts
-import { Line, Bar } from 'react-chartjs-2';
+import { Line, Bar } from "react-chartjs-2";
 // Parse library
-import Parse from 'parse';
-import moment from 'moment';
+import Parse from "parse";
+import moment from "moment";
 // reactstrap components
 import {
   Button,
@@ -40,27 +40,32 @@ import {
   Row,
   Col,
   Spinner,
-  UncontrolledTooltip
-} from 'reactstrap';
+  UncontrolledTooltip,
+} from "reactstrap";
 
 // core components
-import { chartOptions, parseOptions, chartExample1, chartExample2 } from 'variables/charts.js';
+import {
+  chartOptions,
+  parseOptions,
+  chartExample1,
+  chartExample2,
+} from "variables/charts.js";
 
-import LeaderHeader from 'components/Headers/LeaderHeader.js';
-import { getUsername } from 'utils';
-import { getLeaderId } from 'utils';
-import { Link } from 'react-router-dom';
-import { convertDate } from 'utils';
-import Maps from './Maps';
-import MapsDashboard from './MapsDashboard';
-import { getUserRole } from 'utils';
+import LeaderHeader from "components/Headers/LeaderHeader.js";
+import { getUsername } from "utils";
+import { getLeaderId } from "utils";
+import { Link } from "react-router-dom";
+import { convertDate } from "utils";
+import Maps from "./Maps";
+import MapsDashboard from "./MapsDashboard";
+import { getUserRole } from "utils";
 
 class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       activeNav: 1,
-      chartExample1Data: 'data1',
+      chartExample1Data: "data1",
       totalAbsen: 0,
       totalTerlambat: 0,
       totalIzin: 0,
@@ -72,7 +77,7 @@ class Index extends React.Component {
       totalStaff: 0,
       absence: [],
       daftarStaff: [],
-      late: []
+      late: [],
     };
     if (window.Chart) {
       parseOptions(Chart, chartOptions());
@@ -80,16 +85,18 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    this.getDaftarAbsenByLevel();
-    this.getDaftarStaff();
-    this.getDaftarAbsenLate();
+    this.getDaftarAbsenByLevel2();
+    this.getDaftarStaffByLevel();
+    // this.getDaftarStaff();
+    // this.getDaftarAbsenLate();
   }
 
   toggleNavs = (e, index) => {
     e.preventDefault();
     this.setState({
       activeNav: index,
-      chartExample1Data: this.state.chartExample1Data === 'data1' ? 'data2' : 'data1'
+      chartExample1Data:
+        this.state.chartExample1Data === "data1" ? "data2" : "data1",
     });
   };
 
@@ -97,13 +104,13 @@ class Index extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+    query.equalTo("leaderIdNew", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
     });
     // query.notContainedIn("roles", ["admin", "leader"]);
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
 
     query
       .find({ useMasterKey: true })
@@ -115,44 +122,180 @@ class Index extends React.Component {
       });
   };
 
+  // Query Staff
+  queryStaffByLevel = (rolesIdKey, containedRoles) => {
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    query.equalTo(rolesIdKey, {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
+    });
+    // query.notContainedIn("roles", ["admin", "leader"]);
+    query.containedIn("roles", containedRoles);
+
+    query
+      .find({ useMasterKey: true })
+      .then((x) => {
+        this.setState({ daftarStaff: x });
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  };
+
+  getDaftarStaffByLevel = (userRole = getUserRole()) => {
+    switch (userRole) {
+      case "leader":
+        this.queryStaffByLevel("leaderIdNew", ["staff"]);
+        break;
+      case "supervisor":
+        this.queryStaffByLevel("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryStaffByLevel("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryStaffByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryStaffByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+          "head",
+        ]);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  // Query Absen Level
+  queryAbsenByLevel = (rolesIDKey, containedRoles) => {
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+    hierarkiQuery.containedIn("roles", containedRoles);
+    hierarkiQuery.equalTo(rolesIDKey, {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
+    });
+
+    const Absence = Parse.Object.extend("Absence");
+    const query = new Parse.Query(Absence);
+
+    const d = new Date();
+    const start = new moment(d);
+    start.startOf("day");
+    const finish = new moment(start);
+    finish.add(1, "day");
+
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    query.ascending("absenMasuk");
+    query.greaterThanOrEqualTo("createdAt", start.toDate());
+    query.lessThan("createdAt", finish.toDate());
+    query.matchesQuery("user", hierarkiQuery);
+    query.include("user");
+    query
+      .find()
+      .then((x) => {
+        console.log("user", x);
+        this.setState({ absence: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
+  getDaftarAbsenByLevel2 = () => {
+    this.setState({ loading: true });
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryAbsenByLevel("leaderIdNew", ["staff"]);
+        break;
+      case "supervisor":
+        this.queryAbsenByLevel("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryAbsenByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryAbsenByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+          "head",
+        ]);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   getDaftarAbsenByLevel = () => {
     this.setState({ loading: true });
     const userRole = getUserRole();
 
     switch (userRole) {
-      case 'leader':
+      case "leader":
         const hierarki = new Parse.User();
         const hierarkiQuery = new Parse.Query(hierarki);
-        hierarkiQuery.containedIn('roles', ['staff', 'Staff']);
-        hierarkiQuery.equalTo('leaderIdNew', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: getLeaderId()
+        hierarkiQuery.containedIn("roles", ["staff", "Staff"]);
+        hierarkiQuery.equalTo("leaderIdNew", {
+          __type: "Pointer",
+          className: "_User",
+          objectId: getLeaderId(),
         });
 
-        const Absence = Parse.Object.extend('Absence');
+        const Absence = Parse.Object.extend("Absence");
         const query = new Parse.Query(Absence);
 
         const d = new Date();
         const start = new moment(d);
-        start.startOf('day');
+        start.startOf("day");
         const finish = new moment(start);
-        finish.add(1, 'day');
+        finish.add(1, "day");
 
         // query.equalTo('leaderIdNew', {
         //   __type: 'Pointer',
         //   className: '_User',
         //   objectId: getLeaderId()
         // });
-        query.ascending('absenMasuk');
-        query.greaterThanOrEqualTo('createdAt', start.toDate());
-        query.lessThan('createdAt', finish.toDate());
-        query.matchesQuery('user', hierarkiQuery);
-        query.include('user');
+        query.ascending("absenMasuk");
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
+        query.matchesQuery("user", hierarkiQuery);
+        query.include("user");
         query
           .find()
           .then((x) => {
-            console.log('user', x);
+            console.log("user", x);
             this.setState({ absence: x, loading: false });
           })
           .catch((err) => {
@@ -160,13 +303,13 @@ class Index extends React.Component {
             this.setState({ loading: false });
           });
         break;
-      case 'supervisor':
+      case "supervisor":
         break;
-      case 'manager':
+      case "manager":
         break;
-      case 'head':
+      case "head":
         break;
-      case 'gm':
+      case "gm":
         break;
 
       default:
@@ -210,35 +353,35 @@ class Index extends React.Component {
     //     this.setState({ loading: false });
     //   });
     this.setState({ loading: true });
-    const Absence = new Parse.Object.extend('Absence');
+    const Absence = new Parse.Object.extend("Absence");
     // const Leader = Parse.Object.extend("Leader");
     // const leader = new Leader();
     const query = new Parse.Query(Absence);
 
     const d = new Date();
     const start = new moment(d);
-    start.startOf('day');
+    start.startOf("day");
     const finish = new moment(start);
-    finish.add(1, 'day');
+    finish.add(1, "day");
 
-    console.log('leaderid', getLeaderId());
+    console.log("leaderid", getLeaderId());
 
     // leader.id = Parse.User.current().get("leaderId").id;
     // query.equalTo("leaderId", leader);
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+    query.equalTo("leaderIdNew", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
     });
-    query.ascending('absenMasuk');
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
-    query.include('user');
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.ascending("absenMasuk");
+    query.greaterThanOrEqualTo("createdAt", start.toDate());
+    query.lessThan("createdAt", finish.toDate());
+    query.include("user");
+    query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
     query
       .find()
       .then((x) => {
-        console.log('user', x);
+        console.log("user", x);
         this.setState({ absence: x, loading: false });
       })
       .catch((err) => {
@@ -248,29 +391,29 @@ class Index extends React.Component {
 
   getDaftarAbsenLate = () => {
     this.setState({ loading: true });
-    const Late = new Parse.Object.extend('Late');
+    const Late = new Parse.Object.extend("Late");
     const query = new Parse.Query(Late);
 
     const d = new Date();
     const start = new moment(d);
-    start.startOf('day');
+    start.startOf("day");
     const finish = new moment(start);
-    finish.add(1, 'day');
+    finish.add(1, "day");
 
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+    query.equalTo("leaderIdNew", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
     });
-    query.ascending('createdAt');
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
-    query.include('user');
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.ascending("createdAt");
+    query.greaterThanOrEqualTo("createdAt", start.toDate());
+    query.lessThan("createdAt", finish.toDate());
+    query.include("user");
+    query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
     query
       .find()
       .then((x) => {
-        console.log('lateeee', x);
+        console.log("lateeee", x);
         this.setState({ late: x, loading: false });
       })
       .catch((err) => {
@@ -316,21 +459,21 @@ class Index extends React.Component {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <td colSpan={4} style={{ textAlign: 'center' }}>
+                      <td colSpan={4} style={{ textAlign: "center" }}>
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{' '}
+                        />{" "}
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{' '}
+                        />{" "}
                         <Spinner
                           as="span"
                           animation="grow"
@@ -340,16 +483,16 @@ class Index extends React.Component {
                         />
                       </td>
                     ) : daftarStaff.length < 1 ? (
-                      <td colSpan={4} style={{ textAlign: 'center' }}>
+                      <td colSpan={4} style={{ textAlign: "center" }}>
                         No data found...
                       </td>
                     ) : (
                       daftarStaff.map((prop, key) => (
                         <tr>
-                          <td>{prop.get('nik')}</td>
-                          <td>{prop.get('fullname')}</td>
-                          <td>{prop.get('jumlahCuti')}</td>
-                          <td>{prop.get('email')}</td>
+                          <td>{prop.get("nik")}</td>
+                          <td>{prop.get("fullname")}</td>
+                          <td>{prop.get("jumlahCuti")}</td>
+                          <td>{prop.get("email")}</td>
                         </tr>
                       ))
                     )}
@@ -366,7 +509,7 @@ class Index extends React.Component {
                       <h3 className="mb-0">Data Absen</h3>
                     </div>
                     <div className="col text-right">
-                      <Link to="/admin/data-absen">
+                      <Link to="/leader/data-absen">
                         <Button
                           color="primary"
                           // href="#pablo"
@@ -376,7 +519,7 @@ class Index extends React.Component {
                           See all
                         </Button>
                       </Link>
-                      {console.log('leaderIdNewNew', getLeaderId())}
+                      {/* {console.log('leaderIdNewNew', getLeaderId())}
                       <Link to="/admin/maps/iIoJF9pqc6" className="ml-2">
                         <Button
                           color="primary"
@@ -386,7 +529,7 @@ class Index extends React.Component {
                         >
                           View Location
                         </Button>
-                      </Link>
+                      </Link> */}
                     </div>
                   </Row>
                 </CardHeader>
@@ -402,21 +545,21 @@ class Index extends React.Component {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <td colSpan={4} style={{ textAlign: 'center' }}>
+                      <td colSpan={4} style={{ textAlign: "center" }}>
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{' '}
+                        />{" "}
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{' '}
+                        />{" "}
                         <Spinner
                           as="span"
                           animation="grow"
@@ -426,31 +569,39 @@ class Index extends React.Component {
                         />
                       </td>
                     ) : absence.length < 1 ? (
-                      <td colSpan={4} style={{ textAlign: 'center' }}>
+                      <td colSpan={4} style={{ textAlign: "center" }}>
                         No data found...
                       </td>
                     ) : (
                       absence.map((prop, key) => (
                         <tr>
-                          <td>{prop.get('user').attributes.nik}</td>
-                          <td>{prop.get('fullname')}</td>
+                          <td>{prop.get("user").attributes.nik}</td>
+                          <td>{prop.get("fullname")}</td>
                           <td>
-                            {prop.get('lateTimes') !== undefined
-                              ? `${convertDate(prop.get('lateTimes'), 'HH:mm')}`
-                              : prop.get('absenMasuk') === undefined
-                              ? ''
-                              : convertDate(prop.get('absenMasuk'), 'HH:mm')}
+                            {prop.get("lateTimes") !== undefined
+                              ? `${convertDate(prop.get("lateTimes"), "HH:mm")}`
+                              : prop.get("absenMasuk") === undefined
+                              ? ""
+                              : convertDate(prop.get("absenMasuk"), "HH:mm")}
                           </td>
                           <td
                             style={{
-                              color: prop.get('lateTimes') !== undefined ? 'red' : 'green'
+                              color:
+                                prop.get("lateTimes") !== undefined
+                                  ? "red"
+                                  : "green",
                             }}
                           >
                             {/* {convertDate(prop.get("absenKeluar"), "HH:mm")} */}
-                            {prop.get('lateTimes') !== undefined ? `Terlambat` : `Tepat Waktu`}
+                            {prop.get("lateTimes") !== undefined
+                              ? `Terlambat`
+                              : `Tepat Waktu`}
                           </td>
                           <td>
-                            <Link className="mr-2" to={`/admin/maps/${prop.get('user').id}`}>
+                            <Link
+                              className="mr-2"
+                              to={`/leader/maps/${prop.get("user").id}`}
+                            >
                               <Button
                                 id="t4"
                                 color="yellow"
@@ -464,7 +615,11 @@ class Index extends React.Component {
                               >
                                 <i className="fa fa-eye" />
                               </Button>
-                              <UncontrolledTooltip delay={0} placement="top" target="t4">
+                              <UncontrolledTooltip
+                                delay={0}
+                                placement="top"
+                                target="t4"
+                              >
                                 Lihat detail
                               </UncontrolledTooltip>
                             </Link>
@@ -480,7 +635,7 @@ class Index extends React.Component {
                   <MapsDashboard />
                 </Card>
               ) : (
-                ''
+                ""
               )}
             </Col>
           </Row>
@@ -489,7 +644,7 @@ class Index extends React.Component {
               <MapsDashboard />
             </Card>
           ) : (
-            ''
+            ""
           )}
         </Container>
       </React.Fragment>

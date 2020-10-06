@@ -15,10 +15,10 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from 'react';
+import React from "react";
 
 // react plugin used to create datetimepicker
-import ReactDatetime from 'react-datetime';
+import ReactDatetime from "react-datetime";
 
 // reactstrap components
 import {
@@ -47,19 +47,19 @@ import {
   Form,
   FormGroup,
   Input,
-  Col
-} from 'reactstrap';
+  Col,
+} from "reactstrap";
 // core components
 // import Header from "components/Headers/Header.js";
-import Parse from 'parse';
-import moment from 'moment';
-import { getLeaderId } from 'utils';
-import ModalHandler from 'components/Modal/Modal';
-import { handleSelect } from 'utils';
-import HeaderNormal from 'components/Headers/HeaderNormal';
-import { padStart } from 'lodash';
-import Alerts from 'components/Alert/Alert';
-import { getUserRole } from 'utils';
+import Parse from "parse";
+import moment from "moment";
+import { getLeaderId } from "utils";
+import ModalHandler from "components/Modal/Modal";
+import { handleSelect } from "utils";
+import HeaderNormal from "components/Headers/HeaderNormal";
+import { padStart } from "lodash";
+import Alerts from "components/Alert/Alert";
+import { getUserRole } from "utils";
 
 class PulangCepat extends React.Component {
   constructor(props) {
@@ -71,17 +71,17 @@ class PulangCepat extends React.Component {
       rejectMode: false,
       counter: 0,
       loadingModal: false,
-      fullnames: '',
+      fullnames: "",
       userIndex: 0,
-      userId: '',
-      reason: '',
+      userId: "",
+      reason: "",
       checkId: [],
       approveAllMode: false,
       rejectAllMode: false,
-      startDate: '',
-      messageApprove: '',
+      startDate: "",
+      messageApprove: "",
       alerts: 2,
-      status: 3
+      status: 3,
     };
   }
 
@@ -92,55 +92,55 @@ class PulangCepat extends React.Component {
   queryEarlyLeavesByLevel = (
     rolesIDKey,
     containedRoles,
-    startDate = 'today',
-    filterType = 'day',
+    startDate = "today",
+    filterType = "day",
     status = this.state.status
   ) => {
     // contained roles must be array
-    const Absence = new Parse.Object.extend('Absence');
+    const Absence = new Parse.Object.extend("Absence");
     const query = new Parse.Query(Absence);
 
     if (parseInt(this.state.statusWaktu) === 4) {
       const d = new Date();
       const start = new moment(this.state.startDate);
-      start.startOf('day');
+      start.startOf("day");
       const finish = new moment(start);
-      finish.add(1, 'day');
-      query.exists('earlyTimes');
-      query.greaterThanOrEqualTo('earlyTimes', start.toDate());
-      query.lessThan('earlyTimes', finish.toDate());
+      finish.add(1, "day");
+      query.exists("earlyTimes");
+      query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+      query.lessThan("earlyTimes", finish.toDate());
     }
     if (parseInt(this.state.statusWaktu) === 5) {
       const d = new Date();
       const start = new moment(this.state.startDate);
-      start.startOf('week');
+      start.startOf("week");
       const finish = new moment(start);
-      finish.add(1, 'week');
-      query.exists('earlyTimes');
-      query.greaterThanOrEqualTo('earlyTimes', start.toDate());
-      query.lessThan('earlyTimes', finish.toDate());
+      finish.add(1, "week");
+      query.exists("earlyTimes");
+      query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+      query.lessThan("earlyTimes", finish.toDate());
     }
     if (parseInt(this.state.statusWaktu) === 6) {
       const d = new Date();
       const start = new moment(this.state.startDate);
-      start.startOf('month');
+      start.startOf("month");
       const finish = new moment(start);
-      finish.add(1, 'month');
-      query.exists('earlyTimes');
-      query.greaterThanOrEqualTo('earlyTimes', start.toDate());
-      query.lessThan('earlyTimes', finish.toDate());
+      finish.add(1, "month");
+      query.exists("earlyTimes");
+      query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+      query.lessThan("earlyTimes", finish.toDate());
     }
     if (parseInt(this.state.status) === 3 || status === 3) {
-      if (startDate !== 'today') {
-      } else if (startDate === 'today') {
+      if (startDate !== "today") {
+      } else if (startDate === "today") {
         const d = new Date();
         const start = new moment(d);
         start.startOf(filterType);
         const finish = new moment(start);
         finish.add(1, filterType);
-        query.exists('earlyTimes');
-        query.greaterThanOrEqualTo('earlyTimes', start.toDate());
-        query.lessThan('earlyTimes', finish.toDate());
+        query.exists("earlyTimes");
+        query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+        query.lessThan("earlyTimes", finish.toDate());
       }
       // const d = new Date();
       // const start = new moment(d);
@@ -153,28 +153,31 @@ class PulangCepat extends React.Component {
       // query.descending('createdAt');
       // query.equalTo('approvalLate', 3);
     }
-    if (parseInt(this.state.status) === 1 || parseInt(this.state.status) === 0) {
-      query.descending('updatedAt');
-      query.exists('earlyTImes');
+    if (
+      parseInt(this.state.status) === 1 ||
+      parseInt(this.state.status) === 0
+    ) {
+      query.descending("updatedAt");
+      query.exists("earlyTimes");
     }
 
-    query.exists('earlyTimes');
+    query.exists("earlyTimes");
     query.equalTo(rolesIDKey, {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
     });
-    query.notContainedIn('roles', containedRoles);
+    query.notContainedIn("roles", containedRoles);
     // if (
     //   parseInt(this.state.status) === 1 ||
     //   parseInt(this.state.status) === 0
     // ) {
-    query.equalTo('approvalEarly', status);
+    query.equalTo("approvalEarly", status);
     // }
     // query.equalTo("status", parseInt(this.state.status));
     // query.greaterThanOrEqualTo("createdAt", start.toDate());
     // query.lessThan("createdAt", finish.toDate());
-    query.include('user');
+    query.include("user");
     query
       .find()
       .then((x) => {
@@ -189,46 +192,52 @@ class PulangCepat extends React.Component {
   };
 
   getDataByLevel = (
-    startDate = 'today',
+    startDate = "today",
     userRole = getUserRole(),
-    filterType = 'day',
+    filterType = "day",
     status = this.state.status
   ) => {
     switch (userRole) {
-      case 'leader':
-        this.queryEarlyLeavesByLevel('leaderIdNew', ['staff'], startDate, filterType, status);
-        break;
-      case 'supervisor':
+      case "leader":
         this.queryEarlyLeavesByLevel(
-          'supervisorID',
-          ['staff', 'leader'],
+          "leaderIdNew",
+          ["staff"],
           startDate,
           filterType,
           status
         );
         break;
-      case 'manager':
+      case "supervisor":
         this.queryEarlyLeavesByLevel(
-          'managerID',
-          ['staff', 'leader', 'supervisor'],
+          "supervisorID",
+          ["staff", "leader"],
           startDate,
           filterType,
           status
         );
         break;
-      case 'head':
+      case "manager":
         this.queryEarlyLeavesByLevel(
-          'headID',
-          ['staff', 'leader', 'supervisor', 'manager'],
+          "managerID",
+          ["staff", "leader", "supervisor"],
           startDate,
           filterType,
           status
         );
         break;
-      case 'gm':
+      case "head":
         this.queryEarlyLeavesByLevel(
-          'headID',
-          ['staff', 'leader', 'supervisor', 'manager', 'head'],
+          "headID",
+          ["staff", "leader", "supervisor", "manager"],
+          startDate,
+          filterType,
+          status
+        );
+        break;
+      case "gm":
+        this.queryEarlyLeavesByLevel(
+          "headID",
+          ["staff", "leader", "supervisor", "manager", "head"],
           startDate,
           filterType,
           status
@@ -242,26 +251,26 @@ class PulangCepat extends React.Component {
 
   getData = () => {
     this.setState({ loading: true });
-    const Absence = Parse.Object.extend('Absence');
+    const Absence = Parse.Object.extend("Absence");
     const query = new Parse.Query(Absence);
 
     const d = new Date();
     const start = new moment(d);
-    start.startOf('day');
+    start.startOf("day");
     const finish = new moment(start);
-    finish.add(1, 'day');
+    finish.add(1, "day");
 
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+    query.equalTo("leaderIdNew", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
     });
-    query.exists('earlyTimes');
-    query.descending('createdAt');
-    query.equalTo('approvalEarly', 3);
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
+    query.exists("earlyTimes");
+    query.descending("createdAt");
+    query.equalTo("approvalEarly", 3);
+    query.greaterThanOrEqualTo("createdAt", start.toDate());
+    query.lessThan("createdAt", finish.toDate());
+    query.notContainedIn("roles", ["admin", "Admin", "Leader", "leader"]);
     query
       .find()
       .then((x) => {
@@ -278,7 +287,12 @@ class PulangCepat extends React.Component {
   handleFilter = (e) => {
     e.preventDefault();
     this.setState({ loading: true });
-    this.getDataByLevel(this.state.startDate, getUserRole(), 'fox', parseInt(this.state.status));
+    this.getDataByLevel(
+      this.state.startDate,
+      getUserRole(),
+      "fox",
+      parseInt(this.state.status)
+    );
   };
 
   closeLoading = () => {
@@ -288,14 +302,14 @@ class PulangCepat extends React.Component {
   handleApproval = (e, approvalMode) => {
     e.preventDefault();
     this.setState({ loadingModal: true });
-    const Absence = Parse.Object.extend('Absence');
+    const Absence = Parse.Object.extend("Absence");
     const query = new Parse.Query(Absence);
 
     query
       .get(this.state.userId)
       .then((x) => {
-        x.set('approvalEarly', approvalMode ? 1 : 0);
-        if (!approvalMode) x.set('alasanRejectEarly', this.state.reason);
+        x.set("approvalEarly", approvalMode ? 1 : 0);
+        if (!approvalMode) x.set("alasanRejectEarly", this.state.reason);
         x.save()
           .then(() => {
             let newArr = [...this.state.leave];
@@ -303,10 +317,10 @@ class PulangCepat extends React.Component {
             this.setState({
               counter: this.state.counter + 1,
               leave: newArr,
-              [approvalMode ? 'approvalMode' : 'rejectMode']: false,
+              [approvalMode ? "approvalMode" : "rejectMode"]: false,
               loadingModal: false,
-              messageApprove: approvalMode ? 'approve' : 'reject',
-              alerts: 1
+              messageApprove: approvalMode ? "approve" : "reject",
+              alerts: 1,
             });
             // alert(`Berhasil ${approvalMode ? "approve" : "reject"}`);
             return;
@@ -326,7 +340,7 @@ class PulangCepat extends React.Component {
 
   toggle = (state) => {
     this.setState({
-      [state]: !this.state[state]
+      [state]: !this.state[state],
     });
   };
 
@@ -345,7 +359,9 @@ class PulangCepat extends React.Component {
       return x;
     });
 
-    this.setState({ leave: leave, checkId: collecId }, () => console.log(this.state.checkId));
+    this.setState({ leave: leave, checkId: collecId }, () =>
+      console.log(this.state.checkId)
+    );
   };
 
   handleChildCheck = (e) => {
@@ -353,14 +369,14 @@ class PulangCepat extends React.Component {
     const { checkId } = this.state;
     let checked = e.target.value;
     leave.map((x) => {
-      console.log('bandingkan', x.id === e.target.value);
+      console.log("bandingkan", x.id === e.target.value);
       if (x.id === e.target.value) {
-        console.log('sama');
+        console.log("sama");
         x.select = e.target.checked;
         if (x.select) {
           this.setState(
             (prevState) => ({
-              checkId: [...this.state.checkId, checked]
+              checkId: [...this.state.checkId, checked],
             }),
             () => console.log(this.state.checkId)
           );
@@ -370,7 +386,7 @@ class PulangCepat extends React.Component {
             checkId.splice(index, 1);
             this.setState(
               (prevState) => ({
-                checkId: checkId
+                checkId: checkId,
               }),
               () => console.log(this.state.checkId)
             );
@@ -384,18 +400,18 @@ class PulangCepat extends React.Component {
 
   handleApproveAll = (e) => {
     this.setState({ loading: true });
-    const Absence = Parse.Object.extend('Absence');
+    const Absence = Parse.Object.extend("Absence");
     const query = new Parse.Query(Absence);
 
     query.get(e).then((x) => {
-      x.set('approvalEarly', 1);
+      x.set("approvalEarly", 1);
       x.save().then(() => {
         const newArr = [...this.state.leave];
         newArr.splice(this.state.userIndex, 1);
         this.setState({
           leave: newArr,
           approvalMode: false,
-          loading: false
+          loading: false,
         });
       });
     });
@@ -403,18 +419,18 @@ class PulangCepat extends React.Component {
 
   handleRejectAll = (e) => {
     this.setState({ loading: true });
-    const Absence = Parse.Object.extend('Absence');
+    const Absence = Parse.Object.extend("Absence");
     const query = new Parse.Query(Absence);
 
     query.get(e).then((x) => {
-      x.set('approvalEarly', 0);
+      x.set("approvalEarly", 0);
       x.save().then(() => {
         const newArr = [...this.state.leave];
         newArr.splice(this.state.userIndex, 1);
         this.setState({
           leave: newArr,
           rejectMode: false,
-          loading: false
+          loading: false,
         });
       });
     });
@@ -426,20 +442,20 @@ class PulangCepat extends React.Component {
     let totalData = 0;
 
     checkId.map((id) => {
-      const Absence = Parse.Object.extend('Absence');
+      const Absence = Parse.Object.extend("Absence");
       const query = new Parse.Query(Absence);
 
       query.get(id).then((x) => {
-        x.set('approvalEarly', 1);
+        x.set("approvalEarly", 1);
         x.save().then(() => {
           totalData = totalData + 1;
           if (totalData === checkId.length) {
             // alert("Berhasil Approve");
             this.setState({
-              messageApprove: 'Approve ' + totalData + ' Data',
+              messageApprove: "Approve " + totalData + " Data",
               alerts: 1,
               loadingModal: false,
-              approveAllMode: false
+              approveAllMode: false,
             });
             // return;
             return window.location.reload(false);
@@ -458,22 +474,22 @@ class PulangCepat extends React.Component {
     let totalData = 0;
 
     checkId.map((id) => {
-      const Absence = Parse.Object.extend('Absence');
+      const Absence = Parse.Object.extend("Absence");
       const query = new Parse.Query(Absence);
 
       query.get(id).then((x) => {
-        x.set('approvalEarly', 0);
-        x.set('alasanRejectEarly', this.state.reason);
+        x.set("approvalEarly", 0);
+        x.set("alasanRejectEarly", this.state.reason);
         x.save().then(() => {
           totalData = totalData + 1;
           if (totalData === checkId.length) {
             // alert("Berhasil reject");
             this.setState({
-              messageApprove: 'Reject ' + totalData + ' Data',
+              messageApprove: "Reject " + totalData + " Data",
               alerts: 1,
               loadingModal: false,
               closeLoading: false,
-              approveAllMode: false
+              approveAllMode: false,
             });
             // return;
             return window.location.reload(false);
@@ -501,7 +517,7 @@ class PulangCepat extends React.Component {
       fullnames,
       rejectAllMode,
       approveAllMode,
-      startDate
+      startDate,
     } = this.state;
 
     return (
@@ -516,7 +532,7 @@ class PulangCepat extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Request pulang cepat</h3>
                   {parseInt(this.state.alerts) === 2 ? (
-                    ''
+                    ""
                   ) : (
                     <Alerts
                       show={true}
@@ -525,7 +541,11 @@ class PulangCepat extends React.Component {
                       message={`Berhasil ${this.state.messageApprove}`}
                     />
                   )}
-                  <Form role="form" onSubmit={this.handleFilter} className="mt-3">
+                  <Form
+                    role="form"
+                    onSubmit={this.handleFilter}
+                    className="mt-3"
+                  >
                     <div className="row">
                       <div className="col-md-2 col-sm-12">
                         <p>Filter By</p>
@@ -578,19 +598,25 @@ class PulangCepat extends React.Component {
                             </InputGroupAddon>
                             <ReactDatetime
                               inputProps={{
-                                placeholder: 'Date Picker Here',
+                                placeholder: "Date Picker Here",
                                 required: true,
-                                readOnly: true
+                                readOnly: true,
                               }}
-                              viewMode={parseInt(this.state.statusWaktu) === 6 ? 'months' : 'days'}
+                              viewMode={
+                                parseInt(this.state.statusWaktu) === 6
+                                  ? "months"
+                                  : "days"
+                              }
                               dateFormat={
-                                parseInt(this.state.statusWaktu) === 6 ? 'MM/YYYY' : 'MM/DD/YYYY'
+                                parseInt(this.state.statusWaktu) === 6
+                                  ? "MM/YYYY"
+                                  : "MM/DD/YYYY"
                               }
                               timeFormat={false}
                               value={startDate}
                               onChange={(e) => {
                                 this.setState({
-                                  startDate: e.toDate()
+                                  startDate: e.toDate(),
                                 });
                               }}
                             />
@@ -598,7 +624,12 @@ class PulangCepat extends React.Component {
                         </FormGroup>
                       </div>
                       <div className="text-center mt--4">
-                        <Button className="my-4" color="primary" type="submit" disabled={loading}>
+                        <Button
+                          className="my-4"
+                          color="primary"
+                          type="submit"
+                          disabled={loading}
+                        >
                           {loading ? (
                             <div>
                               <Spinner
@@ -607,41 +638,43 @@ class PulangCepat extends React.Component {
                                 size="sm"
                                 role="status"
                                 aria-hidden="true"
-                              />{' '}
+                              />{" "}
                               Loading
                             </div>
                           ) : (
-                            'Search'
+                            "Search"
                           )}
                         </Button>
                       </div>
                     </div>
                   </Form>
                   {leave.length === 0 ? (
-                    ''
+                    ""
                   ) : this.state.checkId.length === 0 ? (
-                    ''
+                    ""
                   ) : (
                     <Col sm={{ span: 0 }} className="float-none">
                       <Button
                         color="primary"
                         size="sm"
                         type="submit"
-                        disable={loading ? 'true' : 'false'}
+                        disable={loading ? "true" : "false"}
                         className="mr-2 m-1"
                         onClick={() => this.setState({ approveAllMode: true })}
                       >
-                        <i className="fa fa-check" /> {loading ? 'Fetching...' : 'Approve'}
+                        <i className="fa fa-check" />{" "}
+                        {loading ? "Fetching..." : "Approve"}
                       </Button>
                       <Button
                         color="primary"
                         type="submit"
                         size="sm"
                         className="m-1"
-                        disable={loading ? 'true' : 'false'}
+                        disable={loading ? "true" : "false"}
                         onClick={() => this.setState({ rejectAllMode: true })}
                       >
-                        <i className="fa fa-times" /> {loading ? 'Fetching...' : 'Reject'}
+                        <i className="fa fa-times" />{" "}
+                        {loading ? "Fetching..." : "Reject"}
                       </Button>
                     </Col>
                   )}
@@ -650,7 +683,8 @@ class PulangCepat extends React.Component {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      {parseInt(this.state.status) === 0 || parseInt(this.state.status) === 1 ? (
+                      {parseInt(this.state.status) === 0 ||
+                      parseInt(this.state.status) === 1 ? (
                         <th>
                           <input
                             type="checkbox"
@@ -660,7 +694,10 @@ class PulangCepat extends React.Component {
                         </th>
                       ) : (
                         <th>
-                          <input type="checkbox" onChange={this.handleAllCheck} />
+                          <input
+                            type="checkbox"
+                            onChange={this.handleAllCheck}
+                          />
                         </th>
                       )}
                       <th scope="col">NIK</th>
@@ -671,7 +708,7 @@ class PulangCepat extends React.Component {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <td colSpan={5} style={{ textAlign: 'center' }}>
+                      <td colSpan={5} style={{ textAlign: "center" }}>
                         <Spinner
                           as="span"
                           cuti
@@ -679,14 +716,14 @@ class PulangCepat extends React.Component {
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{' '}
+                        />{" "}
                         <Spinner
                           as="span"
                           animation="grow"
                           size="sm"
                           role="status"
                           aria-hidden="true"
-                        />{' '}
+                        />{" "}
                         <Spinner
                           as="span"
                           animation="grow"
@@ -696,13 +733,13 @@ class PulangCepat extends React.Component {
                         />
                       </td>
                     ) : leave.length < 1 ? (
-                      <td colSpan={5} style={{ textAlign: 'center' }}>
+                      <td colSpan={5} style={{ textAlign: "center" }}>
                         No data found...
                       </td>
                     ) : (
                       leave.map((prop, key) => (
                         <tr>
-                          {prop.get('approvalEarly') === 3 ? (
+                          {prop.get("approvalEarly") === 3 ? (
                             <td>
                               <input
                                 type="checkbox"
@@ -722,12 +759,12 @@ class PulangCepat extends React.Component {
                               />
                             </td>
                           )}
-                          <td>{prop.get('user').attributes.nik}</td>
-                          <td>{prop.get('fullname')}</td>
-                          <td>{prop.get('alasan')}</td>
-                          {prop.get('approvalEarly') === 1 ? (
+                          <td>{prop.get("user").attributes.nik}</td>
+                          <td>{prop.get("fullname")}</td>
+                          <td>{prop.get("alasan")}</td>
+                          {prop.get("approvalEarly") === 1 ? (
                             <td>Approved</td>
-                          ) : prop.get('approvalEarly') === 0 ? (
+                          ) : prop.get("approvalEarly") === 0 ? (
                             <td>Rejected</td>
                           ) : (
                             <td>
@@ -740,13 +777,17 @@ class PulangCepat extends React.Component {
                                     approvalMode: true,
                                     userId: prop.id,
                                     userIndex: key,
-                                    fullnames: prop.get('fullname')
+                                    fullnames: prop.get("fullname"),
                                   });
                                 }}
                               >
                                 <i className="fa fa-check" />
                               </Button>
-                              <UncontrolledTooltip delay={0} placement="top" target="t1">
+                              <UncontrolledTooltip
+                                delay={0}
+                                placement="top"
+                                target="t1"
+                              >
                                 Approve
                               </UncontrolledTooltip>
 
@@ -758,13 +799,17 @@ class PulangCepat extends React.Component {
                                     rejectMode: true,
                                     userId: prop.id,
                                     userIndex: key,
-                                    fullnames: prop.get('fullname')
+                                    fullnames: prop.get("fullname"),
                                   });
                                 }}
                               >
                                 <i className="fa fa-times" />
                               </Button>
-                              <UncontrolledTooltip delay={0} placement="top" target="t2">
+                              <UncontrolledTooltip
+                                delay={0}
+                                placement="top"
+                                target="t2"
+                              >
                                 Reject
                               </UncontrolledTooltip>
                             </td>
@@ -833,7 +878,7 @@ class PulangCepat extends React.Component {
           show={approvalMode}
           loading={loadingModal}
           footer={true}
-          handleHide={() => this.toggle('approvalMode')}
+          handleHide={() => this.toggle("approvalMode")}
           title="Approval Confirmation"
           body={`Approve pulang cepat ${fullnames} ?`}
           handleSubmit={(e) => this.handleApproval(e, true)}
@@ -843,7 +888,7 @@ class PulangCepat extends React.Component {
         <ModalHandler
           show={rejectMode}
           footer={false}
-          handleHide={() => this.toggle('rejectMode')}
+          handleHide={() => this.toggle("rejectMode")}
           title="Reject Confirmation"
           body={
             <div>
@@ -862,7 +907,7 @@ class PulangCepat extends React.Component {
                   color="secondary"
                   data-dismiss="modal"
                   type="button"
-                  onClick={() => this.toggle('rejectMode')}
+                  onClick={() => this.toggle("rejectMode")}
                 >
                   Close
                 </Button>
@@ -875,11 +920,11 @@ class PulangCepat extends React.Component {
                         size="sm"
                         role="status"
                         aria-hidden="true"
-                      />{' '}
+                      />{" "}
                       Submitting...
                     </div>
                   ) : (
-                    'Submit'
+                    "Submit"
                   )}
                 </Button>
               </Form>
@@ -892,7 +937,7 @@ class PulangCepat extends React.Component {
           show={approveAllMode}
           loading={loadingModal}
           footer={true}
-          handleHide={() => this.toggle('approveAllMode')}
+          handleHide={() => this.toggle("approveAllMode")}
           title="Approve Confirmation"
           body={
             <div>
@@ -907,7 +952,7 @@ class PulangCepat extends React.Component {
           show={rejectAllMode}
           loading={loadingModal}
           footer={false}
-          handleHide={() => this.toggle('rejectAllMode')}
+          handleHide={() => this.toggle("rejectAllMode")}
           title="Reject Confirmation"
           body={
             <div>
@@ -926,7 +971,7 @@ class PulangCepat extends React.Component {
                   color="secondary"
                   data-dismiss="modal"
                   type="button"
-                  onClick={() => this.toggle('rejectAllMode')}
+                  onClick={() => this.toggle("rejectAllMode")}
                 >
                   Close
                 </Button>
@@ -939,11 +984,11 @@ class PulangCepat extends React.Component {
                         size="sm"
                         role="status"
                         aria-hidden="true"
-                      />{' '}
+                      />{" "}
                       Submitting...
                     </div>
                   ) : (
-                    'Submit'
+                    "Submit"
                   )}
                 </Button>
               </Form>

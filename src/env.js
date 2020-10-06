@@ -15,8 +15,8 @@
 
 // db attend deploy
 module.exports = {
-  APPLICATION_ID: 'BWfDydXimKhzP1b7LAINxCxBlJEyPohGt2dlVYhD',
-  JAVASCRIPT_KEY: 'mYo1Zb2X3uEaichdFhxNCIqvZl7dGwKmaLUZXwtU',
-  MASTER_KEY: 'TBpInmYBYXVXmpMsorBKL6Sy9g1c4VvfSOQ0LZlR',
-  SERVER_URL: 'https://parseapi.back4app.com/'
+  APPLICATION_ID: "BWfDydXimKhzP1b7LAINxCxBlJEyPohGt2dlVYhD",
+  JAVASCRIPT_KEY: "mYo1Zb2X3uEaichdFhxNCIqvZl7dGwKmaLUZXwtU",
+  MASTER_KEY: "TBpInmYBYXVXmpMsorBKL6Sy9g1c4VvfSOQ0LZlR",
+  SERVER_URL: "https://parseapi.back4app.com/",
 };

@@ -1166,7 +1166,10 @@ class ViewHistory extends React.Component {
                                   prop.get("absenMasuk"),
                                   "DD/MM/YYYY HH:mm:ss"
                                 )
-                              : ""}
+                              : convertDate(
+                                  prop.get("createdAt"),
+                                  "DD/MM/YYYY"
+                                )}
                           </td>
                           {this.state.searchBy === "Absen" ? (
                             <td>

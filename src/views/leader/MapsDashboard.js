@@ -244,8 +244,87 @@ class MapsDashboard extends React.Component {
     this.getLocation();
     // this.getDaftarAbsen();
     // this.getDataLate();
-    this.getDaftarAbsenByLevel();
+    this.getDaftarAbsenByLevel2();
   }
+
+  // Query Absen
+  queryAbsenByLevel = (rolesIdKey, containedRoles) => {
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+    hierarkiQuery.containedIn("roles", containedRoles);
+    hierarkiQuery.equalTo(rolesIdKey, {
+      __type: "Pointer",
+      className: "_User",
+      objectId: getLeaderId(),
+    });
+
+    const Absence = Parse.Object.extend("Absence");
+    const query = new Parse.Query(Absence);
+
+    const d = new Date();
+    const start = new moment(d);
+    start.startOf("day");
+    const finish = new moment(start);
+    finish.add(1, "day");
+
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    query.ascending("absenMasuk");
+    query.greaterThanOrEqualTo("createdAt", start.toDate());
+    query.lessThan("createdAt", finish.toDate());
+    query.matchesQuery("user", hierarkiQuery);
+    query.include("user");
+    query
+      .find()
+      .then((x) => {
+        console.log("user", x);
+        this.setState({ absence: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
+  getDaftarAbsenByLevel2 = () => {
+    this.setState({ loading: true });
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryAbsenByLevel("leaderIdNew", ["staff"]);
+        break;
+      case "supervisor":
+        this.queryAbsenByLevel("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryAbsenByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryAbsenByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+          "head",
+        ]);
+        break;
+
+      default:
+        break;
+    }
+  };
 
   getDaftarAbsenByLevel = () => {
     this.setState({ loading: true });
