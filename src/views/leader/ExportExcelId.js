@@ -46,7 +46,8 @@ import Parse from "parse";
 import moment from "moment";
 import { getLeaderId } from "utils";
 import { convertDate } from "utils";
-import ReactHTMLTableToExcel from "react-html-table-to-excel";
+// import ReactHTMLTableToExcel from "react-html-table-to-excel";
+import ReactHTMLTableToExcel from "../../react-html-table-to-excel/index";
 import { handleSelect } from "utils";
 import _ from "lodash/lang";
 

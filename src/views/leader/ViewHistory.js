@@ -502,6 +502,9 @@ class ViewHistory extends React.Component {
     }
 
     if (searchBy === "Terlambat") {
+      const Search = Parse.Object.extend("Absence");
+      const query = new Parse.Query(Search);
+
       // jika pilih waktu dan tanggal terisi
       if (parseInt(this.state.status) === 4) {
         const d = new Date();
@@ -531,7 +534,7 @@ class ViewHistory extends React.Component {
         query.lessThan("createdAt", finish.toDate());
       }
       query.include("user");
-      query.descending("time");
+      query.descending("absenMasuk");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
@@ -560,6 +563,8 @@ class ViewHistory extends React.Component {
     }
 
     if (searchBy === "Lembur") {
+      const Search = Parse.Object.extend("Absence");
+      const query = new Parse.Query(Search);
       // jika pilih waktu dan tanggal terisi
       if (parseInt(this.state.status) === 4) {
         const d = new Date();
@@ -589,7 +594,7 @@ class ViewHistory extends React.Component {
         query.lessThan("createdAt", finish.toDate());
       }
       query.include("user");
-      query.descending("time");
+      query.descending("absenMasuk");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
@@ -617,6 +622,8 @@ class ViewHistory extends React.Component {
     }
 
     if (searchBy === "Pulang Cepat") {
+      const Search = Parse.Object.extend("Absence");
+      const query = new Parse.Query(Search);
       // jika pilih waktu dan tanggal terisi
       if (parseInt(this.state.status) === 4) {
         const d = new Date();
@@ -646,7 +653,7 @@ class ViewHistory extends React.Component {
         query.lessThan("createdAt", finish.toDate());
       }
       query.include("user");
-      query.descending("time");
+      query.descending("absenMasuk");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
@@ -1203,7 +1210,8 @@ class ViewHistory extends React.Component {
                                 ? "Lembur"
                                 : "Tepat Waktu"}
                             </td>
-                          ) : (
+                          ) : this.state.searchBy === "Cuti" ||
+                            this.state.searchBy === "Izin" ? (
                             <td
                               style={{
                                 color: `${
@@ -1214,6 +1222,28 @@ class ViewHistory extends React.Component {
                               {prop.get("status") === 3
                                 ? "Menunggu konfirmasi"
                                 : prop.get("status") === 0
+                                ? "Rejected"
+                                : "Approved"}
+                            </td>
+                          ) : (
+                            <td
+                              style={{
+                                color: `${
+                                  prop.get("approvalEarly") === 0 ||
+                                  prop.get("approvalOvertime") === 0 ||
+                                  prop.get("approvalLate") === 0
+                                    ? "red"
+                                    : "blue"
+                                }`,
+                              }}
+                            >
+                              {prop.get("approvalEarly") === 3 ||
+                              prop.get("approvalOvertime") === 3 ||
+                              prop.get("approvalLate") === 3
+                                ? "Menunggu konfirmasi"
+                                : prop.get("approvalEarly") === 0 ||
+                                  prop.get("approvalOvertime") === 0 ||
+                                  prop.get("approvalLate") === 0
                                 ? "Rejected"
                                 : "Approved"}
                             </td>
