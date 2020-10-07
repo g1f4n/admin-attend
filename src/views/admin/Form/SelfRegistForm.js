@@ -681,33 +681,49 @@ class SelfRegistForm extends React.Component {
     user
       .save()
       .then((x) => {
-        const SelfRegist = Parse.Object.extend("SelfRegist");
-        const query = new Parse.Query(SelfRegist);
+        console.log("isi user", user);
+        console.log("objectid user", x.id);
 
-        query.get(id).then((x) => {
-          x.set("status", 1);
-          x.save()
-            .then(() => {
-              this.handleSendEmail(
-                this.state.email,
-                "KTA Team",
-                this.state.name,
-                "Selamat kamu berhasil melakukan self registration! Silahkan login menggunakan NIK dan password yang sudah kamu buat, terimakasih!",
-                "",
-                "addMode",
-                "Berhasil approve data"
-              );
-            })
-            .catch((err) => {
-              console.log(err.message);
-              this.setState({
-                loadingModal: false,
-                rejectMode: false,
-                message: "Gagal tambah data, coba lagi",
-                visible: true,
-              });
+        const updateUser = new Parse.User();
+        const queryUser = new Parse.Query(updateUser);
+
+        queryUser.get(x.id).then((y) => {
+          y.set("userId", {
+            __type: "Pointer",
+            className: "_User",
+            objectId: x.id,
+          });
+          y.save(null, { useMasterKey: true }).then((x) => {
+            const SelfRegist = Parse.Object.extend("SelfRegist");
+            const query = new Parse.Query(SelfRegist);
+
+            query.get(id).then((x) => {
+              x.set("status", 1);
+              x.save()
+                .then(() => {
+                  this.handleSendEmail(
+                    this.state.email,
+                    "KTA Team",
+                    this.state.name,
+                    "Selamat kamu berhasil melakukan self registration! Silahkan login menggunakan NIK dan password yang sudah kamu buat, terimakasih!",
+                    "",
+                    "addMode",
+                    "Berhasil approve data"
+                  );
+                })
+                .catch((err) => {
+                  console.log(err.message);
+                  this.setState({
+                    loadingModal: false,
+                    rejectMode: false,
+                    message: "Gagal tambah data, coba lagi",
+                    visible: true,
+                  });
+                });
             });
+          });
         });
+
         // this.setState({
         //   // daftarStaff: this.state.daftarStaff.concat(x),
         //   addMode: false,
@@ -1095,7 +1111,7 @@ class SelfRegistForm extends React.Component {
             this.setState({ selectLeader: e.target.value });
           }}
         >
-          <option selected disabled hidden>
+          <option selected disabled hidden value="">
             Pilih leader
           </option>
           {this.state.daftarLeader.map((x, i) => (
@@ -1118,7 +1134,7 @@ class SelfRegistForm extends React.Component {
             this.setState({ selectSupervisor: e.target.value });
           }}
         >
-          <option selected disabled hidden>
+          <option selected disabled hidden value="">
             Pilih supervisor
           </option>
           {this.state.daftarSupervisor.map((x, i) => (
@@ -1141,7 +1157,7 @@ class SelfRegistForm extends React.Component {
             this.setState({ selectManager: e.target.value });
           }}
         >
-          <option selected disabled hidden>
+          <option selected disabled hidden value="">
             Pilih manager
           </option>
           {this.state.daftarManager.map((x, i) => (
@@ -1164,7 +1180,7 @@ class SelfRegistForm extends React.Component {
             this.setState({ selectHead: e.target.value });
           }}
         >
-          <option selected disabled hidden>
+          <option selected disabled hidden value="">
             Pilih head
           </option>
           {this.state.daftarHead.map((x, i) => (
@@ -1187,7 +1203,7 @@ class SelfRegistForm extends React.Component {
             this.setState({ selectGM: e.target.value });
           }}
         >
-          <option selected disabled hidden>
+          <option selected disabled hidden value="">
             Pilih GM
           </option>
           {this.state.daftarGM.map((x, i) => (
@@ -1276,7 +1292,7 @@ class SelfRegistForm extends React.Component {
       switch (userSelectLevel.toLowerCase()) {
         case "staff":
           return staffSelectDropdown;
-        case "leader":
+        case "team leader":
           return leaderSelectDropdown;
         case "supervisor":
           return supervisorSelectDropdown;

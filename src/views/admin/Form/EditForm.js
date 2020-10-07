@@ -823,6 +823,11 @@ class EditForm extends React.Component {
         x.set("jumlahCuti", parseInt(jumlahCuti));
         x.set("lembur", lembur);
         x.set("roles", level.toLowerCase());
+        x.set("userId", {
+          __type: "Pointer",
+          className: "_User",
+          objectId: id,
+        });
         if (fotoWajah !== "")
           x.set("fotoWajah", new Parse.File("profile.jpg", fotoWajah));
         x.save(null, { useMasterKey: true })
@@ -985,6 +990,7 @@ class EditForm extends React.Component {
             this.setState({ selectLeader: e.target.value });
           }}
         >
+          <option value="">Pilih Leader</option>
           {this.state.daftarLeader.map((x, i) => (
             <option selected={leader.id === x.id} key={i} value={x.id}>
               {x.get("fullname")}
@@ -1005,6 +1011,7 @@ class EditForm extends React.Component {
             this.setState({ selectSupervisor: e.target.value });
           }}
         >
+          <option value="">Pilih Supervisor</option>
           {this.state.daftarSupervisor.map((x, i) => (
             <option selected={supervisor.id === x.id} key={i} value={x.id}>
               {x.get("fullname") === undefined ? "" : x.get("fullname")}
@@ -1025,6 +1032,7 @@ class EditForm extends React.Component {
             this.setState({ selectManager: e.target.value });
           }}
         >
+          <option value="">Pilih Manager</option>
           {this.state.daftarManager.map((x, i) => (
             <option selected={manager.id === x.id} key={i} value={x.id}>
               {x.get("fullname")}
@@ -1045,6 +1053,7 @@ class EditForm extends React.Component {
             this.setState({ selectHead: e.target.value });
           }}
         >
+          <option value="">Pilih Head</option>
           {this.state.daftarHead.map((x, i) => (
             <option selected={head.id === x.id} key={i} value={x.id}>
               {x.get("fullname")}
@@ -1065,6 +1074,7 @@ class EditForm extends React.Component {
             this.setState({ selectGM: e.target.value });
           }}
         >
+          <option value="">Pilih GM</option>
           {this.state.daftarGM.map((x, i) => (
             <option selected={gm.id === x.id} key={i} value={x.id}>
               {x.get("fullname")}
@@ -1151,7 +1161,7 @@ class EditForm extends React.Component {
       switch (userSelectLevel.toLowerCase()) {
         case "staff":
           return staffSelectDropdown;
-        case "leader":
+        case "team leader":
           return leaderSelectDropdown;
         case "supervisor":
           return supervisorSelectDropdown;
