@@ -331,8 +331,8 @@ class ViewHistory extends React.Component {
         start.startOf("day");
         const finish = new moment(start);
         finish.add(1, "day");
-        query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-        query.lessThan("absenMasuk", finish.toDate());
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
       }
       if (parseInt(this.state.status) === 5) {
         const d = new Date();
@@ -340,8 +340,8 @@ class ViewHistory extends React.Component {
         start.startOf("week");
         const finish = new moment(start);
         finish.add(1, "week");
-        query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-        query.lessThan("absenMasuk", finish.toDate());
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
       }
       if (parseInt(this.state.status) === 6) {
         if (this.state.startDate === undefined) {
@@ -352,8 +352,8 @@ class ViewHistory extends React.Component {
         start.startOf("month");
         const finish = new moment(start);
         finish.add(1, "month");
-        query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-        query.lessThan("absenMasuk", finish.toDate());
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
       }
       query.equalTo("leaderIdNew", {
         __type: "Pointer",

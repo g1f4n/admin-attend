@@ -99,25 +99,29 @@ class AllAbsen extends React.Component {
       const finish = new moment(start);
       finish.add(1, "day");
 
-      query.equalTo("user", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: id,
-      });
-      query.ascending("absenMasuk");
-      query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-      query.lessThan("absenMasuk", finish.toDate());
-      query.include("user");
-      query
-        .find()
-        .then((x) => {
-          console.log("user", x);
-          this.setState({ absence: x, loading: false });
-        })
-        .catch((err) => {
-          alert(err.message);
-          this.setState({ loading: false });
-        });
+      query.ascending("createdAt");
+      query.greaterThanOrEqualTo("createdAt", start.toDate());
+      query.lessThan("createdAt", finish.toDate());
+
+      // query.equalTo("user", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: id,
+      // });
+      // query.ascending("absenMasuk");
+      // query.greaterThanOrEqualTo("absenMasuk", start.toDate());
+      // query.lessThan("absenMasuk", finish.toDate());
+      // query.include("user");
+      // query
+      //   .find()
+      //   .then((x) => {
+      //     console.log("user", x);
+      //     this.setState({ absence: x, loading: false });
+      //   })
+      //   .catch((err) => {
+      //     alert(err.message);
+      //     this.setState({ loading: false });
+      //   });
     } else if (parseInt(this.state.status) === 5) {
       const d = new Date();
       const start = new moment(this.state.startDate);
@@ -125,25 +129,29 @@ class AllAbsen extends React.Component {
       const finish = new moment(start);
       finish.add(1, "week");
 
-      query.equalTo("user", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: id,
-      });
-      query.ascending("absenMasuk");
-      query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-      query.lessThan("absenMasuk", finish.toDate());
-      query.include("user");
-      query
-        .find()
-        .then((x) => {
-          console.log("user", x);
-          this.setState({ absence: x, loading: false });
-        })
-        .catch((err) => {
-          alert(err.message);
-          this.setState({ loading: false });
-        });
+      query.ascending("createdAt");
+      query.greaterThanOrEqualTo("createdAt", start.toDate());
+      query.lessThan("createdAt", finish.toDate());
+
+      // query.equalTo("user", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: id,
+      // });
+      // query.ascending("absenMasuk");
+      // query.greaterThanOrEqualTo("absenMasuk", start.toDate());
+      // query.lessThan("absenMasuk", finish.toDate());
+      // query.include("user");
+      // query
+      //   .find()
+      //   .then((x) => {
+      //     console.log("user", x);
+      //     this.setState({ absence: x, loading: false });
+      //   })
+      //   .catch((err) => {
+      //     alert(err.message);
+      //     this.setState({ loading: false });
+      //   });
     } else if (parseInt(this.state.status) === 6) {
       const d = new Date();
       const start = new moment(this.state.startDate);
@@ -151,42 +159,64 @@ class AllAbsen extends React.Component {
       const finish = new moment(start);
       finish.add(1, "month");
 
-      query.equalTo("user", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: id,
-      });
-      query.ascending("absenMasuk");
-      query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-      query.lessThan("absenMasuk", finish.toDate());
-      query.include("user");
-      query
-        .find()
-        .then((x) => {
-          console.log("user", x);
-          this.setState({ absence: x, loading: false });
-        })
-        .catch((err) => {
-          alert(err.message);
-          this.setState({ loading: false });
-        });
+      // query.equalTo("user", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: id,
+      // });
+      query.ascending("createdAt");
+      query.greaterThanOrEqualTo("createdAt", start.toDate());
+      query.lessThan("createdAt", finish.toDate());
+      // query.include("user");
+      // query
+      //   .find()
+      //   .then((x) => {
+      //     console.log("user", x);
+      //     this.setState({ absence: x, loading: false });
+      //   })
+      //   .catch((err) => {
+      //     alert(err.message);
+      //     this.setState({ loading: false });
+      //   });
     } else if (parseInt(this.state.status) === 7) {
       const d = new Date();
       const start = new moment(this.state.startDate);
       //start.startOf('month');
       const finish = new moment(this.state.endDate);
       //finish.add(1, 'month');
+      
+      query.ascending("createdAt");
+      query.greaterThanOrEqualTo("createdAt", start.toDate());
+      query.lessThan("createdAt", finish.toDate());
 
-      query.equalTo("user", {
+      // query.equalTo("user", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: id,
+      // });
+      // query.ascending("absenMasuk");
+      // query.greaterThanOrEqualTo("absenMasuk", start.toDate());
+      // query.lessThan("absenMasuk", finish.toDate());
+      // query.include("user");
+      // query
+      //   .find()
+      //   .then((x) => {
+      //     console.log("user", x);
+      //     this.setState({ absence: x, loading: false });
+      //   })
+      //   .catch((err) => {
+      //     alert(err.message);
+      //     this.setState({ loading: false });
+      //   });
+    }
+
+    query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
         objectId: id,
       });
-      query.ascending("absenMasuk");
-      query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-      query.lessThan("absenMasuk", finish.toDate());
-      query.include("user");
-      query
+    query.include("user");
+    query
         .find()
         .then((x) => {
           console.log("user", x);
@@ -196,7 +226,6 @@ class AllAbsen extends React.Component {
           alert(err.message);
           this.setState({ loading: false });
         });
-    }
   };
 
   subtractHourLate = (workingHour, duttyOn, typeTime) => {
@@ -253,7 +282,7 @@ class AllAbsen extends React.Component {
       objectId: id,
     });
     query.ascending("absenMasuk");
-    query.exists("absenMasuk");
+    // query.exists("absenMasuk");
     // query.greaterThanOrEqualTo('createdAt', start.toDate());
     // query.lessThan('createdAt', finish.toDate());
     query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
@@ -347,7 +376,7 @@ class AllAbsen extends React.Component {
         }).map((value, index) => {
           overtimeMinutes.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(convertDate(value.get("overtimeOut"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
                   `${value.get("user").attributes.jamKeluar}:00`,
@@ -358,7 +387,7 @@ class AllAbsen extends React.Component {
           );
           overtimeHours.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(convertDate(value.get("overtimeOut"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
                   `${value.get("user").attributes.jamKeluar}:00`,
@@ -373,10 +402,10 @@ class AllAbsen extends React.Component {
         x.map((value, index) => {
           totalMinutes.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
-                  convertDate(value.get("absenMasuk"), "HH:mm"),
+                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
                   "HH:mm"
                 )
               )
@@ -384,10 +413,10 @@ class AllAbsen extends React.Component {
           );
           totalHours.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
-                  convertDate(value.get("absenMasuk"), "HH:mm"),
+                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
                   "HH:mm"
                 )
               )
@@ -1247,7 +1276,7 @@ class AllAbsen extends React.Component {
                           <tr>
                             {/* Day */}
                             <td>
-                              {convertDate(prop.get("absenMasuk"), "ddd")}
+                              {convertDate(prop.get("createdAt"), "ddd")}
                             </td>
 
                             {/* Date */}
@@ -1543,11 +1572,15 @@ class AllAbsen extends React.Component {
                             {/* Total Hour Hours */}
                             {/* <td>{prop.get("fullname")}</td> */}
                             <td>
-                              {prop.get("absenKeluar") === undefined
-                                ? 0
-                                : moment
+                              { moment
                                     .duration(
-                                      convertDate(
+                                      prop.get("earlyTimes") !== undefined ? convertDate(
+                                        prop.get("earlyTimes"),
+                                        "HH:mm"
+                                      ) : prop.get("overtimeOut") !== undefined ? convertDate(
+                                        prop.get("overtimeOut"),
+                                        "HH:mm"
+                                      ) : convertDate(
                                         prop.get("absenKeluar"),
                                         "HH:mm"
                                       ),
@@ -1555,7 +1588,10 @@ class AllAbsen extends React.Component {
                                     )
                                     .subtract(
                                       moment.duration(
-                                        convertDate(
+                                        prop.get("lateTimes") !== undefined ? convertDate(
+                                          prop.get("lateTimes"),
+                                          "HH:mm"
+                                        ) : convertDate(
                                           prop.get("absenMasuk"),
                                           "HH:mm"
                                         ),
@@ -1569,12 +1605,15 @@ class AllAbsen extends React.Component {
                             <td>
                               {moment
                                 .duration(
-                                  convertDate(prop.get("absenKeluar"), "HH:mm"),
+                                  prop.get("earlyTimes") !== undefined ? convertDate(prop.get("earlyTimes"), "HH:mm") : prop.get("overtimeOut") !== undefined ? convertDate(prop.get("overtimeOut"), "HH:mm") : convertDate(prop.get("absenKeluar"), "HH:mm"),
                                   "HH:mm"
                                 )
                                 .subtract(
                                   moment.duration(
-                                    convertDate(
+                                    prop.get("lateTimes") !== undefined ? convertDate(
+                                      prop.get("lateTimes"),
+                                      "HH:mm"
+                                    ) : convertDate(
                                       prop.get("absenMasuk"),
                                       "HH:mm"
                                     ),

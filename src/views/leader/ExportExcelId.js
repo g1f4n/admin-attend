@@ -2468,10 +2468,10 @@ class ExportExcelId extends React.Component {
         x.map((value, index) => {
           totalMinutes.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
-                  convertDate(value.get("absenMasuk"), "HH:mm"),
+                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
                   "HH:mm"
                 )
               )
@@ -2479,10 +2479,10 @@ class ExportExcelId extends React.Component {
           );
           totalHours.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
-                  convertDate(value.get("absenMasuk"), "HH:mm"),
+                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
                   "HH:mm"
                 )
               )
@@ -3791,7 +3791,7 @@ class ExportExcelId extends React.Component {
                                 ? moment
                                     .duration(
                                       convertDate(
-                                        prop.get("absenKeluar"),
+                                        prop.get("overtimeOut"),
                                         "HH:mm"
                                       ),
                                       "HH:mm"

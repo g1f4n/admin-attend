@@ -1763,7 +1763,7 @@ class SelfRegistForm extends React.Component {
                               <option selected disabled hidden>
                                 Pilih tipe lembur
                               </option>
-                              {["Ya", "Tidak"].map((x) => (
+                              {["ya", "tidak"].map((x) => (
                                 <option value={x}>{x}</option>
                               ))}
                             </Input>

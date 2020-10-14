@@ -648,9 +648,9 @@ class TesEksport extends React.Component {
       className: "_User",
       objectId: id,
     });
-    query.ascending("absenMasuk");
-    query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-    query.lessThan("absenMasuk", finish.toDate());
+    query.ascending("createdAt");
+    query.greaterThanOrEqualTo("createdAt", start.toDate());
+    query.lessThan("createdAt", finish.toDate());
     query.include("user");
     query
       .find()
@@ -1459,9 +1459,9 @@ class TesEksport extends React.Component {
           className: "_User",
           objectId: id,
         });
-        query.ascending("absenMasuk");
-        query.greaterThanOrEqualTo("absenMasuk", start.toDate());
-        query.lessThan("absenMasuk", finish.toDate());
+        query.ascending("createdAt");
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
         query.include("user");
         query
           .find()

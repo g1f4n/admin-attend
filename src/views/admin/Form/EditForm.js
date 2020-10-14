@@ -1618,7 +1618,7 @@ class EditForm extends React.Component {
                                 })
                               }
                             >
-                              {["Ya", "Tidak"].map((x) => (
+                              {["ya", "tidak"].map((x) => (
                                 <option
                                   selected={
                                     lembur.toLowerCase() === x.toLowerCase()
