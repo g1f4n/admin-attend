@@ -219,7 +219,568 @@ class AllAbsen extends React.Component {
     query
         .find()
         .then((x) => {
-          console.log("user", x);
+          // console.log("user", x);
+          // this.setState({ absence: x, loading: false });
+          let early = [];
+          let hours = [];
+          let lateTimesMinute = [];
+          let lateTimesHours = [];
+          let overtimeMinutes = [];
+          let overtimeHours = [];
+          let totalHours = [];
+          let totalMinutes = [];
+          x.filter((z) => {
+            if (z.get("earlyTimes") === undefined) {
+              return false;
+            }
+            // else if (z.get("lateTimes") === undefined) {
+            //   return false;
+            // } else if (z.get("overtimeOut") === undefined) {
+            //   return false;
+            // }
+            return true;
+          }).map((value, index) => {
+            early.push(
+              moment
+                .duration(
+                  `${value.get("user").attributes.jamKeluar}:00`,
+                  "HH:mm"
+                )
+                .subtract(
+                  moment.duration(
+                    convertDate(value.get("earlyTimes"), "HH:mm"),
+                    "HH:mm"
+                  )
+                )
+                .minutes()
+            );
+            hours.push(
+              moment
+                .duration(
+                  `${value.get("user").attributes.jamKeluar}:00`,
+                  "HH:mm"
+                )
+                .subtract(
+                  moment.duration(
+                    convertDate(value.get("earlyTimes"), "HH:mm"),
+                    "HH:mm"
+                  )
+                )
+                .hours()
+            );
+            console.log("early departure", early);
+          });
+          // late times map
+          x.filter((a) => {
+            if (a.get("lateTimes") === undefined) {
+              return false;
+            }
+            return true;
+          }).map((value, index) => {
+            // lateTime
+            lateTimesMinute.push(
+              moment
+                .duration(convertDate(value.get("lateTimes"), "HH:mm"), "HH:mm")
+                .subtract(
+                  moment.duration(
+                    `${value.get("user").attributes.jamMasuk}:00`,
+                    "HH:mm"
+                  )
+                )
+                .minutes()
+            );
+            lateTimesHours.push(
+              moment
+                .duration(convertDate(value.get("lateTimes"), "HH:mm"), "HH:mm")
+                .subtract(
+                  moment.duration(
+                    `${value.get("user").attributes.jamMasuk}:00`,
+                    "HH:mm"
+                  )
+                )
+                .hours()
+            );
+            console.log("value late", lateTimesMinute);
+          });
+
+          // overtime
+          x.filter((d) => {
+            if (d.get("overtimeOut") === undefined) {
+              return false;
+            }
+            return true;
+          }).map((value, index) => {
+            overtimeMinutes.push(
+              moment
+                .duration(
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
+                  "HH:mm"
+                )
+                .subtract(
+                  moment.duration(
+                    `${value.get("user").attributes.jamKeluar}:00`,
+                    "HH:mm"
+                  )
+                )
+                .minutes()
+            );
+            overtimeHours.push(
+              moment
+                .duration(
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
+                  "HH:mm"
+                )
+                .subtract(
+                  moment.duration(
+                    `${value.get("user").attributes.jamKeluar}:00`,
+                    "HH:mm"
+                  )
+                )
+                .hours()
+            );
+          });
+
+          // // Total Hours
+          // x.map((value, index) => {
+          //   totalMinutes.push(
+          //     moment
+          //       .duration(
+          //         convertDate(value.get("absenKeluar"), "HH:mm"),
+          //         "HH:mm"
+          //       )
+          //       .subtract(
+          //         moment.duration(
+          //           convertDate(value.get("absenMasuk"), "HH:mm"),
+          //           "HH:mm"
+          //         )
+          //       )
+          //       .minutes()
+          //   );
+          //   totalHours.push(
+          //     moment
+          //       .duration(
+          //         convertDate(value.get("absenKeluar"), "HH:mm"),
+          //         "HH:mm"
+          //       )
+          //       .subtract(
+          //         moment.duration(
+          //           convertDate(value.get("absenMasuk"), "HH:mm"),
+          //           "HH:mm"
+          //         )
+          //       )
+          //       .hours()
+          //   );
+          // });
+          // Total Hours
+          x.map((value, index) => {
+            totalMinutes.push(
+              moment
+                .duration(
+                  value.get("earlyTimes") !== undefined
+                    ? convertDate(value.get("earlyTimes"), "HH:mm")
+                    : value.get("overtimeOut") !== undefined
+                    ? convertDate(value.get("overtimeOut"), "HH:mm")
+                    : value.get("absenKeluar") !== undefined
+                    ? convertDate(value.get("absenKeluar"), "HH:mm")
+                    : `00:00`,
+                  "HH:mm"
+                )
+                .subtract(
+                  moment.duration(
+                    value.get("lateTimes") !== undefined
+                      ? convertDate(value.get("lateTimes"), "HH:mm")
+                      : value.get("absenMasuk") !== undefined
+                      ? convertDate(value.get("absenMasuk"), "HH:mm")
+                      : `00:00`,
+                    "HH:mm"
+                  )
+                )
+                .minutes()
+            );
+            totalHours.push(
+              moment
+                .duration(
+                  value.get("earlyTimes") !== undefined
+                    ? convertDate(value.get("earlyTimes"), "HH:mm")
+                    : value.get("overtimeOut") !== undefined
+                    ? convertDate(value.get("overtimeOut"), "HH:mm")
+                    : value.get("absenKeluar") !== undefined
+                    ? convertDate(value.get("absenKeluar"), "HH:mm")
+                    : `00:00`,
+                  "HH:mm"
+                )
+                .subtract(
+                  moment.duration(
+                    value.get("lateTimes") !== undefined
+                      ? convertDate(value.get("lateTimes"), "HH:mm")
+                      : convertDate(value.get("absenMasuk"), "HH:mm"),
+                    "HH:mm"
+                  )
+                )
+                .hours()
+            );
+          });
+          // console.log("total hours", totalMinutes);
+
+          // if (early.length < 1 || hours.length < 1) {
+          //   return false;
+          // }
+          // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
+          //   return false;
+          // }
+          if (early.length === 1) {
+            // early.reduce((acc, curr) => {
+            //   console.log(acc);
+            //   console.log(curr);
+            //   console.log("minutes", (parseInt(acc) + parseInt(curr)) % 60);
+            //   console.log(
+            //     "sisaJam",
+            //     Math.floor((parseInt(acc) + parseInt(curr)) / 60)
+            //   );
+            //   this.setState({
+            //     sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+            //     minutesEarly: (parseInt(acc) + parseInt(curr)) % 60,
+            //   });
+            // }, 0);
+            let jumlahEarly = early.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const minutesEarly = jumlahEarly % 60;
+            const sisaJam = Math.floor(jumlahEarly / 60);
+            this.setState({
+              sisaJam: sisaJam,
+              minutesEarly: minutesEarly,
+            });
+            console.log("reduce baru menit", minutesEarly);
+            console.log("reduce baru jam sisa", sisaJam);
+          } else if (early.length > 1) {
+            let jumlahEarly = early.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const minutesEarly = jumlahEarly % 60;
+            const sisaJam = Math.floor(jumlahEarly / 60);
+            this.setState({
+              sisaJam: sisaJam,
+              minutesEarly: minutesEarly,
+            });
+            // early.reduce((acc, curr) => {
+            //   console.log(acc);
+            //   console.log(curr);
+            //   console.log("minutes", parseFloat(acc) + parseFloat(curr));
+            //   console.log(
+            //     "sisaJam",
+            //     Math.floor((parseInt(acc) + parseInt(curr)) / 60)
+            //   );
+            //   return this.setState({
+            //     sisaJam: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+            //     minutesEarly: (parseInt(acc) + parseInt(curr)) % 60,
+            //   });
+            // });
+            // console.log("minutes early", this.state.minutesEarly);
+            // console.log("sisa jam early", this.state.sisaJam);
+          } else {
+            this.setState({ minutesEarly: 0, sisaJam: 0 });
+          }
+
+          if (hours.length === 1) {
+            // hours
+            //   .filter((val) => {
+            //     if (val === "") {
+            //       return false;
+            //     }
+            //     return true;
+            //   })
+            //   .reduce((acc, curr) => {
+            //     console.log(
+            //       "hours",
+            //       parseInt(acc) + parseInt(curr) + this.state.sisaJam
+            //     );
+            //     this.setState({
+            //       jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam,
+            //     });
+            //   }, 0);
+            let jumlahHours = hours.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const jamEarly = jumlahHours + this.state.sisaJam;
+            this.setState({
+              jamEarly: jamEarly,
+            });
+          } else if (hours.length > 1) {
+            // hours
+            //   .filter((val) => {
+            //     if (val === "") {
+            //       return false;
+            //     }
+            //     return true;
+            //   })
+            //   .reduce((acc, curr) => {
+            //     console.log(
+            //       "hours sisa",
+            //       parseInt(acc) + parseInt(curr) + this.state.sisaJam
+            //     );
+            //     this.setState({
+            //       jamEarly: parseInt(acc) + parseInt(curr) + this.state.sisaJam,
+            //     });
+            //   });
+            // console.log("test jam", this.state.sisaJam);
+            let jumlahHours = hours.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const jamEarly = jumlahHours + this.state.sisaJam;
+            this.setState({
+              jamEarly: jamEarly,
+            });
+          } else {
+            this.setState({ jamEarly: 0 });
+          }
+          // late Times
+          console.log("late times ", lateTimesHours);
+          if (lateTimesMinute.length === 1) {
+            // lateTimesMinute.reduce((acc, curr) => {
+            //   this.setState({
+            //     sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+            //     minutesLate: (parseInt(acc) + parseInt(curr)) % 60,
+            //   });
+            //   console.log("sisa Jam Late", this.state.sisaJamLate);
+            //   console.log("menit Late", this.state.minutesLate);
+            // }, 0);
+            let jumlahLateMinutes = lateTimesMinute.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const minutesLate = jumlahLateMinutes % 60;
+            const sisaJamLate = Math.floor(jumlahLateMinutes / 60);
+            this.setState({
+              sisaJamLate: sisaJamLate,
+              minutesLate: minutesLate,
+            });
+          } else if (lateTimesMinute.length > 1) {
+            // console.log("nilai", lateTimesMinute);
+            // // let coba = [52, 28];
+            // lateTimesMinute.reduce((acc, curr) => {
+            //   this.setState({
+            //     sisaJamLate: Math.floor((parseInt(acc) + parseInt(curr)) / 60),
+            //     minutesLate: (parseInt(acc) + parseInt(curr)) % 60,
+            //   });
+            //   console.log("sisa Jam Late", this.state.sisaJamLate);
+            //   console.log("menit Late", this.state.coba);
+            // });
+            let jumlahLateMinutes = lateTimesMinute.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const minutesLate = jumlahLateMinutes % 60;
+            const sisaJamLate = Math.floor(jumlahLateMinutes / 60);
+            this.setState({
+              sisaJamLate: sisaJamLate,
+              minutesLate: minutesLate,
+            });
+          } else {
+            this.setState({
+              sisaJamLate: 0,
+              minutesLate: 0,
+            });
+          }
+          if (lateTimesHours.length === 1) {
+            // lateTimesHours.reduce((acc, curr) => {
+            //   this.setState({
+            //     hoursLate:
+            //       parseInt(acc) + parseInt(curr) + this.state.sisaJamLate,
+            //   });
+            //   console.log("jamLate", this.state.hoursLate);
+            // }, 0);
+            let jumlahHoursLate = lateTimesHours.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const jamLate = jumlahHoursLate + this.state.sisaJamLate;
+            this.setState({
+              hoursLate: jamLate,
+            });
+          } else if (lateTimesHours.length > 1) {
+            // let coba = [8, 7, 2, 0];
+            // lateTimesHours.reduce((acc, curr) => {
+            //   this.setState({
+            //     hoursLate:
+            //       parseInt(acc) + parseInt(curr) + this.state.sisaJamLate,
+            //   });
+            //   console.log("jamLate", this.state.hoursLate);
+            //   console.log("sisaJamLate", parseInt(this.state.sisaJamLate));
+            // });
+            let jumlahHoursLate = lateTimesHours.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const jamLate = jumlahHoursLate + this.state.sisaJamLate;
+            this.setState({
+              hoursLate: jamLate,
+            });
+          } else {
+            this.setState({ hoursLate: 0 });
+          }
+          // overtime
+          if (overtimeMinutes.length === 1) {
+            // overtimeMinutes.reduce((acc, curr) => {
+            //   this.setState(
+            //     {
+            //       sisaJamOvertime: Math.floor(
+            //         (parseInt(acc) + parseInt(curr)) / 60
+            //       ),
+            //       minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60,
+            //     },
+            //     () => console.log(this.state.minutesOvertime)
+            //   );
+            // }, 0);
+            let jumlahOvertimeOutMinutes = overtimeMinutes.reduce(
+              (acc, curr) => {
+                return acc + curr;
+              },
+              0
+            );
+            const minutesOvertime = jumlahOvertimeOutMinutes % 60;
+            const sisaJamOvertime = Math.floor(jumlahOvertimeOutMinutes / 60);
+            this.setState({
+              sisaJamOvertime: sisaJamOvertime,
+              minutesOvertime: minutesOvertime,
+            });
+          } else if (overtimeMinutes.length > 1) {
+            // overtimeMinutes.reduce((acc, curr) => {
+            //   this.setState(
+            //     {
+            //       sisaJamOvertime: Math.floor(
+            //         (parseInt(acc) + parseInt(curr)) / 60
+            //       ),
+            //       minutesOvertime: (parseInt(acc) + parseInt(curr)) % 60,
+            //     },
+            //     () => console.log(this.state.minutesOvertime)
+            //   );
+            // });
+            let jumlahOvertimeOutMinutes = overtimeMinutes.reduce(
+              (acc, curr) => {
+                return acc + curr;
+              },
+              0
+            );
+            const minutesOvertime = jumlahOvertimeOutMinutes % 60;
+            const sisaJamOvertime = Math.floor(jumlahOvertimeOutMinutes / 60);
+            this.setState({
+              sisaJamOvertime: sisaJamOvertime,
+              minutesOvertime: minutesOvertime,
+            });
+          } else {
+            this.setState({ minutesOvertime: 0, sisaJam: 0 });
+          }
+          if (overtimeHours.length === 1) {
+            // overtimeHours.reduce((acc, curr) => {
+            //   this.setState({
+            //     jamOvertime:
+            //       parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime,
+            //   });
+            // }, 0);
+            let jumlahHoursOvertime = overtimeHours.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const jamOvertime =
+              jumlahHoursOvertime + this.state.sisaJamOvertime;
+            this.setState({
+              jamOvertime: jamOvertime,
+            });
+          } else if (overtimeHours.length > 1) {
+            // overtimeHours.reduce((acc, curr) => {
+            //   this.setState({
+            //     jamOvertime:
+            //       parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime,
+            //   });
+            // });
+            let jumlahHoursOvertime = overtimeHours.reduce((acc, curr) => {
+              return acc + curr;
+            }, 0);
+            const jamOvertime =
+              jumlahHoursOvertime + this.state.sisaJamOvertime;
+            this.setState({
+              jamOvertime: jamOvertime,
+            });
+          } else {
+            this.setState({
+              jamOvertime: 0,
+            });
+          }
+          if (totalMinutes.length === 1) {
+            // totalMinutes.reduce((acc, curr) => {
+            //   this.setState({
+            //     sisaJamTotalMinutes: Math.floor(
+            //       (parseInt(acc) + parseInt(curr)) / 60
+            //     ),
+            //     minutesTotal: (parseFloat(acc) + parseFloat(curr)) % 60,
+            //   });
+            // }, 0);
+            // console.log("total minutes", totalMinutes);
+            // console.log("total minutes2", this.state.minutesTotal);
+
+            let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+              return parseInt(acc) + parseInt(currz);
+            }, 0);
+            const sisaJamTotalMinutes = Math.floor(totalJumlahMenit / 60);
+            const minutesTotal = totalJumlahMenit % 60;
+            this.setState({
+              sisaJamTotalMinutes: sisaJamTotalMinutes,
+              minutesTotal: minutesTotal,
+            });
+          } else if (totalMinutes.length > 1) {
+            // totalMinutes.reduce((acc, curr) => {
+            //   this.setState({
+            //     sisaJamTotalMinutes: Math.floor(
+            //       (parseInt(acc) + parseInt(curr)) / 60
+            //     ),
+            //     minutesTotal: (parseFloat(acc) + parseFloat(curr)) % 60,
+            //   });
+            // });
+            let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
+              return parseInt(acc) + parseInt(currz);
+            }, 0);
+            const sisaJamTotalMinutes = Math.floor(totalJumlahMenit / 60);
+            const minutesTotal = totalJumlahMenit % 60;
+            this.setState({
+              sisaJamTotalMinutes: sisaJamTotalMinutes,
+              minutesTotal: minutesTotal,
+            });
+          } else {
+            this.setState({ minutesTotal: 0, sisaJamTotalMinutes: 0 });
+          }
+          if (totalHours.length === 1) {
+            // totalHours.reduce((acc, curr) => {
+            //   this.setState({
+            //     jamTotal:
+            //       parseInt(acc) +
+            //       parseInt(curr) +
+            //       this.state.sisaJamTotalMinutes,
+            //   });
+            // }, 0);
+            let totalJumlah = totalHours.reduce((exe, croz) => {
+              return exe + croz;
+            }, 0);
+            const jamTotal = totalJumlah + this.state.sisaJamTotalMinutes;
+            this.setState({
+              jamTotal: jamTotal,
+            });
+          } else if (totalHours.length > 1) {
+            // totalHours.reduce((acc, curr) => {
+            //   this.setState({
+            //     jamTotal:
+            //       parseInt(acc) +
+            //       parseInt(curr) +
+            //       this.state.sisaJamTotalMinutes,
+            //   });
+            // });
+            let totalJumlah = totalHours.reduce((exe, croz) => {
+              return exe + croz;
+            }, 0);
+            const jamTotal = totalJumlah + this.state.sisaJamTotalMinutes;
+            this.setState({
+              jamTotal: jamTotal,
+            });
+          } else {
+            this.setState({
+              jamTotal: 0,
+            });
+          }
           this.setState({ absence: x, loading: false });
         })
         .catch((err) => {
@@ -1366,7 +1927,8 @@ class AllAbsen extends React.Component {
                                 ? convertDate(prop.get("earlyTimes"), "k")
                                 : prop.get("absenKeluar") !== undefined
                                 ? convertDate(prop.get("absenKeluar"), "k")
-                                : ""}
+                                : prop.get("overtimeOut") !== undefined
+                                ? convertDate(prop.get("overtimeOut"), "k") : ""}
                             </td>
 
                             {/* Dutty off Minutes */}
@@ -1389,7 +1951,8 @@ class AllAbsen extends React.Component {
                                 ? convertDate(prop.get("earlyTimes"), "m")
                                 : prop.get("absenKeluar") !== undefined
                                 ? convertDate(prop.get("absenKeluar"), "m")
-                                : ""}
+                                : prop.get("overtimeOut") !== undefined
+                                ? convertDate(prop.get("overtimeOut"), "m") : ""}
                             </td>
 
                             {/* Late In Hours */}
@@ -1514,9 +2077,7 @@ class AllAbsen extends React.Component {
                             "Overtime"
                           )
                         : ""} */}
-                              {prop.get("absenKeluar") === undefined
-                                ? ""
-                                : prop.get("overtimeOut") !== undefined
+                              {prop.get("overtimeOut") !== undefined
                                 ? moment
                                     .duration(
                                       convertDate(
@@ -1546,13 +2107,11 @@ class AllAbsen extends React.Component {
                             "Overtime"
                           )
                         : ""} */}
-                              {prop.get("absenKeluar") === undefined
-                                ? ""
-                                : prop.get("overtimeOut") !== undefined
+                              {prop.get("overtimeOut") !== undefined
                                 ? moment
                                     .duration(
                                       convertDate(
-                                        prop.get("absenKeluar"),
+                                        prop.get("overtimeOut"),
                                         "HH:mm"
                                       ),
                                       "HH:mm"
@@ -1676,7 +2235,7 @@ class AllAbsen extends React.Component {
                           "hours",
                           "overtimeOut"
                         ).reduce(this.getSum, 0)} */}
-                        {this.state.jamOvertime.toString()}
+                        {this.state.jamOvertime}
                       </td>
                       <td>
                         {/* {this.getTotalHours(
@@ -1684,7 +2243,7 @@ class AllAbsen extends React.Component {
                           "minutes",
                           "overtimeOut"
                         ).reduce(this.getSum, 0)} */}
-                        {this.state.minutesOvertime.toString()}
+                        {this.state.minutesOvertime}
                       </td>
                       <td>
                         {/* {this.getTotalHours(

@@ -113,13 +113,13 @@ class ViewHistory extends React.Component {
 
     if (searchBy === "Absen") {
       // query.equalTo("leaderId", getLeaderId);
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
       // query.limit(this.state.pageRangeDisplayed);
-      query.descending("absenMasuk");
+      query.descending("createdAt");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
@@ -355,12 +355,12 @@ class ViewHistory extends React.Component {
         query.greaterThanOrEqualTo("createdAt", start.toDate());
         query.lessThan("createdAt", finish.toDate());
       }
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
-      query.descending("absenMasuk");
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
+      query.descending("createdAt");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
@@ -417,11 +417,11 @@ class ViewHistory extends React.Component {
         className: "_User",
         objectId: userId,
       });
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
       // query.limit(this.state.pageRangeDisplayed);
       query.equalTo("statusIzin", 2);
       // query.equalTo("status", 3);
@@ -480,11 +480,11 @@ class ViewHistory extends React.Component {
         className: "_User",
         objectId: userId,
       });
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
       // query.equalTo("leaderId", getLeaderId);
       query
         .find()
@@ -512,8 +512,8 @@ class ViewHistory extends React.Component {
         start.startOf("day");
         const finish = new moment(start);
         finish.add(1, "day");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("lateTimes", start.toDate());
+        query.lessThan("lateTimes", finish.toDate());
       }
       if (parseInt(this.state.status) === 5) {
         const d = new Date();
@@ -521,8 +521,8 @@ class ViewHistory extends React.Component {
         start.startOf("week");
         const finish = new moment(start);
         finish.add(1, "week");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("lateTimes", start.toDate());
+        query.lessThan("lateTimes", finish.toDate());
       }
       if (parseInt(this.state.status) === 6) {
         const d = new Date();
@@ -530,21 +530,21 @@ class ViewHistory extends React.Component {
         start.startOf("month");
         const finish = new moment(start);
         finish.add(1, "month");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("lateTimes", start.toDate());
+        query.lessThan("lateTimes", finish.toDate());
       }
       query.include("user");
-      query.descending("absenMasuk");
+      query.descending("lateTimes");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
         objectId: userId,
       });
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
       // query.equalTo("status", 3);
       // query.equalTo("leaderId", getLeaderId);
       query
@@ -572,8 +572,8 @@ class ViewHistory extends React.Component {
         start.startOf("day");
         const finish = new moment(start);
         finish.add(1, "day");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("overtimeOut", start.toDate());
+        query.lessThan("overtimeOut", finish.toDate());
       }
       if (parseInt(this.state.status) === 5) {
         const d = new Date();
@@ -581,8 +581,8 @@ class ViewHistory extends React.Component {
         start.startOf("week");
         const finish = new moment(start);
         finish.add(1, "week");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("overtimeOut", start.toDate());
+        query.lessThan("overtimeOut", finish.toDate());
       }
       if (parseInt(this.state.status) === 6) {
         const d = new Date();
@@ -590,21 +590,21 @@ class ViewHistory extends React.Component {
         start.startOf("month");
         const finish = new moment(start);
         finish.add(1, "month");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("overtimeOut", start.toDate());
+        query.lessThan("overtimeOut", finish.toDate());
       }
       query.include("user");
-      query.descending("absenMasuk");
+      query.descending("overtimeOut");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
         objectId: userId,
       });
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
       // query.equalTo("leaderId", getLeaderId);
       query
         .find()
@@ -631,8 +631,8 @@ class ViewHistory extends React.Component {
         start.startOf("day");
         const finish = new moment(start);
         finish.add(1, "day");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+        query.lessThan("earlyTimes", finish.toDate());
       }
       if (parseInt(this.state.status) === 5) {
         const d = new Date();
@@ -640,8 +640,8 @@ class ViewHistory extends React.Component {
         start.startOf("week");
         const finish = new moment(start);
         finish.add(1, "week");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+        query.lessThan("earlyTimes", finish.toDate());
       }
       if (parseInt(this.state.status) === 6) {
         const d = new Date();
@@ -649,21 +649,21 @@ class ViewHistory extends React.Component {
         start.startOf("month");
         const finish = new moment(start);
         finish.add(1, "month");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.greaterThanOrEqualTo("earlyTimes", start.toDate());
+        query.lessThan("earlyTimes", finish.toDate());
       }
       query.include("user");
-      query.descending("absenMasuk");
+      query.descending("earlyTimes");
       query.equalTo("user", {
         __type: "Pointer",
         className: "_User",
         objectId: userId,
       });
-      query.equalTo("leaderIdNew", {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId(),
-      });
+      // query.equalTo("leaderIdNew", {
+      //   __type: "Pointer",
+      //   className: "_User",
+      //   objectId: getLeaderId(),
+      // });
       // query.equalTo("leaderId", getLeaderId);
       query
         .find()

@@ -313,8 +313,8 @@ class Index extends React.Component {
     const finish = new moment(start);
     finish.add(1, 'day');
 
-    query.greaterThanOrEqualTo('absenMasuk', start.toDate());
-    query.lessThan('absenMasuk', finish.toDate());
+    query.greaterThanOrEqualTo('createdAt', start.toDate());
+    query.lessThan('createdAt', finish.toDate());
     query.include('user');
     query
       .find()

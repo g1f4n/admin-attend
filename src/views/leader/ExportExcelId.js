@@ -196,7 +196,7 @@ class ExportExcelId extends React.Component {
             overtimeMinutes.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -210,7 +210,7 @@ class ExportExcelId extends React.Component {
             overtimeHours.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -223,17 +223,58 @@ class ExportExcelId extends React.Component {
             );
           });
 
+          // // Total Hours
+          // x.map((value, index) => {
+          //   totalMinutes.push(
+          //     moment
+          //       .duration(
+          //         convertDate(value.get("absenKeluar"), "HH:mm"),
+          //         "HH:mm"
+          //       )
+          //       .subtract(
+          //         moment.duration(
+          //           convertDate(value.get("absenMasuk"), "HH:mm"),
+          //           "HH:mm"
+          //         )
+          //       )
+          //       .minutes()
+          //   );
+          //   totalHours.push(
+          //     moment
+          //       .duration(
+          //         convertDate(value.get("absenKeluar"), "HH:mm"),
+          //         "HH:mm"
+          //       )
+          //       .subtract(
+          //         moment.duration(
+          //           convertDate(value.get("absenMasuk"), "HH:mm"),
+          //           "HH:mm"
+          //         )
+          //       )
+          //       .hours()
+          //   );
+          // });
           // Total Hours
           x.map((value, index) => {
             totalMinutes.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  value.get("earlyTimes") !== undefined
+                    ? convertDate(value.get("earlyTimes"), "HH:mm")
+                    : value.get("overtimeOut") !== undefined
+                    ? convertDate(value.get("overtimeOut"), "HH:mm")
+                    : value.get("absenKeluar") !== undefined
+                    ? convertDate(value.get("absenKeluar"), "HH:mm")
+                    : `00:00`,
                   "HH:mm"
                 )
                 .subtract(
                   moment.duration(
-                    convertDate(value.get("absenMasuk"), "HH:mm"),
+                    value.get("lateTimes") !== undefined
+                      ? convertDate(value.get("lateTimes"), "HH:mm")
+                      : value.get("absenMasuk") !== undefined
+                      ? convertDate(value.get("absenMasuk"), "HH:mm")
+                      : `00:00`,
                     "HH:mm"
                   )
                 )
@@ -242,12 +283,20 @@ class ExportExcelId extends React.Component {
             totalHours.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  value.get("earlyTimes") !== undefined
+                    ? convertDate(value.get("earlyTimes"), "HH:mm")
+                    : value.get("overtimeOut") !== undefined
+                    ? convertDate(value.get("overtimeOut"), "HH:mm")
+                    : value.get("absenKeluar") !== undefined
+                    ? convertDate(value.get("absenKeluar"), "HH:mm")
+                    : `00:00`,
                   "HH:mm"
                 )
                 .subtract(
                   moment.duration(
-                    convertDate(value.get("absenMasuk"), "HH:mm"),
+                    value.get("lateTimes") !== undefined
+                      ? convertDate(value.get("lateTimes"), "HH:mm")
+                      : convertDate(value.get("absenMasuk"), "HH:mm"),
                     "HH:mm"
                   )
                 )
@@ -733,7 +782,7 @@ class ExportExcelId extends React.Component {
             overtimeMinutes.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -747,7 +796,7 @@ class ExportExcelId extends React.Component {
             overtimeHours.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -1288,7 +1337,7 @@ class ExportExcelId extends React.Component {
             overtimeMinutes.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -1302,7 +1351,7 @@ class ExportExcelId extends React.Component {
             overtimeHours.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -1846,7 +1895,7 @@ class ExportExcelId extends React.Component {
             overtimeMinutes.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -1860,7 +1909,7 @@ class ExportExcelId extends React.Component {
             overtimeHours.push(
               moment
                 .duration(
-                  convertDate(value.get("absenKeluar"), "HH:mm"),
+                  convertDate(value.get("overtimeOut"), "HH:mm"),
                   "HH:mm"
                 )
                 .subtract(
@@ -2442,7 +2491,7 @@ class ExportExcelId extends React.Component {
         }).map((value, index) => {
           overtimeMinutes.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(convertDate(value.get("overtimeOut"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
                   `${value.get("user").attributes.jamKeluar}:00`,
@@ -2453,7 +2502,7 @@ class ExportExcelId extends React.Component {
           );
           overtimeHours.push(
             moment
-              .duration(convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(convertDate(value.get("overtimeOut"), "HH:mm"), "HH:mm")
               .subtract(
                 moment.duration(
                   `${value.get("user").attributes.jamKeluar}:00`,
@@ -3515,7 +3564,7 @@ class ExportExcelId extends React.Component {
                           <tr>
                             {/* Day */}
                             <td>
-                              {convertDate(prop.get("absenMasuk"), "ddd")}
+                              {convertDate(prop.get("createdAt"), "ddd")}
                             </td>
 
                             {/* Date */}
@@ -3605,7 +3654,8 @@ class ExportExcelId extends React.Component {
                                 ? convertDate(prop.get("earlyTimes"), "k")
                                 : prop.get("absenKeluar") !== undefined
                                 ? convertDate(prop.get("absenKeluar"), "k")
-                                : ""}
+                                : prop.get("overtimeOut") !== undefined
+                                ? convertDate(prop.get("overtimeOut"), "k") : ""}
                             </td>
 
                             {/* Dutty off Minutes */}
@@ -3628,7 +3678,8 @@ class ExportExcelId extends React.Component {
                                 ? convertDate(prop.get("earlyTimes"), "m")
                                 : prop.get("absenKeluar") !== undefined
                                 ? convertDate(prop.get("absenKeluar"), "m")
-                                : ""}
+                                : prop.get("overtimeOut") !== undefined
+                                ? convertDate(prop.get("overtimeOut"), "m") : ""}
                             </td>
 
                             {/* Late In Hours */}
@@ -3753,9 +3804,7 @@ class ExportExcelId extends React.Component {
                             "Overtime"
                           )
                         : ""} */}
-                              {prop.get("absenKeluar") === undefined
-                                ? ""
-                                : prop.get("overtimeOut") !== undefined
+                              {prop.get("overtimeOut") !== undefined
                                 ? moment
                                     .duration(
                                       convertDate(
@@ -3785,9 +3834,7 @@ class ExportExcelId extends React.Component {
                             "Overtime"
                           )
                         : ""} */}
-                              {prop.get("absenKeluar") === undefined
-                                ? ""
-                                : prop.get("overtimeOut") !== undefined
+                              {prop.get("overtimeOut") !== undefined
                                 ? moment
                                     .duration(
                                       convertDate(
