@@ -100,6 +100,9 @@ class PulangCepat extends React.Component {
     const Absence = new Parse.Object.extend("Absence");
     const query = new Parse.Query(Absence);
 
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+
     if (parseInt(this.state.statusWaktu) === 4) {
       const d = new Date();
       const start = new moment(this.state.startDate);
@@ -162,12 +165,14 @@ class PulangCepat extends React.Component {
     }
 
     query.exists("earlyTimes");
-    query.equalTo(rolesIDKey, {
+    hierarkiQuery.equalTo(rolesIDKey, {
       __type: "Pointer",
       className: "_User",
       objectId: getLeaderId(),
     });
-    query.notContainedIn("roles", containedRoles);
+    // hierarkiQuery.notContainedIn("roles", containedRoles);
+    hierarkiQuery.containedIn("roles", containedRoles);
+    query.matchesQuery('user', hierarkiQuery);
     // if (
     //   parseInt(this.state.status) === 1 ||
     //   parseInt(this.state.status) === 0
@@ -761,7 +766,7 @@ class PulangCepat extends React.Component {
                           )}
                           <td>{prop.get("user").attributes.nik}</td>
                           <td>{prop.get("fullname")}</td>
-                          <td>{prop.get("alasan")}</td>
+                          <td>{prop.get("alasanKeluar")}</td>
                           {prop.get("approvalEarly") === 1 ? (
                             <td>Approved</td>
                           ) : prop.get("approvalEarly") === 0 ? (

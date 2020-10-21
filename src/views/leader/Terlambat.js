@@ -140,6 +140,9 @@ class Terlambat extends React.Component {
     const Absence = new Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
 
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+
     if (parseInt(this.state.statusWaktu) === 4) {
       const d = new Date();
       const start = new moment(this.state.startDate);
@@ -199,12 +202,13 @@ class Terlambat extends React.Component {
     }
 
     query.exists('lateTimes');
-    query.equalTo(rolesIDKey, {
+    hierarkiQuery.equalTo(rolesIDKey, {
       __type: 'Pointer',
       className: '_User',
       objectId: getLeaderId()
     });
-    query.notContainedIn('roles', containedRoles);
+    query.matchesQuery('user', hierarkiQuery);
+    hierarkiQuery.notContainedIn('roles', containedRoles);
     // if (
     //   parseInt(this.state.status) === 1 ||
     //   parseInt(this.state.status) === 0
@@ -214,7 +218,7 @@ class Terlambat extends React.Component {
     // query.equalTo("status", parseInt(this.state.status));
     // query.greaterThanOrEqualTo("createdAt", start.toDate());
     // query.lessThan("createdAt", finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
+    // query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
     query.include('user');
     query
       .find()
@@ -583,7 +587,13 @@ class Terlambat extends React.Component {
                               inputProps={{
                                 placeholder: 'Date Picker Here',
                                 required: true,
-                                readOnly: true
+                                // readOnly: true
+                                disabled:
+                                  parseInt(this.state.statusWaktu) === 4 ||
+                                  parseInt(this.state.statusWaktu) === 5 ||
+                                  parseInt(this.state.statusWaktu) === 6
+                                    ? false
+                                    : true,
                               }}
                               viewMode={parseInt(this.state.statusWaktu) === 6 ? 'months' : 'days'}
                               dateFormat={
@@ -727,7 +737,7 @@ class Terlambat extends React.Component {
                           </td>
                           <td>{prop.get('user').attributes.nik}</td>
                           <td>{prop.get('fullname')}</td>
-                          <td>{prop.get('alasan')}</td>
+                          <td>{prop.get('alasanMasuk')}</td>
                           {prop.get('approvalLate') === 1 ? (
                             <td>Approved</td>
                           ) : prop.get('approvalLate') === 0 ? (

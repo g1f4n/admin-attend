@@ -85,7 +85,8 @@ class Lembur extends React.Component {
   }
 
   componentDidMount() {
-    this.getData();
+    // this.getData();
+    this.getDataByLevel()
   }
 
   getData = () => {
@@ -135,15 +136,18 @@ class Lembur extends React.Component {
     const Absence = new Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
 
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+
     if (parseInt(this.state.statusWaktu) === 4) {
       const d = new Date();
       const start = new moment(this.state.startDate);
       start.startOf('day');
       const finish = new moment(start);
       finish.add(1, 'day');
-      query.exists('overtimeIn');
-      query.greaterThanOrEqualTo('overtimeIn', start.toDate());
-      query.lessThan('overtimeIn', finish.toDate());
+      query.exists('overtimeOut');
+      query.greaterThanOrEqualTo('overtimeOut', start.toDate());
+      query.lessThan('overtimeOut', finish.toDate());
     }
     if (parseInt(this.state.statusWaktu) === 5) {
       const d = new Date();
@@ -151,9 +155,9 @@ class Lembur extends React.Component {
       start.startOf('week');
       const finish = new moment(start);
       finish.add(1, 'week');
-      query.exists('overtimeIn');
-      query.greaterThanOrEqualTo('overtimeIn', start.toDate());
-      query.lessThan('overtimeIn', finish.toDate());
+      query.exists('overtimeOut');
+      query.greaterThanOrEqualTo('overtimeOut', start.toDate());
+      query.lessThan('overtimeOut', finish.toDate());
     }
     if (parseInt(this.state.statusWaktu) === 6) {
       const d = new Date();
@@ -161,9 +165,9 @@ class Lembur extends React.Component {
       start.startOf('month');
       const finish = new moment(start);
       finish.add(1, 'month');
-      query.exists('overtimeIn');
-      query.greaterThanOrEqualTo('overtimeIn', start.toDate());
-      query.lessThan('overtimeIn', finish.toDate());
+      query.exists('overtimeOut');
+      query.greaterThanOrEqualTo('overtimeOut', start.toDate());
+      query.lessThan('overtimeOut', finish.toDate());
     }
     if (parseInt(this.state.status) === 3 || status === 3) {
       if (startDate !== 'today') {
@@ -173,9 +177,9 @@ class Lembur extends React.Component {
         start.startOf(filterType);
         const finish = new moment(start);
         finish.add(1, filterType);
-        query.exists('overtimeIn');
-        query.greaterThanOrEqualTo('overtimeIn', start.toDate());
-        query.lessThan('overtimeIn', finish.toDate());
+        query.exists('overtimeOut');
+        query.greaterThanOrEqualTo('overtimeOut', start.toDate());
+        query.lessThan('overtimeOut', finish.toDate());
       }
       // const d = new Date();
       // const start = new moment(d);
@@ -190,16 +194,18 @@ class Lembur extends React.Component {
     }
     if (parseInt(this.state.status) === 1 || parseInt(this.state.status) === 0) {
       query.descending('updatedAt');
-      query.exists('overtimeIn');
+      query.exists('overtimeOut');
     }
 
-    query.exists('overtimeIn');
-    query.equalTo(rolesIDKey, {
+    query.exists('overtimeOut');
+    hierarkiQuery.equalTo(rolesIDKey, {
       __type: 'Pointer',
       className: '_User',
       objectId: getLeaderId()
     });
-    query.notContainedIn('roles', containedRoles);
+    // query.notContainedIn('roles', containedRoles);
+    hierarkiQuery.containedIn('roles', containedRoles);
+    query.matchesQuery('user', hierarkiQuery);
     // if (
     //   parseInt(this.state.status) === 1 ||
     //   parseInt(this.state.status) === 0
@@ -209,7 +215,7 @@ class Lembur extends React.Component {
     // query.equalTo("status", parseInt(this.state.status));
     // query.greaterThanOrEqualTo("createdAt", start.toDate());
     // query.lessThan("createdAt", finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
+    // query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
     query.include('user');
     query
       .find()
@@ -714,7 +720,7 @@ class Lembur extends React.Component {
                           )}
                           <td>{prop.get('user').attributes.nik}</td>
                           <td>{prop.get('fullname')}</td>
-                          <td>{prop.get('alasan')}</td>
+                          <td>{prop.get('alasanKeluar')}</td>
                           {prop.get('approvalOvertime') === 1 ? (
                             <td>Approved</td>
                           ) : prop.get('approvalOvertime') === 0 ? (

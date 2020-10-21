@@ -364,6 +364,7 @@ class SelfRegistration extends React.Component {
     query.get(this.state.userId).then((x) => {
       x.set('status', 0);
       x.set('alasanReject', this.state.reason);
+      x.set('imei', '-');
       x.save()
         .then(() => {
           this.handleSendEmail(

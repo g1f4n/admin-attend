@@ -769,7 +769,7 @@ class Maps extends React.Component {
     // this.getDaftarLeader();
     // this.getLeaderStaff();
     // this.getDataTerlambat();
-    this.getDaftarAbsenByLevel();
+    this.getDaftarAbsenByLevel2();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -931,6 +931,91 @@ class Maps extends React.Component {
       });
   };
 
+  // Query Absen
+  queryAbsenByLevel = (rolesIdKey, containedRoles, userId) => {
+    const hierarki = new Parse.User();
+        const hierarkiQuery = new Parse.Query(hierarki);
+        hierarkiQuery.containedIn("roles", containedRoles);
+        hierarkiQuery.equalTo(rolesIdKey, {
+          __type: "Pointer",
+          className: "_User",
+          objectId: getLeaderId(),
+        });
+
+        const Absence = Parse.Object.extend("Absence");
+        const query = new Parse.Query(Absence);
+
+        const d = new Date();
+        const start = new moment(d);
+        start.startOf("day");
+        const finish = new moment(start);
+        finish.add(1, "day");
+
+        // query.equalTo('leaderIdNew', {
+        //   __type: 'Pointer',
+        //   className: '_User',
+        //   objectId: getLeaderId()
+        // });
+        query.ascending("createdAt");
+        query.greaterThanOrEqualTo("createdAt", start.toDate());
+        query.lessThan("createdAt", finish.toDate());
+        query.matchesQuery("user", hierarkiQuery);
+        query.include("user");
+        query.equalTo("user", {
+          __type: "Pointer",
+          className: "_User",
+          objectId: userId,
+        });
+        query
+          .find()
+          .then((x) => {
+            console.log("user", x);
+            this.setState({ dataAbsen: x, loading: false });
+          })
+          .catch((err) => {
+            alert(err.message);
+            this.setState({ loading: false });
+          });
+  };
+
+  getDaftarAbsenByLevel2 = () => {
+    this.setState({ loading: true });
+    const userRole = getUserRole();
+    const id = this.props.match.params.id;
+
+    switch (userRole) {
+      case "leader":
+        this.queryAbsenByLevel("leaderIdNew", ["staff", "Staff"], id);
+        break;
+      case "supervisor":
+        this.queryAbsenByLevel("supervisorID", ["staff", "leader"], id);
+        break;
+      case "manager":
+        this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"], id);
+        break;
+      case "head":
+        this.queryAbsenByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+        ], id);
+        break;
+      case "gm":
+        this.queryAbsenByLevel("headID", [
+          "staff",
+          "leader",
+          "supervisor",
+          "manager",
+          "head",
+        ], id);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   getDaftarAbsenByLevel = () => {
     this.setState({ loading: true });
     const userRole = getUserRole();
@@ -961,9 +1046,9 @@ class Maps extends React.Component {
         //   className: '_User',
         //   objectId: getLeaderId()
         // });
-        query.ascending("absenMasuk");
-        query.greaterThanOrEqualTo("createdAt", start.toDate());
-        query.lessThan("createdAt", finish.toDate());
+        query.ascending("createdAt");
+        // query.greaterThanOrEqualTo("createdAt", start.toDate());
+        // query.lessThan("createdAt", finish.toDate());
         query.matchesQuery("user", hierarkiQuery);
         query.include("user");
         query.equalTo("user", {

@@ -139,6 +139,10 @@ class Izin extends React.Component {
     // contained roles must be array
     const Izin = new Parse.Object.extend('Izin');
     const query = new Parse.Query(Izin);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+
     query.equalTo('statusIzin', 1);
 
     if (parseInt(this.state.statusWaktu) === 4) {
@@ -194,22 +198,24 @@ class Izin extends React.Component {
       query.descending('updatedAt');
     }
 
-    query.equalTo(rolesIDKey, {
+    hierarkiQuery.equalTo(rolesIDKey, {
       __type: 'Pointer',
       className: '_User',
       objectId: getLeaderId()
     });
-    query.notContainedIn('roles', containedRoles);
+    // hierarkiQuery.notContainedIn('roles', containedRoles);
+    hierarkiQuery.containedIn('roles', containedRoles);
     // if (
     //   parseInt(this.state.status) === 1 ||
     //   parseInt(this.state.status) === 0
     // ) {
     query.equalTo('status', status);
+    query.matchesQuery('user', hierarkiQuery);
     // }
     // query.equalTo("status", parseInt(this.state.status));
     // query.greaterThanOrEqualTo("createdAt", start.toDate());
     // query.lessThan("createdAt", finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
+    // query.notContainedIn('roles', ['admin', 'Admin', 'Leader', 'leader']);
     query.include('user');
     query
       .find()
