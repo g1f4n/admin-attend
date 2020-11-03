@@ -60,6 +60,7 @@ import { getLeaderId } from 'utils';
 import { Link } from 'react-router-dom';
 import { convertDate } from 'utils';
 import { slicename } from 'utils/slice';
+import Pagination from 'react-js-pagination';
 
 const MapWrapper = compose(
   withStateHandlers(
@@ -106,7 +107,7 @@ const MapWrapper = compose(
         // icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
         // 	? 'red'
         // 	: x.get('user').attributes.color}-dot.png`)}
-        title={`${x.get('fullname')} absen masuk: ${convertDate(x.get('absenMasuk'), 'HH:mm:ss')}`}
+        title={`${x.get('fullname')} absen masuk: ${x.get("lateTimes") !== undefined ? convertDate(x.get('lateTimes'), 'HH:mm:ss') : convertDate(x.get('absenMasuk'), 'HH:mm:ss')}`}
         position={{
           lat: parseFloat(x.get('latitude')),
           lng: parseFloat(x.get('longitude'))
@@ -127,11 +128,11 @@ const MapWrapper = compose(
 
               <br />
               <br />
-              {x.className === 'Late' && <p>Terlambat</p>}
+              {x.get("lateTimes") !== undefined && <p>Terlambat</p>}
               <p>
                 Absen masuk:{' '}
-                <span style={{ color: x.className === 'Late' ? 'red' : 'blue' }}>
-                  {convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
+                <span style={{ color: x.get("lateTimes") !== undefined ? 'red' : 'blue' }}>
+                  {x.get("lateTimes") !== undefined ? convertDate(x.get('lateTimes'), 'HH:mm:ss') : convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
                 </span>
               </p>
             </div>
@@ -175,6 +176,7 @@ class Index extends React.Component {
       daftarRequest: [],
       daftarLeader: [],
       dataAbsen: [],
+      resPerPage: 20,
       late: [],
       avgLat: 0,
       avgLng: 0,
@@ -190,6 +192,7 @@ class Index extends React.Component {
     this.getDaftarLeader();
     this.getLeaderStaff();
     this.getDataTerlambat();
+    // this.getLeaderStaffFilter();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -307,6 +310,9 @@ class Index extends React.Component {
     const Absence = Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
 
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+
     const d = new Date();
     const start = new moment(d);
     start.startOf('day');
@@ -315,6 +321,7 @@ class Index extends React.Component {
 
     query.greaterThanOrEqualTo('createdAt', start.toDate());
     query.lessThan('createdAt', finish.toDate());
+    query.matchesQuery("user", hierarkiQuery);
     query.include('user');
     query
       .find()
@@ -322,6 +329,46 @@ class Index extends React.Component {
         x.map((y) => (y.select = false));
         console.log(x);
         this.setState({ dataAbsen: x });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ loading: false });
+      });
+  };
+
+  getLeaderStaffFilter = (pageNumber = 1) => {
+    this.setState({ loading: true, page: pageNumber });
+
+    const {resPerPage} = this.state;
+
+    const Absence = Parse.Object.extend('Absence');
+    const query = new Parse.Query(Absence);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+
+    const d = new Date();
+    const start = new moment(d);
+    start.startOf('day');
+    const finish = new moment(start);
+    finish.add(1, 'day');
+
+    // Pagination
+    query.skip(resPerPage * pageNumber - resPerPage);
+    query.limit(resPerPage);
+    query.withCount();
+
+    // query.greaterThanOrEqualTo('createdAt', start.toDate());
+    // query.lessThan('createdAt', finish.toDate());
+    query.matchesQuery("user", hierarkiQuery);
+    query.include('user');
+    query
+      .find()
+      .then((x) => {
+        x.map((y) => (y.select = false));
+        // console.log(x);
+        // console.log("totalData", x.count);
+        this.setState({ dataAbsen: x, totalData:x.count });
       })
       .catch((err) => {
         console.log(err);
@@ -600,13 +647,13 @@ class Index extends React.Component {
                             this.scrollToMyRef();
                           }}
                         >
-                          <td>{prop.get('user').attributes.nik}</td>
+                          <td>{prop.get("user").attributes.nik}</td>
                           <td>{prop.get('user').attributes.fullname}</td>
                           <td>
-                            {prop.className === 'Late' ? (
+                            {prop.get("lateTimes") !== undefined ? (
                               <div>
                                 <span style={{ color: 'red' }}>
-                                  {convertDate(prop.get('time'), 'HH:mm:ss')}
+                                  {convertDate(prop.get('lateTimes'), 'HH:mm:ss')}
                                 </span>
                               </div>
                             ) : (
@@ -618,6 +665,18 @@ class Index extends React.Component {
                     )}
                   </tbody>
                 </Table>
+                {/* <Pagination
+                  activePage={this.state.page}
+                  itemsCountPerPage={this.state.resPerPage}
+                  totalItemsCount={this.state.totalData}
+                  pageRangeDisplayed={5}
+                  onChange={(pageNumber) => this.getLeaderStaffFilter(pageNumber)}
+                  innerClass="pagination justify-content-end p-4"
+                  itemClass="page-item mt-2"
+                  linkClass="page-link"
+                  prevPageText="<"
+                  nextPageText=">"
+                /> */}
               </Card>
             </Col>
           </Row>

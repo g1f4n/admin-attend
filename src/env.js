@@ -21,11 +21,19 @@
 //   SERVER_URL: "https://parseapi.back4app.com/",
 // };
 
-// db attend deploy II
+// // db attend deploy II
+// module.exports = {
+//   APPLICATION_ID: "4AEOa4TwHis5BglLYwnQPLUVtCz6r9n4fvYj0OIE",
+//   JAVASCRIPT_KEY: "XM8weIsmVgf39q030IHeEJoKGcuNH11BgH3m94bP",
+//   MASTER_KEY: "8HI7u9w7CkqjAEJ4tLR05RYXzgfERyfbGRrKZqWz",
+//   SERVER_URL: "https://parseapi.back4app.com/",
+// };
+
+// db attend deploy III
 module.exports = {
-  APPLICATION_ID: "4AEOa4TwHis5BglLYwnQPLUVtCz6r9n4fvYj0OIE",
-  JAVASCRIPT_KEY: "XM8weIsmVgf39q030IHeEJoKGcuNH11BgH3m94bP",
-  MASTER_KEY: "8HI7u9w7CkqjAEJ4tLR05RYXzgfERyfbGRrKZqWz",
+  APPLICATION_ID: "HME9QgBNJdLHkzS5rMdt5W2Gw8zowoBndhvlex9i",
+  JAVASCRIPT_KEY: "PH7Om5XJca4ydE5NilYoAypF3KJ0FWPhGexAnHpT",
+  MASTER_KEY: "NStFJOx03JLN996zw3LCOLyLos9bgVBi34MWEXXu",
   SERVER_URL: "https://parseapi.back4app.com/",
 };
 

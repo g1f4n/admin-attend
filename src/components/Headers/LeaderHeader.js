@@ -24,6 +24,7 @@ import { Link } from 'react-router-dom';
 import Parse from 'parse';
 import moment from 'moment';
 import { getLeaderId } from 'utils';
+import { getUserRole } from "utils";
 
 class LeaderHeader extends React.Component {
   constructor(props) {
@@ -59,16 +60,17 @@ class LeaderHeader extends React.Component {
     this.getTotalLeave();
   }
 
-  getTotalStaff = () => {
+  queryTotalStaff = (rolesIdKey, containedRoles) => {
+    
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('leaderIdNew', {
+    query.equalTo(rolesIdKey, {
       __type: 'Pointer',
       className: '_User',
       objectId: getLeaderId()
     });
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.containedIn('roles', containedRoles);
 
     query
       .count()
@@ -78,6 +80,61 @@ class LeaderHeader extends React.Component {
       .catch((err) => {
         alert(err.message);
       });
+  }
+
+  getTotalStaff = () => {
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryTotalStaff("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalStaff("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalStaff("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalStaff("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalStaff("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
+
+    // const User = new Parse.User();
+    // const query = new Parse.Query(User);
+
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    // query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+
+    // query
+    //   .count()
+    //   .then((x) => {
+    //     this.setState({ totalStaff: x });
+    //   })
+    //   .catch((err) => {
+    //     alert(err.message);
+    //   });
   };
 
   toggleNavs = (e, index) => {
@@ -144,10 +201,13 @@ class LeaderHeader extends React.Component {
       });
   };
 
-  getTotalAbsen = () => {
-    this.setState({ loading: true });
+  queryTotalAbsen = (rolesIdKey, containedRoles) => {
     const Absence = Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
+    const userRole = getUserRole();
 
     const d = new Date();
     const start = new moment(d);
@@ -155,14 +215,20 @@ class LeaderHeader extends React.Component {
     const finish = new moment(start);
     finish.add(1, 'day');
 
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
-    });
-
+    query.greaterThanOrEqualTo('absenMasuk', start.toDate());
+    query.lessThan('absenMasuk', finish.toDate());
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: getLeaderId()
+		});
+		query.matchesQuery("user", hierarkiQuery);
     query
       .count()
       .then((x) => {
@@ -172,11 +238,79 @@ class LeaderHeader extends React.Component {
         this.setState({ loading: false });
         window.location.reload(false);
       });
+  }
+
+  getTotalAbsen = () => {
+    this.setState({ loading: true });
+    // const Absence = Parse.Object.extend('Absence');
+    // const query = new Parse.Query(Absence);
+
+    // const hierarki = new Parse.User();
+    // const hierarkiQuery = new Parse.Query(hierarki);
+    const userRole = getUserRole();
+
+    // const d = new Date();
+    // const start = new moment(d);
+    // start.startOf('day');
+    // const finish = new moment(start);
+    // finish.add(1, 'day');
+
+    // query.greaterThanOrEqualTo('createdAt', start.toDate());
+    // query.lessThan('createdAt', finish.toDate());
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    switch (userRole) {
+      case "leader":
+        this.queryTotalAbsen("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalAbsen("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalAbsen("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalAbsen("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalAbsen("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
+
+    // query
+    //   .count()
+    //   .then((x) => {
+    //     this.setState({ totalAbsen: x });
+    //   })
+    //   .catch(({ message }) => {
+    //     this.setState({ loading: false });
+    //     window.location.reload(false);
+    //   });
   };
 
-  getTotalTerlambat = () => {
-    const Late = Parse.Object.extend('Late');
+  queryTotalTerlambat = (rolesIdKey, containedRoles) => {
+    const Late = Parse.Object.extend('Absence');
     const query = new Parse.Query(Late);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
 
     const d = new Date();
     const start = new moment(d);
@@ -184,14 +318,22 @@ class LeaderHeader extends React.Component {
     const finish = new moment(start);
     finish.add(1, 'day');
 
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
-    });
-    query.equalTo('status', 3);
+    query.greaterThanOrEqualTo('lateTimes', start.toDate());
+    query.lessThan('lateTimes', finish.toDate());
+    query.exists("lateTimes")
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: getLeaderId()
+		});
+		query.matchesQuery("user", hierarkiQuery);
+    query.equalTo('approvalLate', 3);
 
     query
       .count()
@@ -202,11 +344,50 @@ class LeaderHeader extends React.Component {
         this.setState({ loading: false });
         window.location.reload(false);
       });
+  }
+
+  getTotalTerlambat = () => {
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryTotalTerlambat("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalTerlambat("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalTerlambat("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalTerlambat("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalTerlambat("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
   };
 
-  getTotalIzin = () => {
+  queryTotalIzin = (rolesIdKey, containedRoles) => {
     const Izin = Parse.Object.extend('Izin');
     const query = new Parse.Query(Izin);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
 
     const d = new Date();
     const start = new moment(d);
@@ -216,11 +397,18 @@ class LeaderHeader extends React.Component {
 
     query.equalTo('statusIzin', 2);
     query.equalTo('status', 3);
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
-    });
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: getLeaderId()
+		});
+		query.matchesQuery("user", hierarkiQuery);
     query
       .count()
       .then((x) => {
@@ -230,11 +418,76 @@ class LeaderHeader extends React.Component {
         this.setState({ loading: false });
         window.location.reload(false);
       });
+  }
+
+  getTotalIzin = () => {
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryTotalIzin("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalIzin("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalIzin("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalIzin("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalIzin("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
+    
+    // const Izin = Parse.Object.extend('Izin');
+    // const query = new Parse.Query(Izin);
+
+    // const d = new Date();
+    // const start = new moment(d);
+    // start.startOf('day');
+    // const finish = new moment(start);
+    // finish.add(1, 'day');
+
+    // query.equalTo('statusIzin', 2);
+    // query.equalTo('status', 3);
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    // query
+    //   .count()
+    //   .then((x) => {
+    //     this.setState({ totalIzin: x });
+    //   })
+    //   .catch(({ message }) => {
+    //     this.setState({ loading: false });
+    //     window.location.reload(false);
+    //   });
   };
 
-  getTotalSakit = () => {
+  queryTotalSakit = (rolesIdKey, containedRoles) => {
     const Izin = Parse.Object.extend('Izin');
     const query = new Parse.Query(Izin);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
 
     const d = new Date();
     const start = new moment(d);
@@ -242,11 +495,18 @@ class LeaderHeader extends React.Component {
     const finish = new moment(start);
     finish.add(1, 'day');
 
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
-    });
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: getLeaderId()
+		});
+		query.matchesQuery("user", hierarkiQuery);
     query.equalTo('statusIzin', 1);
     query.equalTo('status', 3);
     query
@@ -258,6 +518,67 @@ class LeaderHeader extends React.Component {
         this.setState({ loading: false });
         window.location.reload(false);
       });
+  }
+
+  getTotalSakit = () => {
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryTotalSakit("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalSakit("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalSakit("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalSakit("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalSakit("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
+    // const Izin = Parse.Object.extend('Izin');
+    // const query = new Parse.Query(Izin);
+
+    // const d = new Date();
+    // const start = new moment(d);
+    // start.startOf('day');
+    // const finish = new moment(start);
+    // finish.add(1, 'day');
+
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    // query.equalTo('statusIzin', 1);
+    // query.equalTo('status', 3);
+    // query
+    //   .count()
+    //   .then((x) => {
+    //     this.setState({ totalSakit: x });
+    //   })
+    //   .catch(({ message }) => {
+    //     this.setState({ loading: false });
+    //     window.location.reload(false);
+    //   });
   };
 
   getTotalRequest = () => {
@@ -281,9 +602,12 @@ class LeaderHeader extends React.Component {
       });
   };
 
-  getTotalOvertime = () => {
-    const Overtime = Parse.Object.extend('Overtime');
+  queryTotalOvertime = (rolesIdKey, containedRoles) => {
+    const Overtime = Parse.Object.extend('Absence');
     const query = new Parse.Query(Overtime);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
 
     console.log('yesterday', moment().subtract(1, 'days').toDate());
 
@@ -293,13 +617,21 @@ class LeaderHeader extends React.Component {
     const finish = new moment(start);
     finish.add(1, 'day');
 
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+    hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: getLeaderId()
     });
+    query.matchesQuery("user", hierarkiQuery)
+    query.greaterThanOrEqualTo('overtimeOut', start.toDate());
+    query.lessThan('overtimeOut', finish.toDate());
+    query.equalTo("approvalOvertime", 3);
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
     query
       .count()
       .then((x) => {
@@ -309,11 +641,77 @@ class LeaderHeader extends React.Component {
         this.setState({ loading: false });
         window.location.reload(false);
       });
+  }
+
+  getTotalOvertime = () => {
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryTotalOvertime("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalOvertime("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalOvertime("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalOvertime("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalOvertime("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
+    // const Overtime = Parse.Object.extend('Overtime');
+    // const query = new Parse.Query(Overtime);
+
+    // console.log('yesterday', moment().subtract(1, 'days').toDate());
+
+    // const d = new Date();
+    // const start = new moment(d);
+    // start.startOf('day');
+    // const finish = new moment(start);
+    // finish.add(1, 'day');
+
+    // query.greaterThanOrEqualTo('createdAt', start.toDate());
+    // query.lessThan('createdAt', finish.toDate());
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    // query
+    //   .count()
+    //   .then((x) => {
+    //     this.setState({ totalOvertime: x, loading: false });
+    //   })
+    //   .catch(({ message }) => {
+    //     this.setState({ loading: false });
+    //     window.location.reload(false);
+    //   });
   };
 
-  getTotalLeave = () => {
-    const Leave = Parse.Object.extend('EarlyLeave');
+  queryTotalLeave = (rolesIdKey, containedRoles) => {
+    const Leave = Parse.Object.extend('Absence');
     const query = new Parse.Query(Leave);
+
+    const hierarki = new Parse.User();
+    const hierarkiQuery = new Parse.Query(hierarki);
 
     const d = new Date();
     const start = new moment(d);
@@ -321,14 +719,21 @@ class LeaderHeader extends React.Component {
     const finish = new moment(start);
     finish.add(1, 'day');
 
-    query.equalTo('leaderIdNew', {
-      __type: 'Pointer',
-      className: '_User',
-      objectId: getLeaderId()
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: getLeaderId()
     });
-    query.equalTo('status', 3);
-    query.greaterThanOrEqualTo('createdAt', start.toDate());
-    query.lessThan('createdAt', finish.toDate());
+    query.matchesQuery("user", hierarkiQuery)
+    query.equalTo('approvalEarly', 3);
+    query.greaterThanOrEqualTo('earlyTimes', start.toDate());
+    query.lessThan('earlyTimes', finish.toDate());
     query
       .count()
       .then((x) => {
@@ -338,6 +743,69 @@ class LeaderHeader extends React.Component {
         alert(err.message);
         this.setState({ loading: false });
       });
+  }
+
+  getTotalLeave = () => {
+    const userRole = getUserRole();
+
+    switch (userRole) {
+      case "leader":
+        this.queryTotalLeave("leaderIdNew", ["staff"])
+        break;
+      case "supervisor":
+        this.queryTotalLeave("supervisorID", ["staff", "leader"]);
+        break;
+      case "manager":
+        this.queryTotalLeave("managerID", ["staff", "leader", "supervisor"]);
+        break;
+      case "head":
+        this.queryTotalLeave("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        ]);
+        break;
+      case "gm":
+        this.queryTotalLeave("headID", [
+        "staff",
+        "leader",
+        "supervisor",
+        "manager",
+        "head",
+        ]);
+        break;
+    
+      default:
+        break;
+    }
+
+    // const Leave = Parse.Object.extend('EarlyLeave');
+    // const query = new Parse.Query(Leave);
+
+    // const d = new Date();
+    // const start = new moment(d);
+    // start.startOf('day');
+    // const finish = new moment(start);
+    // finish.add(1, 'day');
+
+    // query.equalTo('leaderIdNew', {
+    //   __type: 'Pointer',
+    //   className: '_User',
+    //   objectId: getLeaderId()
+    // });
+    // query.equalTo('status', 3);
+    // query.greaterThanOrEqualTo('createdAt', start.toDate());
+    // query.lessThan('createdAt', finish.toDate());
+    // query
+    //   .count()
+    //   .then((x) => {
+    //     this.setState({ leave: x, loading: false });
+    //   })
+    //   .catch((err) => {
+    //     alert(err.message);
+    //     this.setState({ loading: false });
+    //   });
   };
 
   render() {

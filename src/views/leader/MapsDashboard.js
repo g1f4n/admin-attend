@@ -102,7 +102,10 @@ const MapWrapper = compose(
         // icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
         // 	? 'red'
         // 	: x.get('user').attributes.color}-dot.png`)}
-        title={`${x.get("fullname")} absen masuk: ${convertDate(
+        title={`${x.get("fullname")} absen masuk: ${x.get("lateTimes") !== undefined ? convertDate(
+          x.get("lateTimes"),
+          "HH:mm"
+        ) : convertDate(
           x.get("absenMasuk"),
           "HH:mm"
         )}`}
@@ -134,7 +137,7 @@ const MapWrapper = compose(
                 <span
                   // style={{ color: x.className === "Late" ? "red" : "blue" }}
                   style={{
-                    color: x.get("lateTimes") === "Late" ? "red" : "blue",
+                    color: x.get("lateTimes") !== undefined ? "red" : "blue",
                   }}
                 >
                   {x.get("lateTimes") !== undefined

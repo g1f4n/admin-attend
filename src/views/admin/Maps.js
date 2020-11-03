@@ -37,6 +37,7 @@ import Parse from 'parse';
 import moment from 'moment';
 import { convertDate } from 'utils';
 import { slicename } from 'utils/slice';
+import { getUserRole } from "utils";
 // mapTypeId={google.maps.MapTypeId.ROADMAP}
 
 // const locationArr = [
@@ -149,7 +150,10 @@ const MapWrapper = compose(
 				// icon={require(`./GmapsIcon/${x.get('user').attributes.color === undefined
 				// 	? 'red'
 				// 	: x.get('user').attributes.color}-dot.png`)}
-				title={`${x.get('fullname')} absen masuk: ${convertDate(
+				title={`${x.get('fullname')} absen masuk: ${x.get("lateTimes") !== undefined ? convertDate(
+					x.get('lateTimes'),
+					'HH:mm:ss'
+				) : convertDate(
 					x.get('absenMasuk'),
 					'HH:mm:ss'
 				)}`}
@@ -168,11 +172,11 @@ const MapWrapper = compose(
 							<img src={x.get('selfieImage').url()} height={100} width={100} />
 							<br />
 							<br />
-							{x.className === 'Late' && <p>Terlambat</p>}
+							{x.get('lateTimes') !== undefined && <p>Terlambat</p>}
 							<p>
 								Absen masuk:{' '}
-								<span style={{ color: x.className === 'Late' ? 'red' : 'blue' }}>
-									{convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
+								<span style={{ color: x.get("lateTimes") !== undefined ? 'red' : 'blue' }}>
+									{x.get("lateTimes") !== undefined ? convertDate(x.get('lateTimes'), 'HH:mm:ss') : convertDate(x.get('absenMasuk'), 'HH:mm:ss')}
 								</span>
 							</p>
 						</div>
@@ -222,7 +226,8 @@ class Maps extends React.Component {
 	}
 
 	componentDidMount() {
-		this.getLeaderStaff();
+		// this.getLeaderStaff();
+		this.getLeaderStaff2();
 		this.getDataTerlambat();
 	}
 
@@ -253,8 +258,8 @@ class Maps extends React.Component {
 			className: '_User',
 			objectId: id
 		});
-		query.greaterThanOrEqualTo('absenMasuk', start.toDate());
-		query.lessThan('absenMasuk', finish.toDate());
+		query.greaterThanOrEqualTo('createdAt', start.toDate());
+		query.lessThan('createdAt', finish.toDate());
 		query.include('user');
 		query
 			.find()
@@ -276,6 +281,102 @@ class Maps extends React.Component {
 				this.setState({ loading: false });
 			});
 	};
+
+	queryAbsenByLevel = (rolesIdKey, containedRoles, id) => {
+		// this.setState({ loading: true });
+		// const id = this.props.match.params.id;
+		console.log("iddssa",id);
+
+		const Absence = Parse.Object.extend('Absence');
+		const query = new Parse.Query(Absence);
+
+		const hierarki = new Parse.User();
+        const hierarkiQuery = new Parse.Query(hierarki);
+		
+		const d = new Date();
+		const start = new moment(d);
+		start.startOf('day');
+		const finish = new moment(start);
+		finish.add(1, 'day');
+		
+        hierarkiQuery.containedIn("roles", containedRoles);
+		hierarkiQuery.equalTo(rolesIdKey, {
+			__type: 'Pointer',
+			className: '_User',
+			objectId: id
+		});
+		query.matchesQuery("user", hierarkiQuery);
+		query.greaterThanOrEqualTo('createdAt', start.toDate());
+		query.lessThan('createdAt', finish.toDate());
+		query.include('user');
+		query
+			.find()
+			.then((x) => {
+				console.log(x);
+				//this.getCenterAverage(x);
+
+				// });
+
+				this.setState(
+					{
+						userLocation: x
+					},
+					() => console.log(this.state.userLocation)
+				);
+			})
+			.catch((err) => {
+				console.log(err);
+				this.setState({ loading: false });
+			});
+	}
+
+	getLeaderStaff2 = () => {
+		this.setState({ loading: true });
+		const userRole = getUserRole();
+		const id = this.props.match.params.id;
+		// const roles = id.split("&")
+		// console.log("iddssa", roles)
+
+		const hierarki = new Parse.User();
+		const hierarkiQuery = new Parse.Query(hierarki);
+		hierarkiQuery.get(id).then((roles) => {
+			switch (roles.get("roles")) {
+				case "leader":
+				  this.queryAbsenByLevel("leaderIdNew", ["staff", "Staff"], id);
+				  break;
+				case "supervisor":
+				  this.queryAbsenByLevel("supervisorID", ["staff", "leader"], id);
+				  break;
+				case "manager":
+				  this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"], id);
+				  break;
+				case "head":
+				  this.queryAbsenByLevel("headID", [
+					"staff",
+					"leader",
+					"supervisor",
+					"manager",
+				  ], id);
+				  break;
+				case "gm":
+				  this.queryAbsenByLevel("headID", [
+					"staff",
+					"leader",
+					"supervisor",
+					"manager",
+					"head",
+				  ], id);
+				  break;
+		  
+				default:
+				  break;
+			  }
+		})
+		.catch((err) => {
+				console.log(err);
+				this.setState({ loading: false });
+			});
+	  };
 
 	getCenterAverage = (arr) => {
 		this.setState({ loading: true });
@@ -397,7 +498,7 @@ class Maps extends React.Component {
 												</thead>
 												<tbody>
 													{this.state.userLocation
-														.concat(this.state.late)
+														// .concat(this.state.late)
 														.map((prop, key) => (
 															<tr
 																onClick={() =>
@@ -414,7 +515,7 @@ class Maps extends React.Component {
 																</td>
 																<td>{prop.get('fullname')}</td>
 																<td>
-																	{prop.className === 'Late' ? (
+																	{prop.get("lateTimes") !== undefined ? (
 																		<div>
 																			<span
 																				style={{
@@ -423,7 +524,7 @@ class Maps extends React.Component {
 																			>
 																				{convertDate(
 																					prop.get(
-																						'time'
+																						'lateTimes'
 																					),
 																					'HH:mm:ss'
 																				)}

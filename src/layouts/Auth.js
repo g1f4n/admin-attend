@@ -54,7 +54,7 @@ class Auth extends React.Component {
               <div className="header-body text-center mb-7">
                 <Row className="justify-content-center">
                   <Col lg="5" md="6">
-                    <h1 className="text-white">DIKA ATTEND</h1>
+                    <h1 className="text-white">HADIR</h1>
                     <p className="text-lead text-white">
                       Selamat datang, silahkan login terlebih dahulu
                     </p>

@@ -295,7 +295,7 @@ class Lembur extends React.Component {
     query
       .get(this.state.userId)
       .then((x) => {
-        x.set('approvalLate', approvalMode ? 1 : 0);
+        x.set('approvalOvertime', approvalMode ? 1 : 0);
         if (!approvalMode) x.set('alasanReject', this.state.reason);
         x.save()
           .then(() => {
@@ -389,7 +389,7 @@ class Lembur extends React.Component {
     const query = new Parse.Query(Absence);
 
     query.get(e).then((x) => {
-      x.set('approvalLate', 1);
+      x.set('approvalOvertime', 1);
       x.save().then(() => {
         const newArr = [...this.state.overtime];
         newArr.splice(this.state.userIndex, 1);
@@ -408,7 +408,7 @@ class Lembur extends React.Component {
     const query = new Parse.Query(Absence);
 
     query.get(e).then((x) => {
-      x.set('approvalLate', 0);
+      x.set('approvalOvertime', 0);
       x.save().then(() => {
         const newArr = [...this.state.overtime];
         newArr.splice(this.state.userIndex, 1);
@@ -431,7 +431,7 @@ class Lembur extends React.Component {
       const query = new Parse.Query(Absence);
 
       query.get(id).then((x) => {
-        x.set('approvalLate', 1);
+        x.set('approvalOvertime', 1);
         x.save().then(() => {
           totalData = totalData + 1;
           if (totalData === checkId.length) {
@@ -463,7 +463,7 @@ class Lembur extends React.Component {
       const query = new Parse.Query(Absence);
 
       query.get(id).then((x) => {
-        x.set('approvalLate', 0);
+        x.set('approvalOvertime', 0);
         x.save().then(() => {
           totalData = totalData + 1;
           if (totalData === checkId.length) {
