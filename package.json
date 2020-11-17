@@ -53,6 +53,7 @@
     "lodash": "^4.17.19",
     "md5": "^2.3.0",
     "moment": "^2.27.0",
+    "multiselect-react-dropdown": "^1.6.1",
     "node-fetch": "^2.6.1",
     "node-sass": "4.13.1",
     "nouislider": "14.1.1",
@@ -67,8 +68,10 @@
     "react-html-table-to-excel": "^2.0.0",
     "react-js-pagination": "^3.0.3",
     "react-loading-skeleton": "^2.1.1",
+    "react-multi-select-component": "^3.0.5",
     "react-router-dom": "5.1.2",
     "react-scripts": "^3.4.1",
+    "react-select": "^3.1.0",
     "react-toggle-button": "^2.2.0",
     "reactstrap": "8.4.1",
     "recompose": "^0.30.0"

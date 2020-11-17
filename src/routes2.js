@@ -33,6 +33,7 @@ import ViewHistory from 'views/leader/ViewHistory';
 import { getLeaderId } from 'utils';
 import { ExportExcelIdz } from 'views/leader/ExportExcelId';
 import TesEksport from 'views/leader/TesEksport';
+import TodoList from 'views/leader/TodoList';
 
 var routes2 = [
   {
@@ -57,6 +58,13 @@ var routes2 = [
     component: ExportExcelIdz,
     layout: '/leader',
     invisible: true
+  },
+  {
+    path: '/todolist',
+    name: 'Todo List',
+    icon: 'ni ni-settings text-yellow',
+    component: TodoList,
+    layout: '/leader'
   },
   {
     path: '/staff',
