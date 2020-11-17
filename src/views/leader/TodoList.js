@@ -311,9 +311,9 @@ class TodoList extends React.Component {
             objectId: id.id
           });
           queryMessaging.save().then((y) => {
-            // Parse.Cloud.run('notif', {title: 'New Task', priority: "high"}).then((response) => {
-            //   console.log("response", response);
-            // })
+            Parse.Cloud.run('notif', {title: 'New Task', priority: "high"}).then((response) => {
+              console.log("response", response);
+            })
             this.setState({
               addMode: false,
               loadingModal: false,
@@ -647,9 +647,9 @@ class TodoList extends React.Component {
       });
 
       queryMessaging.save().then((y) => {
-        // Parse.Cloud.run('notif', {title: 'New Task', delegasi:id, priority: "high"}).then((response) => {
-        //   console.log("response", response);
-        // })
+        Parse.Cloud.run('notif', {title: 'New Task', delegasi:id, priority: "high"}).then((response) => {
+          console.log("response", response);
+        })
         this.setState({
           sendMessageMode: false,
           loadingModal: false,
