@@ -341,9 +341,9 @@ class SendMessage extends React.Component {
       });
 
       queryMessaging.save().then((y) => {
-        // Parse.Cloud.run('notif', {title: 'Message', delegasi:id, priority: "high"}).then((response) => {
-        //   console.log("response", response);
-        // })
+        Parse.Cloud.run('notif', {title: 'Message', delegasi:id, priority: "high"}).then((response) => {
+          console.log("response", response);
+        })
         this.setState({
           sendMessageMode: false,
           loadingModal: false,
