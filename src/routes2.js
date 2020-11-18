@@ -34,6 +34,7 @@ import { getLeaderId } from 'utils';
 import { ExportExcelIdz } from 'views/leader/ExportExcelId';
 import TesEksport from 'views/leader/TesEksport';
 import TodoList from 'views/leader/TodoList';
+import SendMessage from 'views/leader/SendMessage';
 
 var routes2 = [
   {
@@ -64,6 +65,13 @@ var routes2 = [
     name: 'Todo List',
     icon: 'ni ni-settings text-yellow',
     component: TodoList,
+    layout: '/leader'
+  },
+  {
+    path: '/sendmessage',
+    name: 'Message',
+    icon: 'ni ni-send text-info',
+    component: SendMessage,
     layout: '/leader'
   },
   {

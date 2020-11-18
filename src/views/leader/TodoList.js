@@ -70,6 +70,7 @@ import {
   Polyline,
   InfoWindow,
 } from "react-google-maps";
+import { take } from 'lodash';
 
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const MapWithAMarkerClusterer = compose(
@@ -125,6 +126,8 @@ class TodoList extends React.Component {
       latitude: '',
       longitude: '',
       inputAddress: '',
+      titleUrl: '',
+      formUrl: '',
       detail: {},
       loading: false,
       approvalMode: false,
@@ -258,7 +261,7 @@ class TodoList extends React.Component {
     e.preventDefault();
     console.log("idds", this.state.multiDelegasi);
     
-    const { inputDept, tglWaktu, deskripsi, delegasi } = this.state;
+    const { inputDept, tglWaktu, deskripsi, delegasi, titleUrl, formUrl } = this.state;
     this.setState({ loadingModal: true });
     
     this.state.multiDelegasi.map((id) => {
@@ -271,6 +274,14 @@ class TodoList extends React.Component {
       query.set('namaTugas', inputDept);
       query.set('tglWaktu', tglWaktu);
       query.set('deskripsi', deskripsi);
+      // query.set('googleFormUrlTitle', titleUrl);
+      if(formUrl !== '') {
+        query.set('googleFormUrl', formUrl);
+        query.set('taskType', 1);
+      } else {
+        query.set('googleFormUrl', '-');
+        query.set('taskType', 0);
+      }
       query.set('lokasi', this.state.inputAddress);
       query.set('latitude', this.state.latitude.toString());
       query.set('longitude', this.state.longitude.toString());
@@ -296,8 +307,11 @@ class TodoList extends React.Component {
           const queryMessaging = new Messaging();
 
           queryMessaging.set('judul', inputDept);
-          queryMessaging.set('messageType', 0);
-          queryMessaging.set('messagingType', 0);
+          if(formUrl !== '') {
+            queryMessaging.set('messageType', 1);
+          } else {
+            queryMessaging.set('messageType', 0);
+          }
           queryMessaging.set('status', 0);
           queryMessaging.set('objecIdItem', z.id);
           queryMessaging.set('dari', {
@@ -355,6 +369,7 @@ class TodoList extends React.Component {
           latitude: attributes.latitude,
           longitude: attributes.longitude,
           placeName: attributes.lokasi,
+          formUrl: attributes.googleFormUrl,
           editMode: true 
         });
       })
@@ -366,7 +381,7 @@ class TodoList extends React.Component {
 
   handleUpdate = (e) => {
     e.preventDefault();
-    const { inputDept, tglWaktu, deskripsi, delegasi } = this.state;
+    const { inputDept, tglWaktu, deskripsi, delegasi, formUrl } = this.state;
     this.setState({ loadingModal: true });
 
     const TodoList = Parse.Object.extend('TodoList');
@@ -381,6 +396,12 @@ class TodoList extends React.Component {
         y.set('namaTugas', inputDept);
         y.set('deskripsi', deskripsi);
         y.set('tglWaktu', tglWaktu);
+        if(formUrl !== '') {
+          y.set('googleFormUrl', formUrl);
+        } else {
+          y.set('googleFormUrl', '-');
+          // y.set('taskType', 0);
+        }
         if(this.state.inputAddress !== '') {
           y.set('lokasi', this.state.inputAddress);
         }
@@ -429,6 +450,9 @@ class TodoList extends React.Component {
           //     visible: true
           //   });
           // });
+          // Parse.Cloud.run('notif', {title: 'Update Task', priority: "high"}).then((response) => {
+          //   console.log("response", response);
+          // })
           // Parse.Cloud.run('notif', {title: 'Update Task', priority: "high"}).then((response) => {
           //   console.log("response", response);
           // })
@@ -776,7 +800,7 @@ class TodoList extends React.Component {
                       <i className="fa fa-plus" /> Tambah
                     </Button>
 
-                    <Button
+                    {/* <Button
                       className="ml-2"
                       color="primary"
                       data-dismiss="modal"
@@ -784,7 +808,7 @@ class TodoList extends React.Component {
                       onClick={() => this.setState({ sendMessageMode: true })}
                     >
                       <i className="fa fa-paper-plane" /> Send Message
-                    </Button>
+                    </Button> */}
                     {/* : ''} */}
                   </Row>
 
@@ -839,7 +863,8 @@ class TodoList extends React.Component {
                           <td>{prop.get('deskripsi')}</td>
                           <td>{convertDate(prop.get('tglWaktu'), "DD/MM/YYYY HH:mm")}</td>
                           <td>{prop.get('lokasi')}</td>
-                          <td>{getUserRole() === 'staff' ? "-" : prop.get('delegasi').attributes.fullname}</td>
+                          {/* <td>{getUserRole() === 'staff' ? "-" : prop.get('delegasi').attributes.fullname}</td> */}
+                          <td>{prop.get('fullname') !== undefined ? prop.get('fullname') : '-'}</td>
                           {parseInt(prop.get('statusTodo')) === 0 ?
                             <td>
                                 <Button
@@ -1064,6 +1089,29 @@ class TodoList extends React.Component {
                   />
                 </FormGroup>
 
+                {/* <FormGroup>
+                  <Label>Judul Form Url</Label>
+                  <Input
+                    id="zz1"
+                    placeholder="Masukkan Judul Form Url"
+                    type="text"
+                    required={true}
+                    onChange={(e) => this.setState({ titleUrl: e.target.value })}
+                  />
+                </FormGroup> */}
+
+                <FormGroup>
+                  <Label>Google Form Url</Label>
+                  <Input
+                    id="zz1"
+                    placeholder="Masukkan Url"
+                    type="text"
+                    required={true}
+                    onChange={(e) => this.setState({ formUrl: e.target.value })}
+                  />
+                  <h6 style={{color: 'red'}}>Apabila ingin di kosongkan isikan "-"</h6>
+                </FormGroup>
+
                 <Button
                   color="secondary"
                   data-dismiss="modal"
@@ -1243,6 +1291,30 @@ class TodoList extends React.Component {
                     latitude={this.state.latitude}
                     longitude={this.state.longitude} 
                   />
+                </FormGroup>
+
+                {/* <FormGroup>
+                  <Label>Judul Form Url</Label>
+                  <Input
+                    id="zz1"
+                    placeholder="Masukkan Judul Form Url"
+                    type="text"
+                    required={true}
+                    onChange={(e) => this.setState({ titleUrl: e.target.value })}
+                  />
+                </FormGroup> */}
+
+                <FormGroup>
+                  <Label>Google Form Url</Label>
+                  <Input
+                    id="zz1"
+                    placeholder="Masukkan Url"
+                    type="text"
+                    value={this.state.formUrl}
+                    required={true}
+                    onChange={(e) => this.setState({ formUrl: e.target.value })}
+                  />
+                  <h6 style={{color: 'red'}}>Apabila ingin di kosongkan isikan "-"</h6>
                 </FormGroup>
 
               <Button

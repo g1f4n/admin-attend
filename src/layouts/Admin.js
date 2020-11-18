@@ -95,7 +95,7 @@ class Admin extends React.Component {
           }
           logo={{
             innerLink: `${this.state.roles}/index`,
-            imgSrc: require('assets/img/brand/argon-react.png'),
+            imgSrc: require('assets/img/brand/dika-logo.png'),
             imgAlt: '...'
           }}
         />
