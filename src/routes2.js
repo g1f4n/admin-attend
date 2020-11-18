@@ -69,7 +69,7 @@ var routes2 = [
   },
   {
     path: '/sendmessage',
-    name: 'Message',
+    name: 'Message Center',
     icon: 'ni ni-send text-info',
     component: SendMessage,
     layout: '/leader'

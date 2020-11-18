@@ -326,7 +326,7 @@ class SendMessage extends React.Component {
       queryMessaging.set('judul', inputDept);
       queryMessaging.set('deskripsi', deskripsi);
       queryMessaging.set('messageType', 0);
-      queryMessaging.set('messagingType', 0);
+      // queryMessaging.set('messagingType', 0);
       queryMessaging.set('status', 0);
       queryMessaging.set('objecIdItem', id.id);
       queryMessaging.set('dari', {
@@ -341,19 +341,19 @@ class SendMessage extends React.Component {
       });
 
       queryMessaging.save().then((y) => {
-        Parse.Cloud.run('notif', {title: 'Message', delegasi:id, priority: "high"}).then((response) => {
+        Parse.Cloud.run('notif', {title: 'Message', priority: "high"}).then((response) => {
           console.log("response", response);
         })
         this.setState({
           sendMessageMode: false,
           loadingModal: false,
-          // todoList: this.state.todoList.concat(z),
+          // todoList: this.state.todoList.concat(y),
           message: 'Berhasil send message',
           multiDelegasi: [],
           visible: true,
           color: 'success'
         });
-        window.location.href = '/leader/sendMessage'
+        // window.location.href = '/leader/sendMessage'
       })
         .catch((err) => {
           console.log(err.message);
