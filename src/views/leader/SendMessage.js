@@ -316,7 +316,7 @@ class SendMessage extends React.Component {
   handleSendMessage = (e) => {
     e.preventDefault();
 
-    const { inputDept, tglWaktu, deskripsi, delegasi } = this.state;
+    const { inputDept, tglWaktu, deskripsi, delegasi, messageType } = this.state;
     this.setState({ loadingModal: true });
     
     this.state.multiDelegasi.map((id) => {
@@ -325,7 +325,7 @@ class SendMessage extends React.Component {
 
       queryMessaging.set('judul', inputDept);
       queryMessaging.set('deskripsi', deskripsi);
-      queryMessaging.set('messageType', 0);
+      queryMessaging.set('messageType', parseInt(messageType));
       // queryMessaging.set('messagingType', 0);
       queryMessaging.set('status', 0);
       queryMessaging.set('objecIdItem', id.id);
@@ -341,6 +341,7 @@ class SendMessage extends React.Component {
       });
 
       queryMessaging.save().then((y) => {
+        
         Parse.Cloud.run('notif', {title: 'Message', priority: "high"}).then((response) => {
           console.log("response", response);
         })
@@ -521,6 +522,23 @@ class SendMessage extends React.Component {
                               required={true}
                               onChange={(e) => this.setState({ deskripsi: e.target.value })}
                             />  
+                          </Col>
+                        </FormGroup>
+
+                        <FormGroup row={true}>
+                          <Label sm={2}>Message Type</Label>
+                          <Col sm={10}>
+                            <Input
+                              id="zz1"
+                              placeholder="Masukkan Judul"
+                              type="select"
+                              required={true}
+                              onChange={(e) => this.setState({ messageType: e.target.value })}
+                            >
+                              <option value="">Message Type</option>
+                              <option value={100}>Information</option>
+                              <option value={101}>Warning</option>
+                            </Input>
                           </Col>
                         </FormGroup>
 
