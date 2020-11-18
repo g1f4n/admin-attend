@@ -275,7 +275,7 @@ class TodoList extends React.Component {
       query.set('tglWaktu', tglWaktu);
       query.set('deskripsi', deskripsi);
       // query.set('googleFormUrlTitle', titleUrl);
-      if(formUrl !== '') {
+      if(formUrl !== '-') {
         query.set('googleFormUrl', formUrl);
         query.set('taskType', 1);
       } else {
