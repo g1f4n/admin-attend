@@ -353,7 +353,7 @@ class SendMessage extends React.Component {
           visible: true,
           color: 'success'
         });
-        // window.location.href = '/leader/sendMessage'
+        window.location.href = '/leader/sendMessage'
       })
         .catch((err) => {
           console.log(err.message);
