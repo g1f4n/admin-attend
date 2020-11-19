@@ -539,7 +539,7 @@ class SendMessage extends React.Component {
                               // required={true}
                               onChange={(e) => this.setState({ messageType: e.target.value })}
                             >
-                              <option value="">Message Type</option>
+                              <option value={100}>Information</option>
                               <option value={101}>Warning</option>
                             </Input>
                           </Col>
