@@ -93,7 +93,7 @@ class SendMessage extends React.Component {
       deleteCounter: 0,
       message: '',
       color: 'danger',
-      messageType: 0,
+      messageType: 100,
       visible: false,
       multiDelegasi:[],
       selectedOption: [],
@@ -325,10 +325,14 @@ class SendMessage extends React.Component {
 
       queryMessaging.set('judul', inputDept);
       queryMessaging.set('deskripsi', deskripsi);
-      queryMessaging.set('messageType', parseInt(messageType));
+      if(messageType !== '') {
+        queryMessaging.set('messageType', parseInt(messageType));
+      } else {
+        queryMessaging.set("messageType", 100)
+      }
       // queryMessaging.set('messagingType', 0);
       queryMessaging.set('status', 0);
-      queryMessaging.set('objecIdItem', id.id);
+      // queryMessaging.set('objecIdItem', id.id);
       queryMessaging.set('dari', {
         __type: "Pointer",
         className: "_User",
@@ -532,11 +536,10 @@ class SendMessage extends React.Component {
                               id="zz1"
                               placeholder="Masukkan Judul"
                               type="select"
-                              required={true}
+                              // required={true}
                               onChange={(e) => this.setState({ messageType: e.target.value })}
                             >
                               <option value="">Message Type</option>
-                              <option value={100}>Information</option>
                               <option value={101}>Warning</option>
                             </Input>
                           </Col>

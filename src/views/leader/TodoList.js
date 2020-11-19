@@ -75,7 +75,7 @@ import { take } from 'lodash';
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const MapWithAMarkerClusterer = compose(
   withProps({
-    googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q&v=3.exp&libraries=geometry,drawing,places",
+    googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyC8Y7yv06FxuwUhb0zPbCepVrgROQQzADQ&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `400px` }} />,
     mapElement: <div style={{ height: `100%` }} />,
@@ -135,6 +135,7 @@ class TodoList extends React.Component {
       counter: 0,
       loadingModal: false,
       fullnames: '',
+      fullnameEdit: '',
       userId: '',
       userIndex: 0,
       reason: '',
@@ -156,7 +157,8 @@ class TodoList extends React.Component {
   componentDidMount() {
     this.getData();
     this.getDaftarAbsenByLevel();
-    Geocode.setApiKey('AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q');
+    // Geocode.setApiKey('AIzaSyC5tj-2X6b7kwGTqGZkB7sofZdMhpyE75Q');
+    Geocode.setApiKey('AIzaSyC8Y7yv06FxuwUhb0zPbCepVrgROQQzADQ');
     Geocode.setRegion('es');
   }
 
@@ -275,16 +277,20 @@ class TodoList extends React.Component {
       query.set('tglWaktu', tglWaktu);
       query.set('deskripsi', deskripsi);
       // query.set('googleFormUrlTitle', titleUrl);
-      if(formUrl !== '-') {
+      if(formUrl !== '') {
         query.set('googleFormUrl', formUrl);
         query.set('taskType', 1);
       } else {
         query.set('googleFormUrl', '-');
         query.set('taskType', 0);
       }
-      query.set('lokasi', this.state.inputAddress);
-      query.set('latitude', this.state.latitude.toString());
-      query.set('longitude', this.state.longitude.toString());
+      // query.set('lokasi', this.state.inputAddress);
+      query.set('lokasi', "Juara Coding");
+      query.set('latitude', "-6.2407504");
+      query.set('longitude', "106.8535896");
+
+      // query.set('latitude', this.state.latitude.toString());
+      // query.set('longitude', this.state.longitude.toString());
       query.set('fullname', id.fullname);
       query.set('delegasi', {
         __type: "Pointer",
@@ -381,8 +387,10 @@ class TodoList extends React.Component {
 
   handleUpdate = (e) => {
     e.preventDefault();
-    const { inputDept, tglWaktu, deskripsi, delegasi, formUrl } = this.state;
+    const { inputDept, tglWaktu, deskripsi, delegasi, formUrl, fullnameEdit } = this.state;
     this.setState({ loadingModal: true });
+
+    console.log("titleUpdate", this.state.titleUpdate);
 
     const TodoList = Parse.Object.extend('TodoList');
     const query = new Parse.Query(TodoList);
@@ -393,26 +401,28 @@ class TodoList extends React.Component {
     query.equalTo("namaTugas", this.state.titleUpdate);
     query.find().then((x) => {
       x.map((y) => {
+        console.log("y", y);
         y.set('namaTugas', inputDept);
         y.set('deskripsi', deskripsi);
         y.set('tglWaktu', tglWaktu);
         if(formUrl !== '') {
           y.set('googleFormUrl', formUrl);
-        } else {
-          y.set('googleFormUrl', '-');
-          // y.set('taskType', 0);
         }
         if(this.state.inputAddress !== '') {
-          y.set('lokasi', this.state.inputAddress);
+          // y.set('lokasi', this.state.inputAddress);
+          y.set('lokasi', "Juara Coding");
         }
-        y.set('latitude', this.state.latitude.toString());
-        y.set('longitude', this.state.longitude.toString());
+        y.set('latitude', "-6.2407504");
+        y.set('longitude', "106.8535896");
+        // y.set('latitude', this.state.latitude.toString());
+        // y.set('longitude', this.state.longitude.toString());
         if(y.id === this.state.userId) {
           y.set('delegasi', {
             __type: 'Pointer',
             className: '_User',
             objectId: delegasi
           });
+          // y.set('fullname', fullnameEdit);
         }
 
         y.save().then((z) => {
@@ -1022,6 +1032,8 @@ class TodoList extends React.Component {
                     placeholder="Masukkan Alamat Lokasi"
                     className="form-control-alternitive"
                     type="text"
+                    // readOnly={true}
+                    // value="Juara Coding"
                     required={true}
                     onChange={(e) => this.setState({ placeName: e.target.value })}
                   />
@@ -1035,10 +1047,12 @@ class TodoList extends React.Component {
                     className="form-control-alternitive"
                     required={true}
                     type="text"
+                    // readOnly={true}
+                    // value="Juara Coding"
                     onChange={(e) => this.setState({ inputAddress: e.target.value })}
                   />
                 </FormGroup>
-                <Button
+                {/* <Button
                   color="primary"
                   className="mb-4"
                   onClick={this.getLocationGeopoint}
@@ -1058,14 +1072,15 @@ class TodoList extends React.Component {
                   ) : (
                     'Search'
                   )}
-                </Button>
+                </Button> */}
                 <FormGroup hidden>
                   <Label>Latitude</Label>
                   <Input
                     id="zz2"
                     placeholder="0"
                     type="text"
-                    value={this.state.latitude}
+                    // value={this.state.latitude}
+                    value="-6.2407504"
                     required={true}
                     onChange={(e) => this.setState({ latitude: e.target.value })}
                   />
@@ -1076,7 +1091,8 @@ class TodoList extends React.Component {
                     id="zz3"
                     placeholder="0"
                     type="text"
-                    value={this.state.longitude}
+                    // value={this.state.longitude}
+                    value="106.8535896"
                     required={true}
                     onChange={(e) => this.setState({ longitude: e.target.value })}
                   />
@@ -1084,8 +1100,10 @@ class TodoList extends React.Component {
 
                 <FormGroup>
                   <MapWithAMarkerClusterer 
-                    latitude={this.state.latitude}
-                    longitude={this.state.longitude} 
+                    // latitude={this.state.latitude}
+                    // longitude={this.state.longitude} 
+                    latitude={parseFloat("-6.2407504")}
+                    longitude={parseFloat("106.8535896")}
                   />
                 </FormGroup>
 
@@ -1106,17 +1124,17 @@ class TodoList extends React.Component {
                     id="zz1"
                     placeholder="Masukkan Url"
                     type="text"
-                    required={true}
+                    // required={true}
                     onChange={(e) => this.setState({ formUrl: e.target.value })}
                   />
-                  <h6 style={{color: 'red'}}>Apabila ingin di kosongkan isikan "-"</h6>
+                  {/* <h6 style={{color: 'red'}}>Apabila ingin di kosongkan isikan "-"</h6> */}
                 </FormGroup>
 
                 <Button
                   color="secondary"
                   data-dismiss="modal"
                   type="button"
-                  onClick={() => this.toggle('rejectMode')}
+                  onClick={() => this.toggle('addMode')}
                 >
                   Close
                 </Button>
@@ -1218,6 +1236,21 @@ class TodoList extends React.Component {
                   </InputGroup>
                 </FormGroup>
 
+                <Input
+                  hidden
+                  type="select"
+                  className="fa-pull-right"
+                  required={true}
+                  onChange={(e) => {
+                    this.setState({ fullnameEdit: e.target.value });
+                  }}
+                >
+                  // <option value="">Delagasi Staff</option>
+                  {daftarStaff.map((x) => (
+                    <option selected={this.state.delegasi === x.id} value={x.get('fullname')}>{x.get('fullname')}</option>
+                  ))}
+                </Input>
+
                 <FormGroup>
                   <Label>Nama Tempat</Label>
                   <Input
@@ -1242,7 +1275,7 @@ class TodoList extends React.Component {
                   />
                   <h6 style={{color: 'red'}}>Silahkan di isi jika ingin merubah titik lokasi</h6>
                 </FormGroup>
-                <Button
+                {/* <Button
                   color="primary"
                   className="mb-4"
                   onClick={this.getLocationGeopoint}
@@ -1262,14 +1295,15 @@ class TodoList extends React.Component {
                   ) : (
                     'Search'
                   )}
-                </Button>
+                </Button> */}
                 <FormGroup hidden>
                   <Label>Latitude</Label>
                   <Input
                     id="zz2"
                     placeholder="0"
                     type="text"
-                    value={this.state.latitude}
+                    // value={this.state.latitude}
+                    value="-6.2407504"
                     required={true}
                     onChange={(e) => this.setState({ latitude: e.target.value })}
                   />
@@ -1280,7 +1314,8 @@ class TodoList extends React.Component {
                     id="zz3"
                     placeholder="0"
                     type="text"
-                    value={this.state.longitude}
+                    // value={this.state.longitude}
+                    value="106.8535896"
                     required={true}
                     onChange={(e) => this.setState({ longitude: e.target.value })}
                   />
@@ -1288,8 +1323,10 @@ class TodoList extends React.Component {
 
                 <FormGroup>
                   <MapWithAMarkerClusterer 
-                    latitude={this.state.latitude}
-                    longitude={this.state.longitude} 
+                    latitude={parseFloat("-6.2407504")}
+                    longitude={parseFloat("106.8535896")}
+                    // latitude={this.state.latitude}
+                    // longitude={this.state.longitude} 
                   />
                 </FormGroup>
 
@@ -1311,10 +1348,10 @@ class TodoList extends React.Component {
                     placeholder="Masukkan Url"
                     type="text"
                     value={this.state.formUrl}
-                    required={true}
+                    // required={true}
                     onChange={(e) => this.setState({ formUrl: e.target.value })}
                   />
-                  <h6 style={{color: 'red'}}>Apabila ingin di kosongkan isikan "-"</h6>
+                  {/* <h6 style={{color: 'red'}}>Apabila ingin di kosongkan isikan "-"</h6> */}
                 </FormGroup>
 
               <Button
