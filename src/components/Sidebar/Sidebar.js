@@ -168,7 +168,8 @@ class Sidebar extends React.Component {
                       alt="..."
                       width={37}
                       height={37}
-                      src={getCurrentUser().get('fotoWajah').url()}
+                      // src={getCurrentUser().get('fotoWajah').url()}
+                      src={getCurrentUser().get('selfieImage').url()}
                     />
                   </span>
                 </Media>

@@ -489,9 +489,11 @@ class Index extends React.Component {
                     ) : (
                       daftarStaff.map((prop, key) => (
                         <tr>
-                          <td>{prop.get("nik")}</td>
+                          {/* <td>{prop.get("nik")}</td> */}
+                          <td>{prop.get("employeeId")}</td>
                           <td>{prop.get("fullname")}</td>
-                          <td>{prop.get("jumlahCuti")}</td>
+                          {/* <td>{prop.get("jumlahCuti")}</td> */}
+                          <td>{prop.get("totalLeave")}</td>
                           <td>{prop.get("email")}</td>
                         </tr>
                       ))
@@ -575,7 +577,8 @@ class Index extends React.Component {
                     ) : (
                       absence.map((prop, key) => (
                         <tr>
-                          <td>{prop.get("user").attributes.nik}</td>
+                          {/* <td>{prop.get("user").attributes.nik}</td> */}
+                          <td>{prop.get("user").attributes.employeeId}</td>
                           <td>{prop.get("fullname")}</td>
                           <td>
                             {prop.get("lateTimes") !== undefined

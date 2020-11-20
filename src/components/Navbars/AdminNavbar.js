@@ -83,8 +83,9 @@ class AdminNavbar extends React.Component {
                         alt="..."
                         width={37}
                         height={37}
-                        src={getCurrentUser().get('fotoWajah').url()}
-                      />
+                        // src={getCurrentUser().get('fotoWajah').url()}
+                        src={getCurrentUser().get('selfieImage').url()}
+                        />
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
