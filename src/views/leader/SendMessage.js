@@ -347,7 +347,7 @@ class SendMessage extends React.Component {
       queryMessaging.save().then((y) => {
         
         Parse.Cloud.run('notif', {title: 'Message', priority: "high"}).then((response) => {
-          console.log("response", response);
+          console.log("response");
         })
         this.setState({
           sendMessageMode: false,
@@ -358,7 +358,8 @@ class SendMessage extends React.Component {
           visible: true,
           color: 'success'
         });
-        window.location.href = '/leader/sendMessage'
+        // window.location.href = '/leader/sendMessage'
+        window.location.reload(false);
       })
         .catch((err) => {
           console.log(err.message);
