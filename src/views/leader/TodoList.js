@@ -331,7 +331,7 @@ class TodoList extends React.Component {
             objectId: id.id
           });
           queryMessaging.save().then((y) => {
-            Parse.Cloud.run('notif', {title: 'New Task', priority: "high"}).then((response) => {
+            Parse.Cloud.run('notif', {title: 'New Task', alert: inputDept, priority: "high"}).then((response) => {
               console.log("response", response);
             })
             this.setState({
@@ -343,7 +343,8 @@ class TodoList extends React.Component {
               visible: true,
               color: 'success'
             });
-            window.location.href = "/leader/todolist"
+            // window.location.href = "/leader/todolist"
+            window.location.reload(false);
           })
         })
         .catch((err) => {
@@ -474,7 +475,8 @@ class TodoList extends React.Component {
             visible: true,
             color: 'success'
           });
-          window.location.href="/leader/todolist"
+          // window.location.href="/leader/todolist"
+          window.location.reload(false);
 
         }).catch((err) => {
           console.log(err.message);
