@@ -61,6 +61,7 @@ import ReactDatetime from "react-datetime";
 import { Multiselect } from 'multiselect-react-dropdown';
 import Select from 'react-select';
 import Geocode from 'react-geocode';
+import SweetAlert from 'sweetalert2-react';
 import { compose, withProps, withStateHandlers,  withHandlers } from "recompose";
 import {
   withScriptjs,
@@ -265,13 +266,18 @@ class TodoList extends React.Component {
     
     const { inputDept, tglWaktu, deskripsi, delegasi, titleUrl, formUrl } = this.state;
     this.setState({ loadingModal: true });
-    
+
+    let todoListData = [];
+    let messagingData = [];
+    let implodeTaskTo = [];
+
+    this.state.multiDelegasi.map((data) => {
+      implodeTaskTo.push(data.id);
+    });
+
     this.state.multiDelegasi.map((id) => {
       const TodoList = Parse.Object.extend('TodoList');
       const query = new TodoList();
-
-      const Messaging = Parse.Object.extend('Messaging');
-      const queryMessaging = new Messaging();
 
       query.set('namaTugas', inputDept);
       query.set('tglWaktu', tglWaktu);
@@ -304,61 +310,182 @@ class TodoList extends React.Component {
         className: "_User",
         objectId: getLeaderId()
       });
+      
+      todoListData.push(query);
+      
+      // messaging
+      const Messaging = Parse.Object.extend('Messaging');
+      const queryMessaging = new Messaging();
 
-      // query.descending("createdAt");
-      query
-        .save()
-        .then((z) => {
-          const Messaging = Parse.Object.extend('Messaging');
-          const queryMessaging = new Messaging();
+      queryMessaging.set('judul', inputDept);
+      if(formUrl !== '') {
+        queryMessaging.set('messageType', 1);
+      } else {
+        queryMessaging.set('messageType', 0);
+      }
+      queryMessaging.set('status', 0);
+      queryMessaging.set('objecIdItem', id.id);
+      queryMessaging.set('dari', {
+        __type: "Pointer",
+        className: "_User",
+        objectId: getLeaderId()
+      });
+      queryMessaging.set('ke', {
+        __type: "Pointer",
+        className: "_User",
+        objectId: id.id
+      });
 
-          queryMessaging.set('judul', inputDept);
-          if(formUrl !== '') {
-            queryMessaging.set('messageType', 1);
-          } else {
-            queryMessaging.set('messageType', 0);
-          }
-          queryMessaging.set('status', 0);
-          queryMessaging.set('objecIdItem', z.id);
-          queryMessaging.set('dari', {
-            __type: "Pointer",
-            className: "_User",
-            objectId: getLeaderId()
-          });
-          queryMessaging.set('ke', {
-            __type: "Pointer",
-            className: "_User",
-            objectId: id.id
-          });
-          queryMessaging.save().then((y) => {
-            // Parse.Cloud.run('notif', {title: 'New Task', alert: inputDept, priority: "high"}).then((response) => {
-            //   console.log("response", response);
-            // })
-            Parse.Cloud.run('notifWeb', {title: 'New Task', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
-              console.log("response");
-            })
-            this.setState({
-              addMode: false,
-              loadingModal: false,
-              // todoList: this.state.todoList.concat(z),
-              message: 'Berhasil tambah data',
-              multiDelegasi: [],
-              visible: true,
-              color: 'success'
-            });
-            // window.location.href = "/leader/todolist"
-            window.location.reload(false);
-          })
+      messagingData.push(queryMessaging);
+    });
+
+    console.log("todoListData", todoListData);
+    console.log("messagingData", messagingData);
+    Parse.Object.saveAll(todoListData, {
+      success: function(list) {
+        // All the objects were saved.
+        console.log("todoListData", list)
+      },
+      error: function(error) {
+        // An error occurred while saving one of the objects.
+        console.log("todoListDataError", error)
+      },
+    }).then((response) => {
+      Parse.Object.saveAll(messagingData, {
+        success: function(list) {
+          // All the objects were saved.
+          console.log("messagingData", list)
+        },
+        error: function(error) {
+          // An error occurred while saving one of the objects.
+          console.log("messagingDataError", error)
+        },
+      }).then((response) => {
+        Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: implodeTaskTo}).then((response) => {
+          console.log("multidelegasi", implodeTaskTo);
         })
-        .catch((err) => {
-          console.log(err.message);
-          this.setState({
-            loadingModal: false,
-            message: 'Gagal tambah data, coba lagi',
-            visible: true
-          });
+        this.setState({
+          addMode: false,
+          loadingModal: false,
+          // todoList: this.state.todoList.concat(z),
+          message: 'Berhasil tambah data',
+          multiDelegasi: [],
+          visible: true,
+          color: 'success'
         });
-    })
+        // window.location.reload(false);
+      }).catch((err) => {
+        console.log(err.message);
+        this.setState({
+          loadingModal: false,
+          message: 'Gagal tambah data, coba lagi',
+          visible: true
+        });  
+      });
+    }).catch((err) => {
+      console.log(err.message);
+      this.setState({
+        loadingModal: false,
+        message: 'Gagal tambah data, coba lagi',
+        visible: true
+      });
+    });
+
+    
+    
+    // this.state.multiDelegasi.map((id) => {
+    //   const TodoList = Parse.Object.extend('TodoList');
+    //   const query = new TodoList();
+
+    //   const Messaging = Parse.Object.extend('Messaging');
+    //   const queryMessaging = new Messaging();
+
+    //   query.set('namaTugas', inputDept);
+    //   query.set('tglWaktu', tglWaktu);
+    //   query.set('deskripsi', deskripsi);
+    //   // query.set('googleFormUrlTitle', titleUrl);
+    //   if(formUrl !== '') {
+    //     query.set('googleFormUrl', formUrl);
+    //     query.set('taskType', 1);
+    //   } else {
+    //     query.set('googleFormUrl', '-');
+    //     query.set('taskType', 0);
+    //   }
+    //   // query.set('lokasi', this.state.inputAddress);
+    //   query.set('lokasi', "Juara Coding");
+    //   query.set('latitude', "-6.2407504");
+    //   query.set('longitude', "106.8535896");
+
+    //   // query.set('latitude', this.state.latitude.toString());
+    //   // query.set('longitude', this.state.longitude.toString());
+    //   query.set('fullname', id.fullname);
+    //   query.set('delegasi', {
+    //     __type: "Pointer",
+    //     className: "_User",
+    //     objectId: id.id
+    //   });
+    //   query.set('statusTodo', 0);
+    //   query.set('status', 1);
+    //   query.set('taskFrom', {
+    //     __type: "Pointer",
+    //     className: "_User",
+    //     objectId: getLeaderId()
+    //   });
+
+    //   // query.descending("createdAt");
+    //   query
+    //     .save()
+    //     .then((z) => {
+    //       const Messaging = Parse.Object.extend('Messaging');
+    //       const queryMessaging = new Messaging();
+
+    //       queryMessaging.set('judul', inputDept);
+    //       if(formUrl !== '') {
+    //         queryMessaging.set('messageType', 1);
+    //       } else {
+    //         queryMessaging.set('messageType', 0);
+    //       }
+    //       queryMessaging.set('status', 0);
+    //       queryMessaging.set('objecIdItem', z.id);
+    //       queryMessaging.set('dari', {
+    //         __type: "Pointer",
+    //         className: "_User",
+    //         objectId: getLeaderId()
+    //       });
+    //       queryMessaging.set('ke', {
+    //         __type: "Pointer",
+    //         className: "_User",
+    //         objectId: id.id
+    //       });
+    //       queryMessaging.save().then((y) => {
+    //         // Parse.Cloud.run('notif', {title: 'New Task', alert: inputDept, priority: "high"}).then((response) => {
+    //         //   console.log("response", response);
+    //         // })
+    //         Parse.Cloud.run('notifWeb', {title: 'New Task', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
+    //           console.log("response");
+    //         })
+    //         this.setState({
+    //           addMode: false,
+    //           loadingModal: false,
+    //           // todoList: this.state.todoList.concat(z),
+    //           message: 'Berhasil tambah data',
+    //           multiDelegasi: [],
+    //           visible: true,
+    //           color: 'success'
+    //         });
+    //         // window.location.href = "/leader/todolist"
+    //         window.location.reload(false);
+    //       })
+    //     })
+    //     .catch((err) => {
+    //       console.log(err.message);
+    //       this.setState({
+    //         loadingModal: false,
+    //         message: 'Gagal tambah data, coba lagi',
+    //         visible: true
+    //       });
+    //     });
+    // })
   };
 
   getDetail = (e, id) => {
@@ -657,64 +784,71 @@ class TodoList extends React.Component {
     //   });
   };
 
-  // send message
-  handleSendMessage = (e) => {
-    e.preventDefault();
+  // // send message
+  // handleSendMessage = (e) => {
+  //   e.preventDefault();
 
-    const { inputDept, tglWaktu, deskripsi, delegasi } = this.state;
-    this.setState({ loadingModal: true });
+  //   const { inputDept, tglWaktu, deskripsi, delegasi } = this.state;
+  //   this.setState({ loadingModal: true });
     
-    this.state.multiDelegasi.map((id) => {
-      const Messaging = Parse.Object.extend('Messaging');
-      const queryMessaging = new Messaging();
+  //   this.state.multiDelegasi.map((id) => {
+  //     const Messaging = Parse.Object.extend('Messaging');
+  //     const queryMessaging = new Messaging();
 
-      queryMessaging.set('judul', inputDept);
-      queryMessaging.set('deskripsi', deskripsi);
-      queryMessaging.set('messageType', parseInt(this.state.inputAddress));
-      queryMessaging.set('messagingType', parseInt(this.state.inputAddress));
-      queryMessaging.set('status', 0);
-      queryMessaging.set('objecIdItem', id.id);
-      queryMessaging.set('dari', {
-        __type: "Pointer",
-        className: "_User",
-        objectId: getLeaderId()
-      });
-      queryMessaging.set('ke', {
-        __type: "Pointer",
-        className: "_User",
-        objectId: id.id
-      });
+  //     queryMessaging.set('judul', inputDept);
+  //     queryMessaging.set('deskripsi', deskripsi);
+  //     queryMessaging.set('messageType', parseInt(this.state.inputAddress));
+  //     queryMessaging.set('messagingType', parseInt(this.state.inputAddress));
+  //     queryMessaging.set('status', 0);
+  //     queryMessaging.set('objecIdItem', id.id);
+  //     queryMessaging.set('dari', {
+  //       __type: "Pointer",
+  //       className: "_User",
+  //       objectId: getLeaderId()
+  //     });
+  //     queryMessaging.set('ke', {
+  //       __type: "Pointer",
+  //       className: "_User",
+  //       objectId: id.id
+  //     });
 
-      queryMessaging.save().then((y) => {
-        Parse.Cloud.run('notif', {title: 'New Task', delegasi:id, priority: "high"}).then((response) => {
-          console.log("response", response);
-        })
-        this.setState({
-          sendMessageMode: false,
-          loadingModal: false,
-          // todoList: this.state.todoList.concat(z),
-          message: 'Berhasil send message',
-          multiDelegasi: [],
-          visible: true,
-          color: 'success'
-        });
-        // window.location.href = '/leader/todolist'
-      })
-        .catch((err) => {
-          console.log(err.message);
-          this.setState({
-            loadingModal: false,
-            message: 'Gagal tambah data, coba lagi',
-            visible: true
-          });
-        });
-    })
-  }
+  //     queryMessaging.save().then((y) => {
+  //       Parse.Cloud.run('notif', {title: 'New Task', delegasi:id, priority: "high"}).then((response) => {
+  //         console.log("response", response);
+  //       })
+  //       this.setState({
+  //         sendMessageMode: false,
+  //         loadingModal: false,
+  //         // todoList: this.state.todoList.concat(z),
+  //         message: 'Berhasil send message',
+  //         multiDelegasi: [],
+  //         visible: true,
+  //         color: 'success'
+  //       });
+  //       // window.location.href = '/leader/todolist'
+  //     })
+  //       .catch((err) => {
+  //         console.log(err.message);
+  //         this.setState({
+  //           loadingModal: false,
+  //           message: 'Gagal tambah data, coba lagi',
+  //           visible: true
+  //         });
+  //       });
+  //   })
+  // }
 
   toggle = (state) => {
     this.setState({
       [state]: !this.state[state]
     });
+  };
+
+  toggleAlert = (state) => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+    window.location.reload(false);
   };
 
   // getLocation
@@ -795,12 +929,20 @@ class TodoList extends React.Component {
           {/* Table */}
           <Row>
             <div className="col">
-              <Alertz
+              <div>
+                <SweetAlert
+                  show={this.state.visible}
+                  title="Information"
+                  text={this.state.message}
+                  onConfirm={() => this.toggleAlert('visible')}
+                />
+              </div>
+              {/* <Alertz
                 color={this.state.color}
                 message={this.state.message}
                 open={this.state.visible}
                 togglez={() => this.toggle('visible')}
-              />
+              /> */}
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row>

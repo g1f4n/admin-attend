@@ -44,7 +44,8 @@ Parse.Cloud.define("notifWeb", (request) => {
     // });
   
     var query = new Parse.Query(Parse.Installation);
-    query.equalTo("userId", taskTo);
+    query.containedIn("userId", taskTo);
+    // query.equalTo("userId", taskTo);
     // query.matchesKeyInQuery("userId", "objectId", userQuery);
     
     

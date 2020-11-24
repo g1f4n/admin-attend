@@ -74,7 +74,8 @@
     "react-select": "^3.1.0",
     "react-toggle-button": "^2.2.0",
     "reactstrap": "8.4.1",
-    "recompose": "^0.30.0"
+    "recompose": "^0.30.0",
+    "sweetalert2-react": "^0.8.3"
   },
   "devDependencies": {
     "@types/googlemaps": "3.39.2",

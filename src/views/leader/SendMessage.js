@@ -61,6 +61,7 @@ import ReactDatetime from "react-datetime";
 import { Multiselect } from 'multiselect-react-dropdown';
 import Select from 'react-select';
 import Geocode from 'react-geocode';
+import SweetAlert from 'sweetalert2-react';
 import { compose, withProps, withStateHandlers,  withHandlers } from "recompose";
 
 class SendMessage extends React.Component {
@@ -318,6 +319,24 @@ class SendMessage extends React.Component {
 
     const { inputDept, tglWaktu, deskripsi, delegasi, messageType } = this.state;
     this.setState({ loadingModal: true });
+
+    let implodeTaskTo = [];
+    let testArray = []
+
+    const Messaging = Parse.Object.extend('Messaging');
+    const queryMessaging = new Messaging();
+
+    this.state.multiDelegasi.map((data) => {
+      implodeTaskTo.push(data.id);
+    });
+
+
+    
+
+    // Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: implodeTaskTo}).then((response) => {
+    //   console.log("multidelegasi", implodeTaskTo);
+    // })
+    // console.log("implodeTaskTo", implodeTaskTo);
     
     this.state.multiDelegasi.map((id) => {
       const Messaging = Parse.Object.extend('Messaging');
@@ -343,15 +362,45 @@ class SendMessage extends React.Component {
         className: "_User",
         objectId: id.id
       });
-
-      queryMessaging.save().then((y) => {
+      testArray.push(queryMessaging)
+      // // queryMessaging.save().then((y) => {
         
-        // Parse.Cloud.run('notif', {title: 'Message', alert: inputDept, priority: "high"}).then((response) => {
-        //   console.log("response");
-        // })
-        console.log("user", id.id);
-        Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
-          console.log("response");
+      // //   // Parse.Cloud.run('notif', {title: 'Message', alert: inputDept, priority: "high"}).then((response) => {
+      // //   //   console.log("response");
+      // //   // })
+      // //   console.log("user", id.id);
+      // //   Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
+      // //     console.log("response");
+      // //   })
+      // //   this.setState({
+      // //     sendMessageMode: false,
+      // //     loadingModal: false,
+      // //     // todoList: this.state.todoList.concat(y),
+      // //     message: 'Berhasil send message',
+      // //     multiDelegasi: [],
+      // //     visible: true,
+      // //     color: 'success'
+      // //   });
+      //   // window.location.href = '/leader/sendMessage'
+      //   // window.location.reload(false);
+      // })
+      //   .catch((err) => {
+      //     console.log(err.message);
+      //     this.setState({
+      //       loadingModal: false,
+      //       message: 'Gagal tambah data, coba lagi',
+      //       visible: true
+      //     });
+      //   });
+    })
+
+    console.log("testArray", testArray);
+    Parse.Object.saveAll(testArray, {
+      success: "sucess",
+      error: "error",
+    }).then((response) => {
+        Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: implodeTaskTo}).then((response) => {
+          console.log("multidelegasi", implodeTaskTo);
         })
         this.setState({
           sendMessageMode: false,
@@ -362,24 +411,30 @@ class SendMessage extends React.Component {
           visible: true,
           color: 'success'
         });
-        // window.location.href = '/leader/sendMessage'
-        window.location.reload(false);
-      })
-        .catch((err) => {
-          console.log(err.message);
-          this.setState({
-            loadingModal: false,
-            message: 'Gagal tambah data, coba lagi',
-            visible: true
-          });
-        });
-    })
+        // window.location.reload(false);
+    }).catch((error) => {
+      console.log(error.message);
+      this.setState({
+        loadingModal: false,
+        message: 'Gagal tambah data, coba lagi',
+        visible: true
+      });
+    });
   }
+
+  
 
   toggle = (state) => {
     this.setState({
       [state]: !this.state[state]
     });
+  };
+
+  toggleAlert = (state) => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+    window.location.reload(false);
   };
 
   // getLocation
@@ -461,12 +516,20 @@ class SendMessage extends React.Component {
           {/* Table */}
           <Row>
             <div className="col">
-              <Alertz
+              <div>
+                <SweetAlert
+                  show={this.state.visible}
+                  title="Information"
+                  text={this.state.message}
+                  onConfirm={() => this.toggleAlert('visible')}
+                />
+              </div>
+              {/* <Alertz
                 color={this.state.color}
                 message={this.state.message}
                 open={this.state.visible}
                 togglez={() => this.toggle('visible')}
-              />
+              /> */}
               <Card className="shadow">
                 <CardHeader className="border-0">
                   {/* <Row> */}
@@ -503,7 +566,7 @@ class SendMessage extends React.Component {
                                 onSelect={this.onSelect}
                                 onRemove={this.onRemove}
                               />
-                              {/* {console.log("users", this.state.multiDelegasi)} */}
+                              {console.log("users", this.state.multiDelegasi)}
                             </Col>
                           {/* </InputGroup> */}
                         </FormGroup>
