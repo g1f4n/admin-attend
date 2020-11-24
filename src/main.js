@@ -30,8 +30,10 @@ Parse.Cloud.define("notif", (request) => {
 
 // push notification
 Parse.Cloud.define("notifWeb", (request) => {
-    let taskTo = request.params.taskTo
-    
+    let taskTo = request.params.taskTo;
+    const title = request.params.title;
+    const alert = request.params.alert;
+    const priority = request.params.priority;
     // var User = Parse.Object.extend("_User");
     // var userQuery = new Parse.Query(User);
     // userQuery.equalTo("statusUser", 0);
@@ -53,11 +55,17 @@ Parse.Cloud.define("notifWeb", (request) => {
       where: query,
       data: {
 
-        title: request.params.title,
-        alert: request.params.alert,
-        priority: request.params.priority,
+        title: title,
+        alert: alert,
+        priority: priority,
         badge: 1,
         sound: 'default'
+
+        // title: request.params.title,
+        // alert: request.params.alert,
+        // priority: request.params.priority,
+        // badge: 1,
+        // sound: 'default'
     
         // title: request.params.title,
         // timeDate: request.params.timeDate,

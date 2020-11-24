@@ -331,8 +331,11 @@ class TodoList extends React.Component {
             objectId: id.id
           });
           queryMessaging.save().then((y) => {
-            Parse.Cloud.run('notif', {title: 'New Task', alert: inputDept, priority: "high"}).then((response) => {
-              console.log("response", response);
+            // Parse.Cloud.run('notif', {title: 'New Task', alert: inputDept, priority: "high"}).then((response) => {
+            //   console.log("response", response);
+            // })
+            Parse.Cloud.run('notifWeb', {title: 'New Task', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
+              console.log("response");
             })
             this.setState({
               addMode: false,

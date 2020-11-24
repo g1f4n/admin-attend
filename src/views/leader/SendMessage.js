@@ -351,7 +351,7 @@ class SendMessage extends React.Component {
         // })
         console.log("user", id.id);
         Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
-          // console.log("response");
+          console.log("response");
         })
         this.setState({
           sendMessageMode: false,
