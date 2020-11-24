@@ -346,8 +346,12 @@ class SendMessage extends React.Component {
 
       queryMessaging.save().then((y) => {
         
-        Parse.Cloud.run('notif', {title: 'Message', alert: inputDept, priority: "high"}).then((response) => {
-          console.log("response");
+        // Parse.Cloud.run('notif', {title: 'Message', alert: inputDept, priority: "high"}).then((response) => {
+        //   console.log("response");
+        // })
+        console.log("user", id.id);
+        Parse.Cloud.run('notifWeb', {title: 'Message', alert: inputDept, priority: "high", taskTo: id.id}).then((response) => {
+          // console.log("response");
         })
         this.setState({
           sendMessageMode: false,
@@ -499,6 +503,7 @@ class SendMessage extends React.Component {
                                 onSelect={this.onSelect}
                                 onRemove={this.onRemove}
                               />
+                              {/* {console.log("users", this.state.multiDelegasi)} */}
                             </Col>
                           {/* </InputGroup> */}
                         </FormGroup>
