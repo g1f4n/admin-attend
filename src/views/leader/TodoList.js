@@ -886,7 +886,7 @@ class TodoList extends React.Component {
 
   onSelect = (selectedList, selectedItem) => {
     this.state.multiDelegasi.push(selectedItem);
-    this.setState({multiDelegasi: selectedList});
+    // this.setState({multiDelegasi: selectedList});
   }
 
   onRemove = (selectedList, removedItem) =>  {

@@ -100,6 +100,7 @@ class SendMessage extends React.Component {
       selectedOption: [],
       sendMessageMode: false,
       titleUpdate: '',
+      multiselect: [],
     };
   }
 
@@ -320,6 +321,11 @@ class SendMessage extends React.Component {
     const { inputDept, tglWaktu, deskripsi, delegasi, messageType } = this.state;
     this.setState({ loadingModal: true });
 
+    // console.log("multidelegate", this.state.multiDelegasi);
+    // this.state.multiDelegasi.map((data) => {
+    //   console.log("datass", data);
+    // })
+
     let implodeTaskTo = [];
     let testArray = []
 
@@ -472,12 +478,17 @@ class SendMessage extends React.Component {
 
   onSelect = (selectedList, selectedItem) => {
     this.state.multiDelegasi.push(selectedItem);
-    this.setState({multiDelegasi: selectedList});
+    // this.setState({multiDelegasi: selectedList});
   }
 
   onRemove = (selectedList, removedItem) =>  {
+    // console.log("selectList", selectedList);
+    // console.log("removeItem", removedItem);
+    let multidelegate = []
     this.state.multiDelegasi.slice(1, removedItem);
-    this.setState({multiDelegasi: selectedList});
+    // multidelegate.push(selectedList);
+    this.setState({multiDelegasi: selectedList})
+    // this.state.multiDelegasi.slice(1, removedItem);
   }
 
   render() {
@@ -496,17 +507,25 @@ class SendMessage extends React.Component {
       deleteMode,
       messageType,
       selectedOption,
+      multiselect,
       editMode,
       sendMessageMode
     } = this.state;
 
-    const multiselect = [];
-    daftarStaff.map((x) => {
+    daftarStaff.map((row) => {
       multiselect.push({
-        id: x.id,
-        fullname: x.get('fullname')
+        id: row.id,
+        fullname: row.get('fullname')
       })
     })
+
+    // const multiselect = [];
+    // daftarStaff.map((x) => {
+    //   multiselect.push({
+    //     id: x.id,
+    //     fullname: x.get('fullname')
+    //   })
+    // })
 
     return (
       <React.Fragment>
@@ -563,6 +582,7 @@ class SendMessage extends React.Component {
                               <Multiselect
                                 options={multiselect} // Options to display in the dropdown
                                 displayValue="fullname"
+                                // displayValue="key"
                                 onSelect={this.onSelect}
                                 onRemove={this.onRemove}
                               />
@@ -658,7 +678,6 @@ class SendMessage extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log('todoList', todoList)}
                     {loading ? (
                       <td colSpan={6} style={{ textAlign: 'center' }}>
                         <Spinner
