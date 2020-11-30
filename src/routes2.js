@@ -35,6 +35,7 @@ import { ExportExcelIdz } from 'views/leader/ExportExcelId';
 import TesEksport from 'views/leader/TesEksport';
 import TodoList from 'views/leader/TodoList';
 import SendMessage from 'views/leader/SendMessage';
+import HistoryAbsence from 'views/leader/HistoryAbsence';
 
 var routes2 = [
   {
@@ -82,12 +83,19 @@ var routes2 = [
     layout: '/leader'
   },
   {
-    path: '/data-absen',
-    name: 'Absen',
+    path: '/history-absence',
+    name: 'History',
     icon: 'ni ni-bullet-list-67 text-red',
-    component: Tables,
+    component: HistoryAbsence,
     layout: '/leader'
   },
+  // {
+  //   path: '/data-absen',
+  //   name: 'Absen',
+  //   icon: 'ni ni-bullet-list-67 text-red',
+  //   component: Tables,
+  //   layout: '/leader'
+  // },
   {
     path: '/request-cuti',
     name: 'Request Cuti',
