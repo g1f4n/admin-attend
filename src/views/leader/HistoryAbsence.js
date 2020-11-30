@@ -177,6 +177,8 @@ class HistoryAbsence extends React.Component {
       start.startOf(filterType);
       finish = new moment(start);
       finish.add(1, filterType);
+      query.greaterThanOrEqualTo('createdAt', start.toDate());
+      query.lessThan('createdAt', finish.toDate());
     } else {
       const d = new Date();
       start = new moment(d);
@@ -260,6 +262,9 @@ class HistoryAbsence extends React.Component {
   getDaftarAbsenByLevel = (startDate = 'today', userRole = getUserRole(), filterType = 'day') => {
     this.setState({ loading: true });
     //const userRole = getUserRole();
+
+    console.log("startDate", startDate);
+    console.log("startDate2", filterType);
 
     switch (userRole) {
       case 'leader':

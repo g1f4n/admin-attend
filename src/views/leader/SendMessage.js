@@ -62,6 +62,7 @@ import { Multiselect } from 'multiselect-react-dropdown';
 import Select from 'react-select';
 import Geocode from 'react-geocode';
 import SweetAlert from 'sweetalert2-react';
+import cron from 'node-cron';
 import { compose, withProps, withStateHandlers,  withHandlers } from "recompose";
 
 class SendMessage extends React.Component {
@@ -107,7 +108,17 @@ class SendMessage extends React.Component {
   componentDidMount() {
     this.getData();
     this.getDaftarAbsenByLevel();
+    // this.scheduler();
   }
+
+  // // scheduler 
+  // scheduler = (e) => {
+  //   // var cron = require('node-cron');
+
+  //   cron.schedule('* * * * * *', () => {
+  //     console.log('every second');
+  //   });
+  // }
 
   getData = () => {
     this.setState({ loading: true });

@@ -31,6 +31,12 @@ import Parse from 'parse';
 import * as env from './env';
 
 import { checkUser, getUserRole } from './utils';
+import cron from 'node-cron';
+
+// // scheduler
+// cron.schedule('* * * * * *', () => {
+//   console.log("every second");
+// })
 
 Parse.initialize(env.APPLICATION_ID, env.JAVASCRIPT_KEY, env.MASTER_KEY);
 Parse.serverURL = env.SERVER_URL;
