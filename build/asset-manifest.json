@@ -1,21 +1,22 @@
 {
   "files": {
-    "main.css": "/static/css/main.f21cf95d.chunk.css",
-    "main.js": "/static/js/main.7234893e.chunk.js",
-    "main.js.map": "/static/js/main.7234893e.chunk.js.map",
+    "main.css": "/static/css/main.4312a393.chunk.css",
+    "main.js": "/static/js/main.9e067c03.chunk.js",
+    "main.js.map": "/static/js/main.9e067c03.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.c7f5aab7.js",
     "runtime-main.js.map": "/static/js/runtime-main.c7f5aab7.js.map",
-    "static/css/2.79838944.chunk.css": "/static/css/2.79838944.chunk.css",
-    "static/js/2.3f143598.chunk.js": "/static/js/2.3f143598.chunk.js",
-    "static/js/2.3f143598.chunk.js.map": "/static/js/2.3f143598.chunk.js.map",
+    "static/css/2.ae5eb3ef.chunk.css": "/static/css/2.ae5eb3ef.chunk.css",
+    "static/js/2.d80ed51c.chunk.js": "/static/js/2.d80ed51c.chunk.js",
+    "static/js/2.d80ed51c.chunk.js.map": "/static/js/2.d80ed51c.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.65296f8872c1324e6afdb359a7e9b7d1.js": "/precache-manifest.65296f8872c1324e6afdb359a7e9b7d1.js",
+    "precache-manifest.e3893afd2ea53b1411e71e1a0c6779c2.js": "/precache-manifest.e3893afd2ea53b1411e71e1a0c6779c2.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/2.79838944.chunk.css.map": "/static/css/2.79838944.chunk.css.map",
-    "static/css/main.f21cf95d.chunk.css.map": "/static/css/main.f21cf95d.chunk.css.map",
-    "static/js/2.3f143598.chunk.js.LICENSE.txt": "/static/js/2.3f143598.chunk.js.LICENSE.txt",
-    "static/js/main.7234893e.chunk.js.LICENSE.txt": "/static/js/main.7234893e.chunk.js.LICENSE.txt",
+    "static/css/2.ae5eb3ef.chunk.css.map": "/static/css/2.ae5eb3ef.chunk.css.map",
+    "static/css/main.4312a393.chunk.css.map": "/static/css/main.4312a393.chunk.css.map",
+    "static/js/2.d80ed51c.chunk.js.LICENSE.txt": "/static/js/2.d80ed51c.chunk.js.LICENSE.txt",
+    "static/js/main.9e067c03.chunk.js.LICENSE.txt": "/static/js/main.9e067c03.chunk.js.LICENSE.txt",
     "static/media/argon-react.png": "/static/media/argon-react.f38ddea9.png",
+    "static/media/dika-logo.png": "/static/media/dika-logo.cf303668.png",
     "static/media/all.min.css": "/static/media/fa-solid-900.cdfec5cf.woff",
     "static/media/github.svg": "/static/media/github.2e257125.svg",
     "static/media/google.svg": "/static/media/google.08ea438e.svg",
@@ -24,9 +25,9 @@
   },
   "entrypoints": [
     "static/js/runtime-main.c7f5aab7.js",
-    "static/css/2.79838944.chunk.css",
-    "static/js/2.3f143598.chunk.js",
-    "static/css/main.f21cf95d.chunk.css",
-    "static/js/main.7234893e.chunk.js"
+    "static/css/2.ae5eb3ef.chunk.css",
+    "static/js/2.d80ed51c.chunk.js",
+    "static/css/main.4312a393.chunk.css",
+    "static/js/main.9e067c03.chunk.js"
   ]
 }

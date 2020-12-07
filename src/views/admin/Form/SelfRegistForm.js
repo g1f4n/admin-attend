@@ -508,7 +508,7 @@ class SelfRegistForm extends React.Component {
     });
     const formData = new FormData();
     formData.append("knax", e.target.files[0]);
-    Axios.post("http://34.126.96.126:4000/api/face-check", formData, {
+    Axios.post("http://52.77.8.120:4000/api/face-check", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -555,6 +555,22 @@ class SelfRegistForm extends React.Component {
         this.setState({ loadingModal: false });
       });
   };
+
+  // send data to textfile
+  handleTextFile = (req) => {
+    let user = req;
+    let data = JSON.stringify(user, null, 2);
+    
+    const formData = new FormData();
+    formData.append("data", data);
+    Axios.post("http://52.77.8.120:3005/api/updateUserData", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(({response}) => {
+      console.log("success");
+    })
+  }
 
   handleSubmit = () => {
     this.setState({ loading: true });
@@ -684,6 +700,41 @@ class SelfRegistForm extends React.Component {
         console.log("isi user", user);
         console.log("objectid user", x.id);
 
+        // send textfile to server
+        let users = {
+          objectId: x.id,
+          absenPoint: this.state.idPoint,
+          fullname: x.get("fullname"),
+          email: x.get("email"),
+          username: x.get("username"),
+          passwordClone: x.get("passwordClone"),
+          nik: x.get("nik"),
+          tipe: x.get("tipe"),
+          posisi: x.get("posisi"),
+          level: x.get("level"),
+          imei: x.get("imei"),
+          jamKerja:  x.get("jamKerja"),
+          lokasiKerja: x.get("lokasiKerja"),
+          jamMasuk: x.get("jamMasuk"),
+          jumlahCuti: x.get("jumlahCuti"),
+          lembur: x.get("lembur"),
+          roles: x.get("roles"),
+          fotoWajah: x.get("fotoWajah"),
+          exclude: x.get("exclude"),
+          appSetting: x.get("appSetting"),
+          createdAt: x.get("createdAt"),
+          updatedAt: x.get("updatedAt"),
+          jamKeluar: x.get("jamKeluar"),
+          leaderIdNew: x.get("leaderIdNew"),
+          supervisorID: x.get("supervisorID"),
+          managerID: x.get("managerID"),
+          headID: x.get("headID"),
+          gmID: x.get("gmID"),
+          userId: x.id,
+          statusUser: x.get("statusUser"),
+          ACL: x.get("ACL"),
+        }
+
         const updateUser = new Parse.User();
         const queryUser = new Parse.Query(updateUser);
 
@@ -701,6 +752,7 @@ class SelfRegistForm extends React.Component {
               x.set("status", 1);
               x.save()
                 .then(() => {
+                  this.handleTextFile(users);
                   this.handleSendEmail(
                     this.state.email,
                     "KTA Team",

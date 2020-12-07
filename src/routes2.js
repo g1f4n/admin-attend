@@ -33,6 +33,7 @@ import ViewHistory from 'views/leader/ViewHistory';
 import { getLeaderId } from 'utils';
 import { ExportExcelIdz } from 'views/leader/ExportExcelId';
 import TesEksport from 'views/leader/TesEksport';
+import HistoryAbsence from 'views/leader/HistoryAbsence';
 
 var routes2 = [
   {
@@ -65,11 +66,18 @@ var routes2 = [
     component: Profile,
     layout: '/leader'
   },
+  // {
+  //   path: '/data-absen',
+  //   name: 'Absen',
+  //   icon: 'ni ni-bullet-list-67 text-red',
+  //   component: Tables,
+  //   layout: '/leader'
+  // },
   {
-    path: '/data-absen',
-    name: 'Absen',
+    path: '/history-absence',
+    name: 'History Absen',
     icon: 'ni ni-bullet-list-67 text-red',
-    component: Tables,
+    component: HistoryAbsence,
     layout: '/leader'
   },
   {

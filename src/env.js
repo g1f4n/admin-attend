@@ -52,3 +52,11 @@ module.exports = {
 //   MASTER_KEY: "A5VTmrJQKFx7usZLLMIdG5HsGZ400PFlwcsZAjRI",
 //   SERVER_URL: "https://parseapi.back4app.com/",
 // };
+
+// db attend testing VI
+// module.exports = {
+//   APPLICATION_ID: "cP30FxLqf3QgDtaeccmzjznhS7XEsv00uyzeqQQu",
+//   JAVASCRIPT_KEY: "VjcKqKdHNLJkmcYH1pMV6aslO3RX35vrkaqPysod",
+//   MASTER_KEY: "ETC46J2lepoxjh45RUy5p7THF4YYTA1uXLXqoCpz",
+//   SERVER_URL: "https://parseapi.back4app.com/",
+// };
