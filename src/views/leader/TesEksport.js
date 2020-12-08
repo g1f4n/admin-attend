@@ -5738,7 +5738,7 @@ class TesEksport extends React.Component {
             this.toggle("excelMode");
             this.setState({ tableData: [] });
           }}
-          title={`${this.state.checkId.length} user, export data to excel`}
+          title={`${this.state.checkId.length} user terpilih, export data to excel ?`}
           body={
             <div>
               <Form role="form" onSubmit={this.getDataAbsen} className="mt-3">
