@@ -910,7 +910,7 @@ class Terlambat extends React.Component {
           title="Approve Confirmation"
           body={
             <div>
-              <h3 className="mb-4">{`Approve cuti ${this.state.checkId.length} data ?`}</h3>
+              <h3 className="mb-4">{`Approve Terlambat ${this.state.checkId.length} data ?`}</h3>
             </div>
           }
           handleSubmit={this.approveChecked}

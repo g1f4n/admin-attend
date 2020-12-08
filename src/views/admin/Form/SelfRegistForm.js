@@ -45,6 +45,8 @@ import md5 from "md5";
 import Alertz from "components/Alert/Alertz";
 import { Link } from "react-router-dom";
 import emailjs from "emailjs-com";
+import ModalHandler from 'components/Modal/Modal';
+import SweetAlert from 'sweetalert2-react';
 
 class SelfRegistForm extends React.Component {
   constructor(props) {
@@ -123,6 +125,8 @@ class SelfRegistForm extends React.Component {
       jamMasuk: 0,
       jamKeluar: 0,
       visibleToggle: false,
+      selfImage:'',
+      photoMode: false,
     };
   }
 
@@ -1099,6 +1103,13 @@ class SelfRegistForm extends React.Component {
     });
   };
 
+  toggleAlert = (state) => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+    window.location.reload(false);
+  };
+
   handleIdAbsen = (e) => {
     var element_input = document.getElementById("myoptions");
     var element_datalist = document.getElementById("data");
@@ -1415,6 +1426,14 @@ class SelfRegistForm extends React.Component {
         <Container className="mt--8" fluid>
           <Row>
             <Col className="order-xl-1" xl="12">
+              {/* <div>
+                <SweetAlert
+                  show={this.state.visible}
+                  title="Information"
+                  text={this.state.message}
+                  onConfirm={() => this.toggleAlert('visible')}
+                />
+              </div> */}
               <Alertz
                 color={this.state.color}
                 message={this.state.message}
@@ -1451,16 +1470,24 @@ class SelfRegistForm extends React.Component {
                             <FormGroup>
                               <Label>Foto Wajah</Label>
                               <Row className="ml-1">
-                                <img
-                                  height={100}
-                                  width={100}
-                                  src={
-                                    this.state.fotoWajah === ""
-                                      ? ""
-                                      : this.state.fotoWajah
-                                  }
-                                  alt="foto"
-                                />
+                                <Link>
+                                  <img
+                                    height={100}
+                                    width={100}
+                                    src={
+                                      this.state.fotoWajah === ""
+                                        ? ""
+                                        : this.state.fotoWajah
+                                    }
+                                    alt="foto"
+                                    onClick={() => {
+                                      this.setState({
+                                        photoMode: true,
+                                        selfImage: this.state.fotoWajah
+                                      })
+                                    }}
+                                  />
+                                </Link>
                               </Row>
                             </FormGroup>
                           ) : (
@@ -1979,6 +2006,17 @@ class SelfRegistForm extends React.Component {
               </Card>
             </Col>
           </Row>
+          
+          {/* photo mode */}
+          <ModalHandler
+            show={this.state.photoMode}
+            title="Foto Wajah"
+            handleHide={() => {
+              this.setState({ photoMode: false });
+            }}
+            body={<img width="100%" height={300} src={this.state.selfImage} />}
+          />
+          
         </Container>
       </React.Fragment>
     );

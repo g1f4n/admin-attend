@@ -5208,6 +5208,9 @@ class TesEksport extends React.Component {
                           Total Hour
                         </th>
                         <th scope="col" rowSpan="2">
+                          Location
+                        </th>
+                        <th scope="col" rowSpan="2">
                           Notes
                         </th>
                       </tr>
@@ -5608,6 +5611,11 @@ class TesEksport extends React.Component {
                                   )
                                 )
                                 .minutes()}
+                            </td>
+
+                            {/* Location */}
+                            <td>
+                              {prop.get("workPlace")}
                             </td>
 
                             {/* Notes */}

@@ -198,7 +198,7 @@ class Index extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.late !== this.state.late) {
       console.log(this.state.dataAbsen);
-      this.getCenterAverage(this.state.dataAbsen.concat(this.state.late));
+      this.getCenterAverage(this.state.dataAbsen);
     }
   }
 
@@ -475,13 +475,13 @@ class Index extends React.Component {
               <Card className="shadow mb-5" ref={this.lcoationRef}>
                 {this.state.loading ? (
                   <div style={{ height: `100%`, textAlign: 'center' }}>Loading map...</div>
-                ) : this.state.dataAbsen.concat(this.state.late).length === 0 ? (
+                ) : this.state.dataAbsen.length === 0 ? (
                   <div style={{ height: `100%`, textAlign: 'center' }}>
                     Tidak ada data absen hari ini
                   </div>
                 ) : (
                   <MapWrapper
-                    userPosition={this.state.dataAbsen.concat(this.state.late)}
+                    userPosition={this.state.dataAbsen}
                     avgLat={this.state.avgLat}
                     avgLng={this.state.avgLng}
                     defaultZoom={this.state.defaultZoom}

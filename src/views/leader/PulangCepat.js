@@ -60,6 +60,7 @@ import HeaderNormal from "components/Headers/HeaderNormal";
 import { padStart } from "lodash";
 import Alerts from "components/Alert/Alert";
 import { getUserRole } from "utils";
+import {convertDate} from "utils";
 
 class PulangCepat extends React.Component {
   constructor(props) {
@@ -707,6 +708,7 @@ class PulangCepat extends React.Component {
                       )}
                       <th scope="col">NIK</th>
                       <th scope="col">Nama</th>
+                      <th scope="col">Waktu</th>
                       <th scope="col">Alasan</th>
                       <th scope="col">Approve</th>
                     </tr>
@@ -766,6 +768,7 @@ class PulangCepat extends React.Component {
                           )}
                           <td>{prop.get("user").attributes.nik}</td>
                           <td>{prop.get("fullname")}</td>
+                          <td>{convertDate(prop.get("earlyTimes"), "DD/MM/YYYY HH:mm")}</td>
                           <td>{prop.get("alasanKeluar")}</td>
                           {prop.get("approvalEarly") === 1 ? (
                             <td>Approved</td>
