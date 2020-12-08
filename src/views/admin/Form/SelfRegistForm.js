@@ -149,7 +149,8 @@ class SelfRegistForm extends React.Component {
     this.getTipe();
     //this.getShifting();
     this.getPoint();
-    emailjs.init("user_h2fWwDoztgEPcKNQ9vadt");
+    // emailjs.init("user_h2fWwDoztgEPcKNQ9vadt");
+    emailjs.init("user_pmowrGg5rvVezxSJbFWXv");
     //this.testRelasi();
   }
 
@@ -540,24 +541,25 @@ class SelfRegistForm extends React.Component {
     const user = new Parse.User();
     const query = new Parse.Query(user);
 
+    
     query.equalTo("imei", this.state.imei);
     query
-      .first()
-      .then((x) => {
-        if (x) {
-          this.setState({
-            imeiMessage: "Imei telah terdaftar",
-            loadingModal: false,
-          });
-          return;
-        } else {
-          this.handleSubmit();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        this.setState({ loadingModal: false });
-      });
+    .first()
+    .then((x) => {
+      if (x) {
+        this.setState({
+          imeiMessage: "Imei telah terdaftar",
+          loadingModal: false,
+        });
+        return;
+      } else {
+        this.handleSubmit();
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      this.setState({ loadingModal: false });
+    });
   };
 
   // send data to textfile
@@ -809,8 +811,10 @@ class SelfRegistForm extends React.Component {
       alasan: alasan,
     };
 
-    var service_id = "gmail";
-    var template_id = "template_N8cRQk3D";
+    // var service_id = "gmail";
+    // var template_id = "template_N8cRQk3D";
+    var service_id = "service_qf2mtqa";
+    var template_id = "template_x04o5rs";
     emailjs
       .send(service_id, template_id, template_params)
       .then(() => {
@@ -1426,20 +1430,20 @@ class SelfRegistForm extends React.Component {
         <Container className="mt--8" fluid>
           <Row>
             <Col className="order-xl-1" xl="12">
-              {/* <div>
+              <div>
                 <SweetAlert
                   show={this.state.visible}
                   title="Information"
                   text={this.state.message}
                   onConfirm={() => this.toggleAlert('visible')}
                 />
-              </div> */}
-              <Alertz
+              </div>
+              {/* <Alertz
                 color={this.state.color}
                 message={this.state.message}
                 open={this.state.visible}
                 togglez={() => this.toggle("visible")}
-              />
+              /> */}
               <Card className="bg-secondary shadow">
                 <CardHeader className="bg-white border-0">
                   <Row className="align-items-center">

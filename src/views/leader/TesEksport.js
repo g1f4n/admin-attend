@@ -50,6 +50,7 @@ import _ from "lodash/lang";
 import { handleSelect } from "utils";
 import LeaderHeader from "components/Headers/LeaderHeader";
 import { getUserRole } from "utils";
+import Pagination from 'react-js-pagination';
 
 class TesEksport extends React.Component {
   constructor(props) {
@@ -243,18 +244,18 @@ class TesEksport extends React.Component {
   };
 
   // get data by level
-  getDataByLevel = (userRole = getUserRole()) => {
+  getDataByLevel = (pageNumber = 1, userRole = getUserRole()) => {
     this.setState({ loadingFilter: true });
 
     switch (userRole) {
       case "leader":
-        this.queryStaffByLevel("leaderIdNew", ["staff"]);
+        this.queryStaffByLevel("leaderIdNew", ["staff"], pageNumber);
         break;
       case "supervisor":
-        this.queryStaffByLevel("supervisorID", ["staff", "leader"]);
+        this.queryStaffByLevel("supervisorID", ["staff", "leader"], pageNumber);
         break;
       case "manager":
-        this.queryStaffByLevel("managerID", ["staff", "leader", "supervisor"]);
+        this.queryStaffByLevel("managerID", ["staff", "leader", "supervisor"], pageNumber);
         break;
       case "head":
         this.queryStaffByLevel("headID", [
@@ -271,7 +272,7 @@ class TesEksport extends React.Component {
           "supervisor",
           "manager",
           "head",
-        ]);
+        ], pageNumber);
         break;
 
       default:
@@ -4074,10 +4075,10 @@ class TesEksport extends React.Component {
             x.map((value, index) => {
               totalMinutes.push(
                 moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : value.get("absenKeluar") !== undefined ? convertDate(value.get("absenKeluar"), "HH:mm") : "", "HH:mm")
               .subtract(
                 moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : value.get("absenMasuk") !== undefined ? convertDate(value.get("absenMasuk"), "HH:mm") : "",
                   "HH:mm"
                 )
               )
@@ -5122,6 +5123,18 @@ class TesEksport extends React.Component {
                     )}
                   </tbody>
                 </Table>
+                {/* <Pagination
+                  activePage={this.state.page}
+                  itemsCountPerPage={this.state.resPerPage}
+                  totalItemsCount={this.state.totalData}
+                  pageRangeDisplayed={5}
+                  onChange={(pageNumber) => this.getDataByLevel(pageNumber)}
+                  innerClass="pagination justify-content-end p-4"
+                  itemClass="page-item mt-2"
+                  linkClass="page-link"
+                  prevPageText="<"
+                  nextPageText=">"
+                /> */}
               </Card>
               <Card>
                 {this.state.absence.map((rowResult, index) => (
@@ -5535,82 +5548,90 @@ class TesEksport extends React.Component {
                             {/* Total Hour Hours */}
                             {/* <td>{prop.get("fullname")}</td> */}
                             <td>
-                              {moment
-                                .duration(
-                                  prop.get("earlyTimes") !== undefined
+                              {prop.get("absenKeluar") !== undefined ||
+                              prop.get("earlyTimes") !== undefined ||
+                              prop.get("overtimeOut") !== undefined ?
+                              moment
+                              .duration(
+                                prop.get("earlyTimes") !== undefined
+                                  ? convertDate(
+                                      prop.get("earlyTimes"),
+                                      "HH:mm"
+                                    )
+                                  : prop.get("overtimeOut") !== undefined
+                                  ? convertDate(
+                                      prop.get("overtimeOut"),
+                                      "HH:mm"
+                                    )
+                                  : prop.get("absenKeluar") !== undefined
+                                  ? convertDate(
+                                      prop.get("absenKeluar"),
+                                      "HH:mm"
+                                    )
+                                  : "",
+                                "HH:mm"
+                              )
+                              .subtract(
+                                moment.duration(
+                                  prop.get("lateTimes") !== undefined
                                     ? convertDate(
-                                        prop.get("earlyTimes"),
+                                        prop.get("lateTimes"),
                                         "HH:mm"
                                       )
-                                    : prop.get("overtimeOut") !== undefined
+                                    : prop.get("absenMasuk") !== undefined
                                     ? convertDate(
-                                        prop.get("overtimeOut"),
-                                        "HH:mm"
-                                      )
-                                    : prop.get("absenKeluar") !== undefined
-                                    ? convertDate(
-                                        prop.get("absenKeluar"),
+                                        prop.get("absenMasuk"),
                                         "HH:mm"
                                       )
                                     : "",
                                   "HH:mm"
                                 )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get("lateTimes") !== undefined
-                                      ? convertDate(
-                                          prop.get("lateTimes"),
-                                          "HH:mm"
-                                        )
-                                      : prop.get("absenMasuk") !== undefined
-                                      ? convertDate(
-                                          prop.get("absenMasuk"),
-                                          "HH:mm"
-                                        )
-                                      : "",
-                                    "HH:mm"
-                                  )
-                                )
-                                .hours()}
+                              )
+                              .hours() : ""}
                             </td>
 
                             {/* Total Hour Minutes */}
                             <td>
-                              {moment
-                                .duration(
-                                  prop.get("earlyTimes") !== undefined
+                              {prop.get("absenKeluar") !== undefined ||
+                              prop.get("earlyTimes") !== undefined ||
+                              prop.get("overtimeOut") !== undefined ? 
+                              moment
+                              .duration(
+                                prop.get("earlyTimes") !== undefined
+                                  ? convertDate(
+                                      prop.get("earlyTimes"),
+                                      "HH:mm"
+                                    )
+                                  : prop.get("overtimeOut") !== undefined
+                                  ? convertDate(
+                                      prop.get("overtimeOut"),
+                                      "HH:mm"
+                                    )
+                                  : prop.get("absenKeluar") !== undefined
+                                  ? convertDate(
+                                      prop.get("absenKeluar"),
+                                      "HH:mm"
+                                    )
+                                  : "",
+                                "HH:mm"
+                              )
+                              .subtract(
+                                moment.duration(
+                                  prop.get("lateTimes") !== undefined
                                     ? convertDate(
-                                        prop.get("earlyTimes"),
+                                        prop.get("lateTimes"),
                                         "HH:mm"
                                       )
-                                    : prop.get("overtimeOut") !== undefined
+                                    : prop.get("absenMasuk") !== undefined
                                     ? convertDate(
-                                        prop.get("overtimeOut"),
-                                        "HH:mm"
-                                      )
-                                    : prop.get("absenKeluar") !== undefined
-                                    ? convertDate(
-                                        prop.get("absenKeluar"),
-                                        "HH:mm"
-                                      )
+                                      prop.get("absenMasuk"),
+                                      "HH:mm"
+                                    )
                                     : "",
-                                  "HH:mm"
+                                "HH:mm"
                                 )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get("lateTimes") !== undefined
-                                      ? convertDate(
-                                          prop.get("lateTimes"),
-                                          "HH:mm"
-                                        )
-                                      : convertDate(
-                                          prop.get("absenMasuk"),
-                                          "HH:mm"
-                                        ),
-                                    "HH:mm"
-                                  )
-                                )
-                                .minutes()}
+                              )
+                              .minutes() : ""}
                             </td>
 
                             {/* Location */}
@@ -5711,13 +5732,13 @@ class TesEksport extends React.Component {
           size="lg"
           show={this.state.excelMode}
           loading={loadingModal}
-          footer={true}
+          footer={false}
           disabled={this.state.tableData.length < 1}
           handleHide={() => {
             this.toggle("excelMode");
             this.setState({ tableData: [] });
           }}
-          title={`Export ${this.state.checkId.length} data to excel`}
+          title={`${this.state.checkId.length} user, export data to excel`}
           body={
             <div>
               <Form role="form" onSubmit={this.getDataAbsen} className="mt-3">
@@ -5871,21 +5892,36 @@ class TesEksport extends React.Component {
                   </div>
                 </div>
               </Form>
-              <Row>
+              <div className="modal-footer">
                 {this.state.tableData.length > 0 ? (
-                  <ReactHTMLTableToExcel
-                    id="test-table-xls-button"
-                    className="btn btn-primary ml-2"
-                    table="ekspor1"
-                    multipleTables={this.state.tableData}
-                    filename="tablexls"
-                    sheet="tablexls"
-                    buttonText="Data siap di export"
-                  />
-                ) : (
-                  ""
-                )}
-              </Row>
+                  <Button
+                  color="secondary"
+                  data-dismiss="modal"
+                  type="button"
+                  onClick={() => {
+                    this.toggle("excelMode");
+                    this.setState({ tableData: [] });
+                  }}
+                    >
+                      Close
+                    </Button>
+                ) : ("")}
+                <Row>
+                  {this.state.tableData.length > 0 ? (
+                    <ReactHTMLTableToExcel
+                      id="test-table-xls-button"
+                      className="btn btn-primary ml-2"
+                      table="ekspor1"
+                      multipleTables={this.state.tableData}
+                      filename="tablexls"
+                      sheet="tablexls"
+                      buttonText="Data siap di export"
+                    />
+                  ) : (
+                    ""
+                  )}
+                </Row>
+              </div>
             </div>
           }
           handleSubmit={(e) => this.handleApproval(e, true)}

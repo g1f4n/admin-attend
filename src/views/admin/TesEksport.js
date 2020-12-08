@@ -5683,13 +5683,13 @@ class TesEksport extends React.Component {
           size="lg"
           show={this.state.excelMode}
           loading={loadingModal}
-          footer={true}
+          footer={false}
           disabled={this.state.tableData.length < 1}
           handleHide={() => {
             this.toggle("excelMode");
             this.setState({ tableData: [] });
           }}
-          title={`Export ${this.state.checkId.length} data to excel`}
+          title={`Export ${this.state.checkId.length} user to excel`}
           body={
             <div>
               <Form role="form" onSubmit={this.getDataAbsen} className="mt-3">
@@ -5843,21 +5843,36 @@ class TesEksport extends React.Component {
                   </div>
                 </div>
               </Form>
-              <Row>
+              <div className="modal-footer">
                 {this.state.tableData.length > 0 ? (
-                  <ReactHTMLTableToExcel
-                    id="test-table-xls-button"
-                    className="btn btn-primary ml-2"
-                    table="ekspor1"
-                    multipleTables={this.state.tableData}
-                    filename="tablexls"
-                    sheet="tablexls"
-                    buttonText="Data siap di export"
-                  />
-                ) : (
-                  ""
-                )}
-              </Row>
+                  <Button
+                  color="secondary"
+                  data-dismiss="modal"
+                  type="button"
+                  onClick={() => {
+                    this.toggle("excelMode");
+                    this.setState({ tableData: [] });
+                  }}
+                  >
+                    Close
+                  </Button>
+                ) : ("")}
+                <Row>
+                  {this.state.tableData.length > 0 ? (
+                    <ReactHTMLTableToExcel
+                      id="test-table-xls-button"
+                      className="btn btn-primary ml-2"
+                      table="ekspor1"
+                      multipleTables={this.state.tableData}
+                      filename="tablexls"
+                      sheet="tablexls"
+                      buttonText="Data siap di export"
+                    />
+                  ) : (
+                    ""
+                  )}
+                </Row>
+              </div>
             </div>
           }
           handleSubmit={(e) => this.handleApproval(e, true)}

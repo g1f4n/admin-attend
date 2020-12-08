@@ -59,6 +59,7 @@ import { handleSelect } from 'utils';
 import HeaderNormal from 'components/Headers/HeaderNormal';
 import Alerts from 'components/Alert/Alert';
 import { getUserRole } from 'utils';
+import {convertDate} from "utils";
 
 class Terlambat extends React.Component {
   constructor(props) {
@@ -689,6 +690,7 @@ class Terlambat extends React.Component {
                       {/* )} */}
                       <th scope="col">NIK</th>
                       <th scope="col">Nama</th>
+                      <th scope="col">Tanggal dan Waktu</th>
                       <th scope="col">Alasan</th>
                       <th scope="col">Approve</th>
                     </tr>
@@ -737,6 +739,7 @@ class Terlambat extends React.Component {
                           </td>
                           <td>{prop.get('user').attributes.nik}</td>
                           <td>{prop.get('fullname')}</td>
+                          <td>{convertDate(prop.get("lateTimes"), "DD/MM/YYYY HH:mm")}</td>
                           <td>{prop.get('alasanMasuk')}</td>
                           {prop.get('approvalLate') === 1 ? (
                             <td>Approved</td>
