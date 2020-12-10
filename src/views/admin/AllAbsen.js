@@ -374,50 +374,55 @@ class AllAbsen extends React.Component {
           // Total Hours
           x.map((value, index) => {
             totalMinutes.push(
-              moment
-                .duration(
-                  value.get("earlyTimes") !== undefined
-                    ? convertDate(value.get("earlyTimes"), "HH:mm")
-                    : value.get("overtimeOut") !== undefined
-                    ? convertDate(value.get("overtimeOut"), "HH:mm")
-                    : value.get("absenKeluar") !== undefined
-                    ? convertDate(value.get("absenKeluar"), "HH:mm")
-                    : `00:00`,
-                  "HH:mm"
-                )
-                .subtract(
-                  moment.duration(
-                    value.get("lateTimes") !== undefined
-                      ? convertDate(value.get("lateTimes"), "HH:mm")
-                      : value.get("absenMasuk") !== undefined
-                      ? convertDate(value.get("absenMasuk"), "HH:mm")
+              value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                moment
+                  .duration(
+                    value.get("earlyTimes") !== undefined
+                      ? convertDate(value.get("earlyTimes"), "HH:mm")
+                      : value.get("overtimeOut") !== undefined
+                      ? convertDate(value.get("overtimeOut"), "HH:mm")
+                      : value.get("absenKeluar") !== undefined
+                      ? convertDate(value.get("absenKeluar"), "HH:mm")
                       : `00:00`,
                     "HH:mm"
                   )
-                )
-                .minutes()
+                  .subtract(
+                    moment.duration(
+                      value.get("lateTimes") !== undefined
+                        ? convertDate(value.get("lateTimes"), "HH:mm")
+                        : value.get("absenMasuk") !== undefined
+                        ? convertDate(value.get("absenMasuk"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                  )
+                  .minutes()
+              : 0
             );
+            console.log("totalMinutes New", totalMinutes);
             totalHours.push(
-              moment
-                .duration(
-                  value.get("earlyTimes") !== undefined
-                    ? convertDate(value.get("earlyTimes"), "HH:mm")
-                    : value.get("overtimeOut") !== undefined
-                    ? convertDate(value.get("overtimeOut"), "HH:mm")
-                    : value.get("absenKeluar") !== undefined
-                    ? convertDate(value.get("absenKeluar"), "HH:mm")
-                    : `00:00`,
-                  "HH:mm"
-                )
-                .subtract(
-                  moment.duration(
-                    value.get("lateTimes") !== undefined
-                      ? convertDate(value.get("lateTimes"), "HH:mm")
-                      : convertDate(value.get("absenMasuk"), "HH:mm"),
+              value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                moment
+                  .duration(
+                    value.get("earlyTimes") !== undefined
+                      ? convertDate(value.get("earlyTimes"), "HH:mm")
+                      : value.get("overtimeOut") !== undefined
+                      ? convertDate(value.get("overtimeOut"), "HH:mm")
+                      : value.get("absenKeluar") !== undefined
+                      ? convertDate(value.get("absenKeluar"), "HH:mm")
+                      : `00:00`,
                     "HH:mm"
                   )
-                )
-                .hours()
+                  .subtract(
+                    moment.duration(
+                      value.get("lateTimes") !== undefined
+                        ? convertDate(value.get("lateTimes"), "HH:mm")
+                        : convertDate(value.get("absenMasuk"), "HH:mm"),
+                      "HH:mm"
+                    )
+                  )
+                  .hours()
+              : 0
             );
           });
           // console.log("total hours", totalMinutes);
@@ -962,26 +967,30 @@ class AllAbsen extends React.Component {
         // Total Hours
         x.map((value, index) => {
           totalMinutes.push(
-            moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              .subtract(
-                moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                  "HH:mm"
+            value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+              moment
+                .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+                .subtract(
+                  moment.duration(
+                    value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                    "HH:mm"
+                  )
                 )
-              )
-              .minutes()
+                .minutes()
+            : 0
           );
           totalHours.push(
-            moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              .subtract(
-                moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                  "HH:mm"
+            value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+              moment
+                .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+                .subtract(
+                  moment.duration(
+                    value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                    "HH:mm"
+                  )
                 )
-              )
-              .hours()
+                .hours()
+            : 0
           );
         });
 
@@ -1774,7 +1783,7 @@ class AllAbsen extends React.Component {
                         Total Hour
                       </th>
                       <th scope="col" rowSpan="2">
-
+                        Location
                       </th>
                       <th scope="col" rowSpan="2">
                         Notes
@@ -2134,7 +2143,8 @@ class AllAbsen extends React.Component {
                             {/* Total Hour Hours */}
                             {/* <td>{prop.get("fullname")}</td> */}
                             <td>
-                              { moment
+                              { prop.get("absenKeluar") !== undefined || prop.get("earlyTimes") !== undefined || prop.get("overtimeOut") !== undefined ?
+                              moment
                                     .duration(
                                       prop.get("earlyTimes") !== undefined ? convertDate(
                                         prop.get("earlyTimes"),
@@ -2160,12 +2170,13 @@ class AllAbsen extends React.Component {
                                         "HH:mm"
                                       )
                                     )
-                                    .hours()}
+                                    .hours() : ""}
                             </td>
 
                             {/* Total Hour Minutes */}
                             <td>
-                              {moment
+                              {prop.get("absenKeluar") !== undefined || prop.get("earlyTimes") !== undefined || prop.get("overtimeOut") !== undefined ?
+                              moment
                                 .duration(
                                   prop.get("earlyTimes") !== undefined ? convertDate(prop.get("earlyTimes"), "HH:mm") : prop.get("overtimeOut") !== undefined ? convertDate(prop.get("overtimeOut"), "HH:mm") : convertDate(prop.get("absenKeluar"), "HH:mm"),
                                   "HH:mm"
@@ -2182,7 +2193,7 @@ class AllAbsen extends React.Component {
                                     "HH:mm"
                                   )
                                 )
-                                .minutes()}
+                                .minutes() : ""}
                             </td>
 
                             {/* Location */}

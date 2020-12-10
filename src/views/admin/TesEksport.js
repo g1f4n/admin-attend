@@ -1433,15 +1433,39 @@ class TesEksport extends React.Component {
             // Total Hours
             x.map((value, index) => {
               totalMinutes.push(
-                moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              .subtract(
-                moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                  "HH:mm"
-                )
-              )
-              .minutes()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .minutes()
+                : 0
+              //   moment
+              // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              // .subtract(
+              //   moment.duration(
+              //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+              //     "HH:mm"
+              //   )
+              // )
+              // .minutes()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -1472,15 +1496,39 @@ class TesEksport extends React.Component {
                 //   .minutes()
               );
               totalHours.push(
-                moment
-                .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-                .subtract(
-                  moment.duration(
-                    value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                    "HH:mm"
-                  )
-                )
-                .hours()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .hours()
+                : 0
+                // moment
+                // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+                // .subtract(
+                //   moment.duration(
+                //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                //     "HH:mm"
+                //   )
+                // )
+                // .hours()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -2284,15 +2332,39 @@ class TesEksport extends React.Component {
             // Total Hours
             x.map((value, index) => {
               totalMinutes.push(
-                moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              .subtract(
-                moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                  "HH:mm"
-                )
-              )
-              .minutes()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .minutes()
+                : 0
+              //   moment
+              // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              // .subtract(
+              //   moment.duration(
+              //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+              //     "HH:mm"
+              //   )
+              // )
+              // .minutes()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -2323,15 +2395,39 @@ class TesEksport extends React.Component {
                 //   .minutes()
               );
               totalHours.push(
-                moment
-                .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-                .subtract(
-                  moment.duration(
-                    value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                    "HH:mm"
-                  )
-                )
-                .hours()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .hours()
+                : 0
+                // moment
+                // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+                // .subtract(
+                //   moment.duration(
+                //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                //     "HH:mm"
+                //   )
+                // )
+                // .hours()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -3132,15 +3228,39 @@ class TesEksport extends React.Component {
             // Total Hours
             x.map((value, index) => {
               totalMinutes.push(
-                moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              .subtract(
-                moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                  "HH:mm"
-                )
-              )
-              .minutes()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .minutes()
+                : 0
+              //   moment
+              // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              // .subtract(
+              //   moment.duration(
+              //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+              //     "HH:mm"
+              //   )
+              // )
+              // .minutes()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -3171,15 +3291,39 @@ class TesEksport extends React.Component {
                 //   .minutes()
               );
               totalHours.push(
-                moment
-                .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-                .subtract(
-                  moment.duration(
-                    value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                    "HH:mm"
-                  )
-                )
-                .hours()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .hours()
+                : 0
+                // moment
+                // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+                // .subtract(
+                //   moment.duration(
+                //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                //     "HH:mm"
+                //   )
+                // )
+                // .hours()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -3987,15 +4131,39 @@ class TesEksport extends React.Component {
             // Total Hours
             x.map((value, index) => {
               totalMinutes.push(
-                moment
-              .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              .subtract(
-                moment.duration(
-                  value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                  "HH:mm"
-                )
-              )
-              .minutes()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .minutes()
+                : 0
+              //   moment
+              // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+              // .subtract(
+              //   moment.duration(
+              //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+              //     "HH:mm"
+              //   )
+              // )
+              // .minutes()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -4026,15 +4194,39 @@ class TesEksport extends React.Component {
                 //   .minutes()
               );
               totalHours.push(
-                moment
-                .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-                .subtract(
-                  moment.duration(
-                    value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-                    "HH:mm"
-                  )
-                )
-                .hours()
+                value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
+                  moment
+                    .duration(
+                      value.get("earlyTimes") !== undefined
+                        ? convertDate(value.get("earlyTimes"), "HH:mm")
+                        : value.get("overtimeOut") !== undefined
+                        ? convertDate(value.get("overtimeOut"), "HH:mm")
+                        : value.get("absenKeluar") !== undefined
+                        ? convertDate(value.get("absenKeluar"), "HH:mm")
+                        : `00:00`,
+                      "HH:mm"
+                    )
+                    .subtract(
+                      moment.duration(
+                        value.get("lateTimes") !== undefined
+                          ? convertDate(value.get("lateTimes"), "HH:mm")
+                          : value.get("absenMasuk") !== undefined
+                          ? convertDate(value.get("absenMasuk"), "HH:mm")
+                          : `00:00`,
+                        "HH:mm"
+                      )
+                    )
+                    .hours()
+                : 0
+                // moment
+                // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
+                // .subtract(
+                //   moment.duration(
+                //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
+                //     "HH:mm"
+                //   )
+                // )
+                // .hours()
                 // moment
                 //   .duration(
                 //     convertDate(value.get("absenKeluar"), "HH:mm"),
@@ -5493,43 +5685,44 @@ class TesEksport extends React.Component {
                                       )
                                     )
                                     .hours()} */}
-                                    {moment
-                                .duration(
-                                  prop.get("earlyTimes") !== undefined
-                                    ? convertDate(
-                                        prop.get("earlyTimes"),
+                                    {prop.get("absenKeluar") !== undefined || prop.get("earlyTimes") !== undefined || prop.get("overtimeOut") !== undefined ?
+                                    moment
+                                    .duration(
+                                      prop.get("earlyTimes") !== undefined
+                                        ? convertDate(
+                                            prop.get("earlyTimes"),
+                                            "HH:mm"
+                                          )
+                                        : prop.get("overtimeOut") !== undefined
+                                        ? convertDate(
+                                            prop.get("overtimeOut"),
+                                            "HH:mm"
+                                          )
+                                        : prop.get("absenKeluar") !== undefined
+                                        ? convertDate(
+                                            prop.get("absenKeluar"),
+                                            "HH:mm"
+                                          )
+                                        : "",
+                                      "HH:mm"
+                                    )
+                                    .subtract(
+                                      moment.duration(
+                                        prop.get("lateTimes") !== undefined
+                                          ? convertDate(
+                                              prop.get("lateTimes"),
+                                              "HH:mm"
+                                            )
+                                          : prop.get("absenMasuk") !== undefined
+                                          ? convertDate(
+                                              prop.get("absenMasuk"),
+                                              "HH:mm"
+                                            )
+                                          : "",
                                         "HH:mm"
                                       )
-                                    : prop.get("overtimeOut") !== undefined
-                                    ? convertDate(
-                                        prop.get("overtimeOut"),
-                                        "HH:mm"
-                                      )
-                                    : prop.get("absenKeluar") !== undefined
-                                    ? convertDate(
-                                        prop.get("absenKeluar"),
-                                        "HH:mm"
-                                      )
-                                    : "",
-                                  "HH:mm"
-                                )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get("lateTimes") !== undefined
-                                      ? convertDate(
-                                          prop.get("lateTimes"),
-                                          "HH:mm"
-                                        )
-                                      : prop.get("absenMasuk") !== undefined
-                                      ? convertDate(
-                                          prop.get("absenMasuk"),
-                                          "HH:mm"
-                                        )
-                                      : "",
-                                    "HH:mm"
-                                  )
-                                )
-                                .hours()}
+                                    )
+                                    .hours() : ""}
                             </td>
 
                             {/* Total Hour Minutes */}
@@ -5549,41 +5742,42 @@ class TesEksport extends React.Component {
                                   )
                                 )
                                 .minutes()} */}
-                              {moment
-                                .duration(
-                                  prop.get("earlyTimes") !== undefined
+                              {prop.get("absenKeluar") !== undefined || prop.get("earlyTimes") !== undefined || prop.get("overtimeOut") !== undefined ?
+                              moment
+                              .duration(
+                                prop.get("earlyTimes") !== undefined
+                                  ? convertDate(
+                                      prop.get("earlyTimes"),
+                                      "HH:mm"
+                                    )
+                                  : prop.get("overtimeOut") !== undefined
+                                  ? convertDate(
+                                      prop.get("overtimeOut"),
+                                      "HH:mm"
+                                    )
+                                  : prop.get("absenKeluar") !== undefined
+                                  ? convertDate(
+                                      prop.get("absenKeluar"),
+                                      "HH:mm"
+                                    )
+                                  : "",
+                                "HH:mm"
+                              )
+                              .subtract(
+                                moment.duration(
+                                  prop.get("lateTimes") !== undefined
                                     ? convertDate(
-                                        prop.get("earlyTimes"),
+                                        prop.get("lateTimes"),
                                         "HH:mm"
                                       )
-                                    : prop.get("overtimeOut") !== undefined
-                                    ? convertDate(
-                                        prop.get("overtimeOut"),
+                                    : convertDate(
+                                        prop.get("absenMasuk"),
                                         "HH:mm"
-                                      )
-                                    : prop.get("absenKeluar") !== undefined
-                                    ? convertDate(
-                                        prop.get("absenKeluar"),
-                                        "HH:mm"
-                                      )
-                                    : "",
+                                      ),
                                   "HH:mm"
                                 )
-                                .subtract(
-                                  moment.duration(
-                                    prop.get("lateTimes") !== undefined
-                                      ? convertDate(
-                                          prop.get("lateTimes"),
-                                          "HH:mm"
-                                        )
-                                      : convertDate(
-                                          prop.get("absenMasuk"),
-                                          "HH:mm"
-                                        ),
-                                    "HH:mm"
-                                  )
-                                )
-                                .minutes()}
+                              )
+                              .minutes() : ""}
                             </td>
 
                             <td>
