@@ -542,19 +542,33 @@ class SelfRegistForm extends React.Component {
     const query = new Parse.Query(user);
 
     
-    query.equalTo("imei", this.state.imei);
+    // query.equalTo("imei", this.state.imei);
+    query.equalTo("email", this.state.email);
     query
     .first()
     .then((x) => {
       if (x) {
-        this.setState({
-          imeiMessage: "Imei telah terdaftar",
-          loadingModal: false,
-        });
-        return;
+        if(x.get("imei") !== this.state.imei) {
+          this.handleEmailDuplicate(x.id);
+        } else {
+          this.setState({
+            imeiMessage: "Imei telah terdaftar",
+            loadingModal: false,
+          });
+          return;
+        }
       } else {
         this.handleSubmit();
       }
+      // if (x) {
+      //   this.setState({
+      //     imeiMessage: "Imei telah terdaftar",
+      //     loadingModal: false,
+      //   });
+      //   return;
+      // } else {
+      //   this.handleSubmit();
+      // }
     })
     .catch((err) => {
       console.log(err);
@@ -576,6 +590,70 @@ class SelfRegistForm extends React.Component {
     }).then(({response}) => {
       console.log("success");
     })
+  }
+
+  // handle email duplicate
+  handleEmailDuplicate = (idUser) => {
+    this.setState({loading: true});
+    const idSelfRegist = this.props.match.params.id;
+    const { nik } = this.state;
+
+    const user = new Parse.User();
+    const query = new Parse.Query(user);
+
+    query.get(idUser).then((row) => {
+      row.set("imei", this.state.imei);
+      row.set("nik", nik.toUpperCase());
+      row.save(null, { useMasterKey: true }).then((data) => {
+        const SelfRegist = Parse.Object.extend("SelfRegist");
+        const query = new Parse.Query(SelfRegist);
+        query.get(idSelfRegist).then((rowSelfRegist) => {
+          rowSelfRegist.set("status", 1);
+
+          rowSelfRegist.save(null, { useMasterKey: true }).then((res) => {
+            this.setState({
+              addMode: false,
+              loadingModal: false,
+              message: "data berhasil di update",
+              visible: true,
+              color: "success",
+            });
+          }).catch((err) => {
+            this.setState({
+              addMode: false,
+              loadingModal: false,
+              message: err.message,
+              visible: true,
+            });
+            console.log(err.message);
+          });
+        }).catch((err) => {
+          this.setState({
+            addMode: false,
+            loadingModal: false,
+            message: err.message,
+            visible: true,
+          });
+          console.log(err.message);
+        });
+      }).catch((err) => {
+        this.setState({
+          addMode: false,
+          loadingModal: false,
+          message: err.message,
+          visible: true,
+        });
+        console.log(err.message);
+      });
+    }).catch((err) => {
+      this.setState({
+        addMode: false,
+        loadingModal: false,
+        message: err.message,
+        visible: true,
+      });
+      console.log(err.message);
+    });
   }
 
   handleSubmit = () => {
@@ -677,8 +755,10 @@ class SelfRegistForm extends React.Component {
     user.set("fullname", name);
     user.set("email", email);
     user.set("username", username);
-    user.set("password", md5(password));
-    user.set("passwordClone", md5(password));
+    user.set("password", password);
+    user.set("passwordClone", password);
+    // user.set("password", md5(password));
+    // user.set("passwordClone", md5(password));
     user.set("nik", nik.toUpperCase());
     user.set("tipe", tipeKaryawan);
     user.set("posisi", posisi);
@@ -958,8 +1038,8 @@ class SelfRegistForm extends React.Component {
         x.set("fullname", name);
         x.set("email", email);
         x.set("username", username);
-        x.set("jamMasuk", this.state.jamMasuk);
-        x.set("jamKeluar", this.state.jamKeluar);
+        x.set("jamMasuk", parseInt(this.state.jamMasuk));
+        x.set("jamKeluar", parseInt(this.state.jamKeluar));
         x.set("username", username);
         if (password !== "") {
           x.set("password", md5(password));
