@@ -59,6 +59,7 @@ import { convertDate } from "utils";
 import Maps from "./Maps";
 import MapsDashboard from "./MapsDashboard";
 import { getUserRole } from "utils";
+import Pagination from 'react-js-pagination';
 
 class Index extends React.Component {
   constructor(props) {
@@ -78,6 +79,12 @@ class Index extends React.Component {
       absence: [],
       daftarStaff: [],
       late: [],
+      resPerPage: 10,
+      page: 1,
+      totalData: 0,
+      resPerPageAbsence: 10,
+      pageAbsence: 1,
+      totalDataAbsence: 0,
     };
     if (window.Chart) {
       parseOptions(Chart, chartOptions());
@@ -123,7 +130,9 @@ class Index extends React.Component {
   };
 
   // Query Staff
-  queryStaffByLevel = (rolesIdKey, containedRoles) => {
+  queryStaffByLevel = (pageNumber = 1, rolesIdKey, containedRoles) => {
+    this.setState({page: pageNumber})
+    const { resPerPage } = this.state;
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
@@ -135,29 +144,33 @@ class Index extends React.Component {
     // query.notContainedIn("roles", ["admin", "leader"]);
     query.containedIn("roles", containedRoles);
 
+    query.skip(resPerPage * pageNumber - resPerPage);
+    query.limit(resPerPage);
+    query.withCount();
+
     query
       .find({ useMasterKey: true })
       .then((x) => {
-        this.setState({ daftarStaff: x });
+        this.setState({ daftarStaff: x.results, totalData: x.count });
       })
       .catch((err) => {
         alert(err.message);
       });
   };
 
-  getDaftarStaffByLevel = (userRole = getUserRole()) => {
+  getDaftarStaffByLevel = (pageNumber, userRole = getUserRole()) => {
     switch (userRole) {
       case "leader":
-        this.queryStaffByLevel("leaderIdNew", ["staff"]);
+        this.queryStaffByLevel(pageNumber, "leaderIdNew", ["staff"]);
         break;
       case "supervisor":
-        this.queryStaffByLevel("supervisorID", ["staff", "leader"]);
+        this.queryStaffByLevel(pageNumber, "supervisorID", ["staff", "leader"]);
         break;
       case "manager":
-        this.queryStaffByLevel("managerID", ["staff", "leader", "supervisor"]);
+        this.queryStaffByLevel(pageNumber, "managerID", ["staff", "leader", "supervisor"]);
         break;
       case "head":
-        this.queryStaffByLevel("headID", [
+        this.queryStaffByLevel(pageNumber, "headID", [
           "staff",
           "leader",
           "supervisor",
@@ -165,7 +178,7 @@ class Index extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryStaffByLevel("headID", [
+        this.queryStaffByLevel(pageNumber, "headID", [
           "staff",
           "leader",
           "supervisor",
@@ -180,7 +193,10 @@ class Index extends React.Component {
   };
 
   // Query Absen Level
-  queryAbsenByLevel = (rolesIDKey, containedRoles) => {
+  queryAbsenByLevel = (pageNumber = 1, rolesIDKey, containedRoles) => {
+    this.setState({pageAbsence: pageNumber});
+    const { resPerPageAbsence } = this.state;
+
     const hierarki = new Parse.User();
     const hierarkiQuery = new Parse.Query(hierarki);
     hierarkiQuery.containedIn("roles", containedRoles);
@@ -204,7 +220,11 @@ class Index extends React.Component {
     //   className: '_User',
     //   objectId: getLeaderId()
     // });
-    query.ascending("absenMasuk");
+    query.skip(resPerPageAbsence * pageNumber - resPerPageAbsence);
+    query.limit(resPerPageAbsence);
+    query.withCount();
+
+    query.ascending("createdAt");
     query.greaterThanOrEqualTo("createdAt", start.toDate());
     query.lessThan("createdAt", finish.toDate());
     query.matchesQuery("user", hierarkiQuery);
@@ -213,7 +233,7 @@ class Index extends React.Component {
       .find()
       .then((x) => {
         console.log("user", x);
-        this.setState({ absence: x, loading: false });
+        this.setState({ absence: x.results, totalDataAbsence: x.count, loading: false });
       })
       .catch((err) => {
         alert(err.message);
@@ -221,22 +241,22 @@ class Index extends React.Component {
       });
   };
 
-  getDaftarAbsenByLevel2 = () => {
+  getDaftarAbsenByLevel2 = (pageNumber) => {
     this.setState({ loading: true });
     const userRole = getUserRole();
 
     switch (userRole) {
       case "leader":
-        this.queryAbsenByLevel("leaderIdNew", ["staff"]);
+        this.queryAbsenByLevel(pageNumber, "leaderIdNew", ["staff"]);
         break;
       case "supervisor":
-        this.queryAbsenByLevel("supervisorID", ["staff", "leader"]);
+        this.queryAbsenByLevel(pageNumber, "supervisorID", ["staff", "leader"]);
         break;
       case "manager":
-        this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"]);
+        this.queryAbsenByLevel(pageNumber, "managerID", ["staff", "leader", "supervisor"]);
         break;
       case "head":
-        this.queryAbsenByLevel("headID", [
+        this.queryAbsenByLevel(pageNumber, "headID", [
           "staff",
           "leader",
           "supervisor",
@@ -244,7 +264,7 @@ class Index extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryAbsenByLevel("headID", [
+        this.queryAbsenByLevel(pageNumber, "headID", [
           "staff",
           "leader",
           "supervisor",
@@ -498,6 +518,18 @@ class Index extends React.Component {
                     )}
                   </tbody>
                 </Table>
+                <Pagination
+                  activePage={this.state.page}
+                  itemsCountPerPage={this.state.resPerPage}
+                  totalItemsCount={this.state.totalData}
+                  pageRangeDisplayed={5}
+                  onChange={(pageNumber) => this.getDaftarStaffByLevel(pageNumber)}
+                  innerClass="pagination justify-content-end p-4"
+                  itemClass="page-item mt-2"
+                  linkClass="page-link"
+                  prevPageText="<"
+                  nextPageText=">"
+                />
                 {/* <Maps /> */}
               </Card>
             </Col>
@@ -629,6 +661,18 @@ class Index extends React.Component {
                     )}
                   </tbody>
                 </Table>
+                <Pagination
+                  activePage={this.state.pageAbsence}
+                  itemsCountPerPage={this.state.resPerPageAbsence}
+                  totalItemsCount={this.state.totalDataAbsence}
+                  pageRangeDisplayed={5}
+                  onChange={(pageNumberAbsence) => this.getDaftarAbsenByLevel2(pageNumberAbsence)}
+                  innerClass="pagination justify-content-end p-4"
+                  itemClass="page-item mt-2"
+                  linkClass="page-link"
+                  prevPageText="<"
+                  nextPageText=">"
+                />
               </Card>
               {absence.length < 10 ? (
                 <Card className="shadow mt-3">

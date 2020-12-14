@@ -34,6 +34,15 @@ import { getLeaderId } from 'utils';
 import { ExportExcelIdz } from 'views/leader/ExportExcelId';
 import TesEksport from 'views/leader/TesEksport';
 import HistoryAbsence from 'views/leader/HistoryAbsence';
+import TipeKaryawan from 'views/admin/TipeKaryawan';
+import DaftarHariCuti from 'views/admin/DaftarHariCuti';
+import ManajemenPoint from 'views/admin/ManajemenPoint';
+import ManajemenPosisi from 'views/admin/ManajemenPosisi';
+import ManajemenLevel from 'views/admin/ManajemenLevel';
+import ManajemenSetting from 'views/admin/ManajemenSetting';
+import ManajemenDepartemen from 'views/admin/ManajemenDepartemen';
+import {getAccessLevel} from 'utils';
+
 
 var routes2 = [
   {
@@ -151,6 +160,56 @@ var routes2 = [
   // 	component: Register,
   // 	layout: '/auth'
   // },
+  // {
+  //   path: '/tipe',
+  //   name: 'Manage Tipe',
+  //   icon: 'ni ni-settings-gear-65 text-danger',
+  //   component: TipeKaryawan,
+  //   layout: '/leader'
+  // },
+  // {
+  //   path: '/haricuti',
+  //   name: 'Manage Hari Cuti',
+  //   icon: 'ni ni-settings-gear-65 text-yellow',
+  //   component: DaftarHariCuti,
+  //   layout: '/leader'
+  // },
+  // {
+  //   path: '/point',
+  //   name: 'Manage Absen Point',
+  //   icon: 'ni ni-settings-gear-65 text-primary',
+  //   component: ManajemenPoint,
+  //   layout: '/leader'
+  // },
+  // {
+  //   path: '/posisi',
+  //   name: 'Manage Posisi',
+  //   icon: 'ni ni-settings-gear-65 text-green',
+  //   component: ManajemenPosisi,
+  //   layout: '/leader'
+  // },
+  // {
+  //   path: '/level',
+  //   name: 'Manage Level',
+  //   icon: 'ni ni-settings-gear-65 text-info',
+  //   component: ManajemenLevel,
+  //   layout: '/leader'
+  // },
+  // {
+  //   path: '/appsetting',
+  //   name: 'Manage Setting',
+  //   icon: 'ni ni-settings text-blue',
+  //   component: ManajemenSetting,
+  //   layout: '/leader'
+  // },
+  // {
+  //   path: '/departemen',
+  //   name: 'Manage Departemen',
+  //   icon: 'ni ni-folder-17 text-primary',
+  //   component: ManajemenDepartemen,
+  //   layout: '/leader'
+  // },
+
   {
     path: '/login',
     name: 'Login',

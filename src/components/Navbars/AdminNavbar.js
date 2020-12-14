@@ -39,6 +39,7 @@ import { getUsername } from 'utils';
 
 import Parse from 'parse';
 import { getCurrentUser } from 'utils';
+import { getFullname } from 'utils';
 
 class AdminNavbar extends React.Component {
   handleLogout = (e) => {
@@ -88,7 +89,8 @@ class AdminNavbar extends React.Component {
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                        {getUsername() ? getUsername() : ''}
+                        {/* {getUsername() ? getUsername() : ''} */}
+                        {getFullname() ? getFullname() : ''}
                       </span>
                     </Media>
                   </Media>

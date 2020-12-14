@@ -238,7 +238,7 @@ class Sidebar extends React.Component {
             {/* Navigation */}
             <Nav navbar>{this.createLinks(routes)}</Nav>
             <div className="dropdown-divider"></div>
-            <h5 style={{textAlign:"justify"}} className="font-weight-bold">Version 1.0.8</h5>
+            <h5 style={{textAlign:"justify"}} className="font-weight-bold">Version 1.0.9</h5>
             {/* Divider */}
 
             {/* Navigation */}

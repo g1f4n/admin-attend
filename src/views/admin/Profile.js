@@ -150,7 +150,7 @@ class Profile extends React.Component {
 
   handleFilter = (e, pageNumber = 1) => {
     e.preventDefault();
-    this.setState({ loadingFilter: true });
+    this.setState({ loadingFilter: true, page: pageNumber });
     const { searchBy, searchValue } = this.state;
     const { resPerPage, page } = this.state;
 
@@ -255,7 +255,7 @@ class Profile extends React.Component {
   };
 
   handleFilterPagination = (pageNumber = 1) => {
-    this.setState({ loadingFilter: true });
+    this.setState({ loadingFilter: true, page: pageNumber });
     const { searchBy, searchValue } = this.state;
     const { resPerPage, page } = this.state;
 

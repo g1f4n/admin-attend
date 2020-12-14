@@ -39,13 +39,17 @@ import { getLeaderId } from 'utils';
 import { slicename } from 'utils/slice';
 import { Link } from 'react-router-dom';
 import { getUserRole } from 'utils';
+import Pagination from 'react-js-pagination';
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       daftarStaff: [],
-      loading: false
+      loading: false,
+      resPerPage: 20,
+      page: 1,
+      totalData: 0,
     };
   }
 
@@ -54,7 +58,9 @@ class Profile extends React.Component {
     this.getDaftarAbsenByLevel();
   }
 
-  queryStaffByLevel = (rolesIDKey, containedRoles) => {
+  queryStaffByLevel = (pageNumber = 1, rolesIDKey, containedRoles) => {
+    this.setState({page: pageNumber})
+    const { resPerPage, page } = this.state;
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
@@ -66,35 +72,39 @@ class Profile extends React.Component {
     query.ascending('roles');
     query.containedIn('roles', containedRoles);
 
+    query.skip(resPerPage * pageNumber - resPerPage);
+    query.limit(resPerPage);
+    query.withCount();
+
     query
       .find({ useMasterKey: true })
       .then((x) => {
-        this.setState({ daftarStaff: x });
+        this.setState({ daftarStaff: x.results, totalData: x.count, loading: false });
       })
       .catch((err) => {
         alert(err.message);
       });
   };
 
-  getDaftarAbsenByLevel = (startDate = 'today', userRole = getUserRole(), filterType = 'day') => {
+  getDaftarAbsenByLevel = (pageNumber, startDate = 'today', userRole = getUserRole(), filterType = 'day') => {
     this.setState({ loading: true });
     //const userRole = getUserRole();
 
     switch (userRole) {
       case 'leader':
-        this.queryStaffByLevel('leaderIdNew', ['staff']);
+        this.queryStaffByLevel(pageNumber, 'leaderIdNew', ['staff']);
         break;
       case 'supervisor':
-        this.queryStaffByLevel('supervisorID', ['staff', 'leader']);
+        this.queryStaffByLevel(pageNumber, 'supervisorID', ['staff', 'leader']);
         break;
       case 'manager':
-        this.queryStaffByLevel('managerID', ['staff', 'leader', 'supervisor']);
+        this.queryStaffByLevel(pageNumber, 'managerID', ['staff', 'leader', 'supervisor']);
         break;
       case 'head':
-        this.queryStaffByLevel('headID', ['staff', 'leader', 'supervisor', 'manager']);
+        this.queryStaffByLevel(pageNumber, 'headID', ['staff', 'leader', 'supervisor', 'manager']);
         break;
       case 'gm':
-        this.queryStaffByLevel('headID', ['staff', 'leader', 'supervisor', 'manager', 'head']);
+        this.queryStaffByLevel(pageNumber, 'headID', ['staff', 'leader', 'supervisor', 'manager', 'head']);
         break;
 
       default:
@@ -177,6 +187,18 @@ class Profile extends React.Component {
               </Col>
             ))}
           </Row>
+          <Pagination
+            activePage={this.state.page}
+            itemsCountPerPage={this.state.resPerPage}
+            totalItemsCount={this.state.totalData}
+            pageRangeDisplayed={5}
+            onChange={(pageNumber) => this.getDaftarAbsenByLevel(pageNumber)}
+            innerClass="pagination justify-content-end p-4"
+            itemClass="page-item mt-2"
+            linkClass="page-link"
+            prevPageText="<"
+            nextPageText=">"
+          />
         </Container>
       </React.Fragment>
     );

@@ -31,7 +31,7 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   Media,
-  Pagination,
+  // Pagination,
   PaginationItem,
   PaginationLink,
   Progress,
@@ -60,6 +60,7 @@ import { convertDate } from 'utils';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import ExportExcel from 'components/Export/ExportExcel';
 import { getUserRole } from 'utils';
+import Pagination from 'react-js-pagination';
 
 class HistoryAbsence extends React.Component {
   constructor(props) {
@@ -69,6 +70,9 @@ class HistoryAbsence extends React.Component {
       loading: false,
       startDate: '',
       leave:'',
+      resPerPage: 20,
+      page: 1,
+      totalData: 0,
       hitButtonExcel: false
     };
     this.btnRef = React.createRef();
@@ -161,7 +165,9 @@ class HistoryAbsence extends React.Component {
         });
   }
 
-  queryAbsenByLevel = (rolesIDKey, containedRoles, startDate = 'today', filterType = 'day') => {
+  queryAbsenByLevel = (pageNumber = 1, rolesIDKey, containedRoles, startDate = 'today', filterType = 'day') => {
+    this.setState({page: pageNumber})
+    const { resPerPage, page } = this.state;
     // contained roles must be array
     const Absence = Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
@@ -194,6 +200,10 @@ class HistoryAbsence extends React.Component {
       objectId: getLeaderId()
     });
 
+    query.skip(resPerPage * pageNumber - resPerPage);
+    query.limit(resPerPage);
+    query.withCount();
+
     query.descending('createdAt');
     // query.greaterThanOrEqualTo('absenMasuk', start.toDate());
     // query.lessThan('absenMasuk', finish.toDate());
@@ -203,7 +213,8 @@ class HistoryAbsence extends React.Component {
       .find()
       .then((x) => {
         console.log('user', x);
-        this.setState({ absence: x, loading: false });
+        this.setState({ absence: x.results, totalData: x.count, loading: false });
+        // this.setState({ absence: x, loading: false });
       })
       .catch((err) => {
         alert(err.message);
@@ -259,7 +270,7 @@ class HistoryAbsence extends React.Component {
       }
   }
 
-  getDaftarAbsenByLevel = (startDate = 'today', userRole = getUserRole(), filterType = 'day') => {
+  getDaftarAbsenByLevel = (pageNumber = 1, startDate = 'today', userRole = getUserRole(), filterType = 'day') => {
     this.setState({ loading: true });
     //const userRole = getUserRole();
 
@@ -268,13 +279,14 @@ class HistoryAbsence extends React.Component {
 
     switch (userRole) {
       case 'leader':
-        this.queryAbsenByLevel('leaderIdNew', ['staff'], startDate, filterType);
+        this.queryAbsenByLevel(pageNumber, 'leaderIdNew', ['staff'], startDate, filterType);
         break;
       case 'supervisor':
-        this.queryAbsenByLevel('supervisorID', ['staff', 'leader'], startDate, filterType);
+        this.queryAbsenByLevel(pageNumber, 'supervisorID', ['staff', 'leader'], startDate, filterType);
         break;
       case 'manager':
         this.queryAbsenByLevel(
+          pageNumber,
           'managerID',
           ['staff', 'leader', 'supervisor'],
           startDate,
@@ -283,6 +295,7 @@ class HistoryAbsence extends React.Component {
         break;
       case 'head':
         this.queryAbsenByLevel(
+          pageNumber,
           'headID',
           ['staff', 'leader', 'supervisor', 'manager'],
           startDate,
@@ -291,6 +304,7 @@ class HistoryAbsence extends React.Component {
         break;
       case 'gm':
         this.queryAbsenByLevel(
+          pageNumber,
           'headID',
           ['staff', 'leader', 'supervisor', 'manager', 'head'],
           startDate,
@@ -303,14 +317,14 @@ class HistoryAbsence extends React.Component {
     }
   };
 
-  handleFilter = (e) => {
+  handleFilter = (e, pageNumber = 1) => {
     e.preventDefault();
     this.setState({ loading: true });
     const Absence = Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
 
     if (parseInt(this.state.status) === 4) {
-      this.getDaftarAbsenByLevel(this.state.startDate, getUserRole(), 'day');
+      this.getDaftarAbsenByLevel(pageNumber, this.state.startDate, getUserRole(), 'day');
       // const d = new Date();
       // const start = new moment(this.state.startDate);
       // start.startOf('day');
@@ -337,7 +351,7 @@ class HistoryAbsence extends React.Component {
       //     this.setState({ loading: false });
       //   });
     } else if (parseInt(this.state.status) === 5) {
-      this.getDaftarAbsenByLevel(this.state.startDate, getUserRole(), 'week');
+      this.getDaftarAbsenByLevel(pageNumber, this.state.startDate, getUserRole(), 'week');
       // const d = new Date();
       // const start = new moment(this.state.startDate);
       // start.startOf('week');
@@ -364,7 +378,7 @@ class HistoryAbsence extends React.Component {
       //     this.setState({ loading: false });
       //   });
     } else if (parseInt(this.state.status) === 6) {
-      this.getDaftarAbsenByLevel(this.state.startDate, getUserRole(), 'month');
+      this.getDaftarAbsenByLevel(pageNumber, this.state.startDate, getUserRole(), 'month');
       // const d = new Date();
       // const start = new moment(this.state.startDate);
       // start.startOf('month');
@@ -623,56 +637,28 @@ class HistoryAbsence extends React.Component {
                     )}
                   </tbody>
                 </Table>
-                {/* <nav aria-label="Page navigation example">
-                  <Pagination
-                    className="pagination justify-content-end"
-                    listClassName="justify-content-end"
-                  >
-                    <PaginationItem className="disabled">
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                        tabIndex="-1"
-                      >
-                        <i className="fa fa-angle-left" />
-                        <span className="sr-only">Previous</span>
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem className="active">
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        1
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        2
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        3
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <i className="fa fa-angle-right" />
-                        <span className="sr-only">Next</span>
-                      </PaginationLink>
-                    </PaginationItem>
-                  </Pagination>
-                </nav> */}
+                <Pagination
+                  activePage={this.state.page}
+                  itemsCountPerPage={this.state.resPerPage}
+                  totalItemsCount={this.state.totalData}
+                  pageRangeDisplayed={5}
+                  onChange={(pageNumber) => parseInt(this.state.status) === 6 ? 
+                                              this.getDaftarAbsenByLevel(pageNumber, this.state.startDate, getUserRole(), 'month') 
+                                            : 
+                                            parseInt(this.state.status) === 5 ? 
+                                              this.getDaftarAbsenByLevel(pageNumber, this.state.startDate, getUserRole(), 'week')
+                                            :
+                                            parseInt(this.state.status) === 4 ?
+                                              this.getDaftarAbsenByLevel(pageNumber, this.state.startDate, getUserRole(), 'day')
+                                            :
+                                              this.getDaftarAbsenByLevel(pageNumber)
+                                          }
+                  innerClass="pagination justify-content-end p-4"
+                  itemClass="page-item mt-2"
+                  linkClass="page-link"
+                  prevPageText="<"
+                  nextPageText=">"
+                />
               </Card>
             </div>
           </Row>

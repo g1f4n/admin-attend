@@ -35,6 +35,28 @@ export const getUsername = () => {
   return false;
 };
 
+export const getFullname = () => {
+  const user = Parse.User.current();
+  console.log(user);
+
+  if (user) {
+    return user.get('fullname').split(' ')[0];
+  }
+
+  return false;
+};
+
+export const getAccessLevel = () => {
+  const user = Parse.User.current();
+  console.log(user);
+
+  if (user) {
+    return user.get('accessLevel').split(' ')[0];
+  }
+
+  return false;
+};
+
 export const getLeaderId = () => {
   return Parse.User.current().id;
 };
