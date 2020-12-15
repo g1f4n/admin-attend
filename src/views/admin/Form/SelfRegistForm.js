@@ -127,6 +127,8 @@ class SelfRegistForm extends React.Component {
       visibleToggle: false,
       selfImage:'',
       photoMode: false,
+      dept: [],
+      deptName: "",
     };
   }
 
@@ -138,7 +140,7 @@ class SelfRegistForm extends React.Component {
   componentDidMount() {
     //this.getStaff();
     //this.handleFilterPagination();
-
+    this.getDepartment();
     this.getLeader();
     this.getSupervisor();
     this.getManager();
@@ -163,6 +165,23 @@ class SelfRegistForm extends React.Component {
       .find()
       .then((x) => {
         this.setState({ daftarPoint: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
+  getDepartment = () => {
+    this.setState({ loading: true });
+    const Department = new Parse.Object.extend("Departemen");
+    const query = new Parse.Query(Department);
+
+    query.equalTo("status", 1);
+    query
+      .find()
+      .then((x) => {
+        this.setState({ dept: x, loading: false });
       })
       .catch((err) => {
         alert(err.message);
@@ -674,6 +693,7 @@ class SelfRegistForm extends React.Component {
       username,
       password,
       email,
+      deptName
     } = this.state;
 
     const user = new Parse.User();
@@ -763,6 +783,7 @@ class SelfRegistForm extends React.Component {
     user.set("tipe", tipeKaryawan);
     user.set("posisi", posisi);
     user.set("level", level.toLowerCase());
+    user.set("department", deptName);
     user.set("imei", imei);
     user.set("jamKerja", jamKerja);
     user.set("lokasiKerja", lokasiKerja);
@@ -1245,6 +1266,7 @@ class SelfRegistForm extends React.Component {
       manager,
       head,
       gm,
+      dept,
     } = this.state;
 
     const leaderForm = (
@@ -1818,6 +1840,35 @@ class SelfRegistForm extends React.Component {
                         </Col>
                       </Row>
                       <Row>
+                      <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-deptName"
+                            >
+                              Departemen
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-deptName"
+                              type="select"
+                              onChange={(e) =>
+                                this.setState({
+                                  deptName: e.target.value.toUpperCase(),
+                                })
+                              }
+                            >
+                              <option selected disabled hidden>
+                                Pilih Departemen
+                              </option>
+                              {dept.map((x, i) => (
+                                <option key={i} value={x.get("deptName")}>
+                                  {x.get("deptName")}
+                                </option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
                         <Col lg="4">
                           <FormGroup>
                             <label
@@ -1876,7 +1927,9 @@ class SelfRegistForm extends React.Component {
                             </Input>
                           </FormGroup>
                         </Col>
-                        <Col lg="4">
+                      </Row>
+                      <Row>
+                      <Col lg="4">
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -1903,8 +1956,6 @@ class SelfRegistForm extends React.Component {
                             </Input>
                           </FormGroup>
                         </Col>
-                      </Row>
-                      <Row>
                         <Col lg="4">
                           <FormGroup>
                             <label

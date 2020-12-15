@@ -41,6 +41,7 @@ import Axios from "axios";
 import md5 from "md5";
 import Alertz from "components/Alert/Alertz";
 import { Link } from "react-router-dom";
+import SweetAlert from 'sweetalert2-react';
 
 class EditForm extends React.Component {
   constructor(props) {
@@ -117,6 +118,8 @@ class EditForm extends React.Component {
       searchValue: "",
       jamMasuk: 0,
       jamKeluar: 0,
+      dept: [],
+      deptName: "",
     };
   }
 
@@ -127,7 +130,7 @@ class EditForm extends React.Component {
   componentDidMount() {
     //this.getStaff();
     //this.handleFilterPagination();
-
+    this.getDepartment();
     this.getLeader();
     this.getSupervisor();
     this.getManager();
@@ -167,6 +170,23 @@ class EditForm extends React.Component {
       .find()
       .then((x) => {
         this.setState({ daftarTipe: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
+  getDepartment = () => {
+    this.setState({ loading: true });
+    const Department = new Parse.Object.extend("Departemen");
+    const query = new Parse.Query(Department);
+
+    query.equalTo("status", 1);
+    query
+      .find()
+      .then((x) => {
+        this.setState({ dept: x, loading: false });
       })
       .catch((err) => {
         alert(err.message);
@@ -710,6 +730,7 @@ class EditForm extends React.Component {
       username,
       password,
       email,
+      deptName
     } = this.state;
 
     const id = this.props.match.params.id;
@@ -822,6 +843,7 @@ class EditForm extends React.Component {
         x.set("lokasiKerja", lokasiKerja);
         x.set("jumlahCuti", parseInt(jumlahCuti));
         x.set("lembur", lembur);
+        x.set("department", deptName);
         x.set("roles", level.toLowerCase());
         x.set("userId", {
           __type: "Pointer",
@@ -885,6 +907,7 @@ class EditForm extends React.Component {
         this.setState({
           nik: attributes.nik,
           name: attributes.fullname,
+          deptName: attributes.department,
           username: attributes.username,
           imei: attributes.imei,
           email: attributes.email,
@@ -942,6 +965,12 @@ class EditForm extends React.Component {
     }
   };
 
+  toggleAlert = (state) => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+  };
+
   render() {
     const {
       name,
@@ -977,6 +1006,8 @@ class EditForm extends React.Component {
       manager,
       head,
       gm,
+      dept,
+      deptName,
     } = this.state;
 
     const leaderForm = (
@@ -1232,12 +1263,20 @@ class EditForm extends React.Component {
         <Container className="mt--8" fluid>
           <Row>
             <Col className="order-xl-1" xl="12">
-              <Alertz
+              <div>
+                <SweetAlert
+                  show={this.state.visible}
+                  title="Information"
+                  text={this.state.message}
+                  onConfirm={() => this.toggleAlert('visible')}
+                />
+              </div>
+              {/* <Alertz
                 color={this.state.color}
                 message={this.state.message}
                 open={this.state.visible}
                 togglez={() => this.toggle("visible")}
-              />
+              /> */}
               <Card className="bg-secondary shadow">
                 <CardHeader className="bg-white border-0">
                   <Row className="align-items-center">
@@ -1500,6 +1539,33 @@ class EditForm extends React.Component {
                         </Col>
                       </Row>
                       <Row>
+                      <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-deptName"
+                            >
+                              Departemen
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-deptName"
+                              type="select"
+                              onChange={(e) =>
+                                this.setState({
+                                  deptName: e.target.value.toUpperCase(),
+                                })
+                              }
+                            >
+                              <option value="">Pilih Departemen</option>
+                              {dept.map((x, i) => (
+                                <option selected={deptName === x.get("deptName")} key={i} value={x.get("deptName")}>
+                                  {x.get("deptName")}
+                                </option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
                         <Col lg="4">
                           <FormGroup>
                             <label
@@ -1566,7 +1632,9 @@ class EditForm extends React.Component {
                             </Input>
                           </FormGroup>
                         </Col>
-                        <Col lg="4">
+                      </Row>
+                      <Row>
+                      <Col lg="4">
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -1598,8 +1666,6 @@ class EditForm extends React.Component {
                             </Input>
                           </FormGroup>
                         </Col>
-                      </Row>
-                      <Row>
                         <Col lg="4">
                           <FormGroup>
                             <label

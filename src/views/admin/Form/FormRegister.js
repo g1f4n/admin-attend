@@ -41,6 +41,7 @@ import Axios from "axios";
 import md5 from "md5";
 import Alertz from "components/Alert/Alertz";
 import { Link } from "react-router-dom";
+import SweetAlert from 'sweetalert2-react';
 
 class FormRegister extends React.Component {
   constructor(props) {
@@ -113,12 +114,15 @@ class FormRegister extends React.Component {
       searchValue: "",
       jamMasuk: 0,
       jamKeluar: 0,
+      dept: [],
+      deptName: "",
     };
   }
 
   componentDidMount() {
     //this.getStaff();
     //this.handleFilterPagination();
+    this.getDepartment();
     this.getLeader();
     this.getSupervisor();
     this.getManager();
@@ -213,6 +217,23 @@ class FormRegister extends React.Component {
       .find()
       .then((x) => {
         this.setState({ daftarLevel: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
+  getDepartment = () => {
+    this.setState({ loading: true });
+    const Department = new Parse.Object.extend("Departemen");
+    const query = new Parse.Query(Department);
+
+    query.equalTo("status", 1);
+    query
+      .find()
+      .then((x) => {
+        this.setState({ dept: x, loading: false });
       })
       .catch((err) => {
         alert(err.message);
@@ -572,6 +593,7 @@ class FormRegister extends React.Component {
       username,
       password,
       email,
+      deptName
     } = this.state;
 
     const user = new Parse.User();
@@ -663,6 +685,7 @@ class FormRegister extends React.Component {
     user.set("imei", imei);
     user.set("jamKerja", jamKerja);
     user.set("lokasiKerja", lokasiKerja);
+    user.set("department", deptName);
     if (this.state.jamMasuk === 0) {
       user.set("jamMasuk", 8);
     } else {
@@ -990,6 +1013,13 @@ class FormRegister extends React.Component {
     }
   };
 
+  toggleAlert = (state) => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+    window.location.reload(false);
+  };
+
   render() {
     const {
       daftarStaff,
@@ -1019,6 +1049,7 @@ class FormRegister extends React.Component {
       daftarLevel,
       daftarPosisi,
       daftarTipe,
+      dept,
       editMode,
     } = this.state;
 
@@ -1285,12 +1316,20 @@ class FormRegister extends React.Component {
         <Container className="mt--8" fluid>
           <Row>
             <Col className="order-xl-1" xl="12">
-              <Alertz
+              <div>
+                <SweetAlert
+                  show={this.state.visible}
+                  title="Information"
+                  text={this.state.message}
+                  onConfirm={() => this.toggleAlert('visible')}
+                />
+              </div>
+              {/* <Alertz
                 color={this.state.color}
                 message={this.state.message}
                 open={this.state.visible}
                 togglez={() => this.toggle("visible")}
-              />
+              /> */}
               <Card className="bg-secondary shadow">
                 <CardHeader className="bg-white border-0">
                   <Row className="align-items-center">
@@ -1552,6 +1591,35 @@ class FormRegister extends React.Component {
                           <FormGroup>
                             <label
                               className="form-control-label"
+                              htmlFor="input-deptName"
+                            >
+                              Departemen
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-deptName"
+                              type="select"
+                              onChange={(e) =>
+                                this.setState({
+                                  deptName: e.target.value.toUpperCase(),
+                                })
+                              }
+                            >
+                              <option selected disabled hidden>
+                                Pilih Departemen
+                              </option>
+                              {dept.map((x, i) => (
+                                <option key={i} value={x.get("deptName")}>
+                                  {x.get("deptName")}
+                                </option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
                               htmlFor="input-posisi"
                             >
                               Posisi kerja
@@ -1606,6 +1674,9 @@ class FormRegister extends React.Component {
                             </Input>
                           </FormGroup>
                         </Col>
+                        
+                      </Row>
+                      <Row>
                         <Col lg="4">
                           <FormGroup>
                             <label
@@ -1631,6 +1702,54 @@ class FormRegister extends React.Component {
                                 <option value={x}>{x}</option>
                               ))}
                             </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-lembur"
+                            >
+                              Lembur ?
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-lembur"
+                              type="select"
+                              onChange={(e) =>
+                                this.setState({
+                                  lembur: e.target.value,
+                                })
+                              }
+                            >
+                              <option selected disabled hidden>
+                                Pilih tipe lembur
+                              </option>
+                              {["ya", "tidak"].map((x) => (
+                                <option value={x}>{x}</option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-cuti"
+                            >
+                              Jumlah Cuti
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-lokasi"
+                              type="number"
+                              value={jumlahCuti}
+                              onChange={(e) =>
+                                this.setState({
+                                  jumlahCuti: e.target.value,
+                                })
+                              }
+                            ></Input>
                           </FormGroup>
                         </Col>
                       </Row>
