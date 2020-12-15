@@ -103,6 +103,7 @@ class TesEksport extends React.Component {
       loadingExcel: false,
       progressExcel: false,
       totalExport: 0,
+      progressCount: 0,
     };
   }
 
@@ -2172,6 +2173,20 @@ class TesEksport extends React.Component {
     });
   };
 
+  progressValue = (e, totalData) => {
+    e.preventDefault();
+    this.setState({progressExcel: true, totalExport: totalData});
+
+    let countData = 0;
+    return setInterval(() => {
+      if(countData < totalData) {
+        console.log("count", countData);
+        countData++;
+        this.setState({progressCount: countData});
+      }
+    }, totalData)
+  }
+
   render() {
     const {
       daftarStaff,
@@ -3070,7 +3085,7 @@ class TesEksport extends React.Component {
                   <span>{this.state.checkId.length}</span>
                 </div>
               </div>
-              <Progress max={this.state.checkId.length} value={this.state.totalExport} color="primary" />
+              <Progress max={this.state.checkId.length} value={this.state.progressCount} color="primary" />
               <div className="modal-footer">
                 <Button
                   color="secondary"
@@ -3255,9 +3270,7 @@ class TesEksport extends React.Component {
                 ) : ("")}
                 <Row>
                   {this.state.tableData.length > 0 ? (
-                    <a onClick={(e) => {
-                      this.setState({progressExcel: true, totalExport: this.state.tableData.length})
-                    }}>
+                    <a onClick={(e) => this.progressValue(e, this.state.tableData.length)}>
                       <ReactHTMLTableToExcel
                         id="test-table-xls-button"
                         className="btn btn-primary ml-2"
