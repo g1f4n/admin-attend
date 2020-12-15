@@ -362,6 +362,16 @@ class TesEksport extends React.Component {
     });
   };
 
+  toggleExcel = (state) => {
+    this.setState({
+      [state]: !this.state[state],
+      tableData: [], 
+      progressExcel: false,
+      checkId: []
+    });
+    window.location.reload(false);
+  };
+
   handleFilter = (e, pageNumber = 1) => {
     e.preventDefault();
     this.setState({ loadingFilter: true, page: pageNumber });
@@ -3145,8 +3155,7 @@ class TesEksport extends React.Component {
           footer={false}
           disabled={this.state.tableData.length < 1}
           handleHide={() => {
-            this.toggle("excelMode");
-            this.setState({ tableData: [] });
+            this.toggleExcel("excelMode");
           }}
           title={`${this.state.checkId.length} user terpilih, export data to excel ?`}
           body={
@@ -3167,8 +3176,7 @@ class TesEksport extends React.Component {
                   data-dismiss="modal"
                   type="button"
                   onClick={() => {
-                    this.toggle("excelMode");
-                    this.setState({ tableData: [] });
+                    this.toggleExcel("excelMode");
                   }}
                 >
                   Close
