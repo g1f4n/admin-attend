@@ -850,6 +850,13 @@ class EditForm extends React.Component {
           className: "_User",
           objectId: id,
         });
+        if(level.toLowerCase() === "gm") {
+          x.set("gmID", {
+            __type: "Pointer",
+            className: "_User",
+            objectId: x.id,
+          });
+        }
         if (fotoWajah !== "")
           x.set("fotoWajah", new Parse.File("profile.jpg", fotoWajah));
         x.save(null, { useMasterKey: true })

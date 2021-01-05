@@ -519,7 +519,7 @@ import {
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
-import Chart from "chart.js";
+// import Chart from "chart.js";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
 // Parse library
@@ -543,12 +543,12 @@ import {
 } from "reactstrap";
 
 // core components
-import {
-  chartOptions,
-  parseOptions,
-  chartExample1,
-  chartExample2,
-} from "variables/charts.js";
+// import {
+//   chartOptions,
+//   parseOptions,
+//   chartExample1,
+//   chartExample2,
+// } from "variables/charts.js";
 
 import Header from "components/Headers/Header.js";
 import { getUsername } from "utils";
@@ -759,9 +759,9 @@ class Maps extends React.Component {
       avgLat: 0,
       avgLng: 0,
     };
-    if (window.Chart) {
-      parseOptions(Chart, chartOptions());
-    }
+    // if (window.Chart) {
+    //   parseOptions(Chart, chartOptions());
+    // }
   }
 
   componentDidMount() {

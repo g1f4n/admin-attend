@@ -19,7 +19,7 @@ import React from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
-import Chart from "chart.js";
+// import Chart from "chart.js";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
 // Parse library
@@ -44,12 +44,12 @@ import {
 } from "reactstrap";
 
 // core components
-import {
-  chartOptions,
-  parseOptions,
-  chartExample1,
-  chartExample2,
-} from "variables/charts.js";
+// import {
+//   chartOptions,
+//   parseOptions,
+//   chartExample1,
+//   chartExample2,
+// } from "variables/charts.js";
 
 import LeaderHeader from "components/Headers/LeaderHeader.js";
 import { getUsername } from "utils";
@@ -66,7 +66,7 @@ class Index extends React.Component {
     super(props);
     this.state = {
       activeNav: 1,
-      chartExample1Data: "data1",
+      // chartExample1Data: "data1",
       totalAbsen: 0,
       totalTerlambat: 0,
       totalIzin: 0,
@@ -86,9 +86,9 @@ class Index extends React.Component {
       pageAbsence: 1,
       totalDataAbsence: 0,
     };
-    if (window.Chart) {
-      parseOptions(Chart, chartOptions());
-    }
+    // if (window.Chart) {
+    //   parseOptions(Chart, chartOptions());
+    // }
   }
 
   componentDidMount() {
@@ -98,14 +98,14 @@ class Index extends React.Component {
     // this.getDaftarAbsenLate();
   }
 
-  toggleNavs = (e, index) => {
-    e.preventDefault();
-    this.setState({
-      activeNav: index,
-      chartExample1Data:
-        this.state.chartExample1Data === "data1" ? "data2" : "data1",
-    });
-  };
+  // toggleNavs = (e, index) => {
+  //   e.preventDefault();
+  //   this.setState({
+  //     activeNav: index,
+  //     chartExample1Data:
+  //       this.state.chartExample1Data === "data1" ? "data2" : "data1",
+  //   });
+  // };
 
   getDaftarStaff = () => {
     const User = new Parse.User();
@@ -541,7 +541,7 @@ class Index extends React.Component {
                       <h3 className="mb-0">Data Absen</h3>
                     </div>
                     <div className="col text-right">
-                      <Link to="/leader/data-absen">
+                      <Link to="/leader/history-absence">
                         <Button
                           color="primary"
                           // href="#pablo"

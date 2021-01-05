@@ -11,6 +11,8 @@ var _react = require('react');
 var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = require('prop-types');
+const JSZip = require('jszip');
+const fileSaver = require('file-saver');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -102,6 +104,7 @@ var ReactHTMLTableToExcel = function (_Component) {
     //   return true;
     // }
     value: function handleDownload() {
+      var zip = new JSZip();
       this.props.multipleTables.map((x) => {
         if (!document) {
           if (process.env.NODE_ENV !== 'production') {
@@ -165,17 +168,26 @@ var ReactHTMLTableToExcel = function (_Component) {
         }
 
         var element = window.document.createElement('a');
-        element.href =
-          uri +
-          ReactHTMLTableToExcel.base64(
-            ReactHTMLTableToExcel.format(template, context)
-          );
+        // element.href =
+        //   uri +
+        //   ReactHTMLTableToExcel.base64(
+        //     ReactHTMLTableToExcel.format(template, context)
+        //   );
         element.download = filename;
-        document.body.appendChild(element);
+
+        // convert excel in zip 
+        zip.file(element.download, ReactHTMLTableToExcel.format(template, context), {binary: true});
+
+        // document.body.appendChild(element);
         element.click();
-        document.body.removeChild(element);
+        // document.body.removeChild(element);
 
         return true;
+      });
+
+      // download zip
+      zip.generateAsync({type: "blob"}).then(function(content) {
+        fileSaver.saveAs(content, "Absensi.zip");
       });
     }
   }, {

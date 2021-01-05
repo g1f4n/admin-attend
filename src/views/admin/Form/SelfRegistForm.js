@@ -832,6 +832,7 @@ class SelfRegistForm extends React.Component {
           createdAt: x.get("createdAt"),
           updatedAt: x.get("updatedAt"),
           jamKeluar: x.get("jamKeluar"),
+          department: x.get("department"),
           leaderIdNew: x.get("leaderIdNew"),
           supervisorID: x.get("supervisorID"),
           managerID: x.get("managerID"),
@@ -851,6 +852,13 @@ class SelfRegistForm extends React.Component {
             className: "_User",
             objectId: x.id,
           });
+          if(level.toLowerCase() === "gm") {
+            y.set("gmID", {
+              __type: "Pointer",
+              className: "_User",
+              objectId: x.id,
+            });
+          }
           y.save(null, { useMasterKey: true }).then((x) => {
             const SelfRegist = Parse.Object.extend("SelfRegist");
             const query = new Parse.Query(SelfRegist);
@@ -1390,10 +1398,11 @@ class SelfRegistForm extends React.Component {
           <Col lg="4">{leaderForm}</Col>
 
           <Col lg="4">{supervisorForm}</Col>
-
+          
           <Col lg="4">{managerForm}</Col>
         </Row>
         <Row>
+          
           <Col lg="4">{headForm}</Col>
 
           <Col lg="4">{gmForm}</Col>

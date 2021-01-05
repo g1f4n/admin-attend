@@ -92,8 +92,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalStaff("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalStaff("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalStaff("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalStaff("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalStaff("headID", [
@@ -104,7 +107,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalStaff("headID", [
+        this.queryTotalStaff("gmID", [
         "staff",
         "leader",
         "supervisor",
@@ -269,8 +272,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalAbsen("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalAbsen("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalAbsen("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalAbsen("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalAbsen("headID", [
@@ -281,7 +287,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalAbsen("headID", [
+        this.queryTotalAbsen("gmID", [
         "staff",
         "leader",
         "supervisor",
@@ -356,8 +362,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalTerlambat("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalTerlambat("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalTerlambat("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalTerlambat("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalTerlambat("headID", [
@@ -368,7 +377,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalTerlambat("headID", [
+        this.queryTotalTerlambat("gmID", [
         "staff",
         "leader",
         "supervisor",
@@ -430,8 +439,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalIzin("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalIzin("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalIzin("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalIzin("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalIzin("headID", [
@@ -442,7 +454,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalIzin("headID", [
+        this.queryTotalIzin("gmID", [
         "staff",
         "leader",
         "supervisor",
@@ -530,8 +542,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalSakit("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalSakit("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalSakit("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalSakit("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalSakit("headID", [
@@ -542,7 +557,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalSakit("headID", [
+        this.queryTotalSakit("gmID", [
         "staff",
         "leader",
         "supervisor",
@@ -653,8 +668,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalOvertime("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalOvertime("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalOvertime("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalOvertime("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalOvertime("headID", [
@@ -665,7 +683,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalOvertime("headID", [
+        this.queryTotalOvertime("gmID", [
         "staff",
         "leader",
         "supervisor",
@@ -755,8 +773,11 @@ class LeaderHeader extends React.Component {
       case "supervisor":
         this.queryTotalLeave("supervisorID", ["staff", "leader"]);
         break;
+      case "deputy manager":
+        this.queryTotalLeave("deputyManagerID", ["staff", "leader", "supervisor"]);
+        break;
       case "manager":
-        this.queryTotalLeave("managerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalLeave("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalLeave("headID", [
@@ -767,7 +788,7 @@ class LeaderHeader extends React.Component {
         ]);
         break;
       case "gm":
-        this.queryTotalLeave("headID", [
+        this.queryTotalLeave("gmID", [
         "staff",
         "leader",
         "supervisor",
