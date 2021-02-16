@@ -57,6 +57,7 @@ class TesEksport extends React.Component {
     this.state = {
       daftarStaff: [],
       absence: [],
+      deptList: [],
       tableData: [],
       fileData: [],
       daftarLevel: [],
@@ -101,12 +102,15 @@ class TesEksport extends React.Component {
       progressExcel: false,
       totalExport: 0,
       progressCount: 0,
+      dataNotFound: 0,
+      subractDataNotFound: 0,
     };
   }
 
   componentDidMount() {
     this.getData();
     this.getPosisi();
+    this.getDepartment();
   }
 
   getPosisi = () => {
@@ -126,6 +130,23 @@ class TesEksport extends React.Component {
       });
   };
 
+  getDepartment = () => {
+    this.setState({ loading: true });
+    const Department = new Parse.Object.extend("Departemen");
+    const query = new Parse.Query(Department);
+
+    query.equalTo("status", 1);
+    query
+      .find()
+      .then((x) => {
+        this.setState({ deptList: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
+
   getData = (pageNumber = 1) => {
     this.setState({ loadingFilter: true, page: pageNumber });
     const { searchBy, searchValue } = this.state;
@@ -134,19 +155,19 @@ class TesEksport extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.notContainedIn("roles", ["admin", "leader", "Admin", "Leader"]);
-    query.skip(resPerPage * pageNumber - resPerPage);
-    query.limit(resPerPage);
-    query.withCount();
+    query.notContainedIn("roles", ["admin", "Admin"]);
+    // query.skip(resPerPage * pageNumber - resPerPage);
+    // query.limit(resPerPage);
+    // query.withCount();
 
     switch (searchBy) {
       case "all":
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
-            x.results.map((y) => (y.select = false));
+            x.map((y) => (y.select = false));
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -160,11 +181,11 @@ class TesEksport extends React.Component {
       case "name":
         query.matches("fullname", searchValue, "i");
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
-            x.results.map((y) => (y.select = false));
+            x.map((y) => (y.select = false));
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -178,11 +199,11 @@ class TesEksport extends React.Component {
       case "nik":
         query.equalTo("nik", searchValue);
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
-            x.results.map((y) => (y.select = false));
+            x.map((y) => (y.select = false));
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -194,13 +215,13 @@ class TesEksport extends React.Component {
         break;
 
       case "divisi":
-        query.matches("posisi", searchValue, "i");
+        query.matches("department", searchValue, "i");
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
-            x.results.map((y) => (y.select = false));
+            x.map((y) => (y.select = false));
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -218,11 +239,11 @@ class TesEksport extends React.Component {
 
         query.matchesQuery("leaderIdNew", leaderQuery);
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
-            x.results.map((y) => (y.select = false));
+            x.map((y) => (y.select = false));
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -246,9 +267,7 @@ class TesEksport extends React.Component {
     const { checkId, fileData } = this.state;
     let checked = e.target.value;
     daftarStaff.map((x, index) => {
-      console.log("bandingkan", x.id === e.target.value);
       if (x.id === e.target.value) {
-        console.log("sama");
         x.select = e.target.checked;
         if (x.select) {
           this.setState(
@@ -260,8 +279,7 @@ class TesEksport extends React.Component {
               ],
             }),
             () => {
-              console.log(this.state.checkId);
-              console.log(this.state.fileData);
+
             }
           );
         } else {
@@ -381,17 +399,17 @@ class TesEksport extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.notContainedIn("roles", ["admin", "leader", "Admin", "Leader"]);
-    query.skip(resPerPage * pageNumber - resPerPage);
-    query.limit(resPerPage);
-    query.withCount();
+    query.notContainedIn("roles", ["admin", "Admin"]);
+    // query.skip(resPerPage * pageNumber - resPerPage);
+    // query.limit(resPerPage);
+    // query.withCount();
     switch (searchBy) {
       case "all":
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -408,7 +426,7 @@ class TesEksport extends React.Component {
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -425,7 +443,7 @@ class TesEksport extends React.Component {
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -437,12 +455,12 @@ class TesEksport extends React.Component {
         break;
 
       case "divisi":
-        query.matches("posisi", searchValue, "i");
+        query.matches("department", searchValue, "i");
         query
-          .find({ useMasterKey: true })
+          .findAll({ useMasterKey: true })
           .then((x) => {
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -463,7 +481,7 @@ class TesEksport extends React.Component {
           .find({ useMasterKey: true })
           .then((x) => {
             this.setState({
-              daftarStaff: x.results,
+              daftarStaff: x,
               totalData: x.count,
               loadingFilter: false,
             });
@@ -512,7 +530,6 @@ class TesEksport extends React.Component {
     query
       .find()
       .then((x) => {
-        console.log("user", x);
         let early = [];
         let hours = [];
         let lateTimesMinute = [];
@@ -554,7 +571,6 @@ class TesEksport extends React.Component {
               )
               .hours()
           );
-          console.log("early departure", early);
         });
         // late times map
         x.filter((a) => {
@@ -586,7 +602,6 @@ class TesEksport extends React.Component {
               )
               .hours()
           );
-          console.log("value late", lateTimesMinute);
         });
 
         // overtime
@@ -620,7 +635,6 @@ class TesEksport extends React.Component {
           );
         });
 
-        console.log("overtime hours", overtimeHours);
 
         // Total Hours
         x.map((value, index) => {
@@ -663,18 +677,11 @@ class TesEksport extends React.Component {
               .hours()
           );
         });
-        console.log("total menit", totalMinutes);
-        console.log("total jam", totalHours);
-        console.log(lateTimesMinute);
-        console.log(lateTimesHours);
-        console.log(overtimeMinutes);
-        console.log(overtimeHours);
 
         let totalOvertime = hours.reduce((acc, curr) => {
           return acc + curr;
         }, 0);
 
-        console.log("total overtime", totalOvertime);
 
         let totalSum = 0;
 
@@ -686,16 +693,6 @@ class TesEksport extends React.Component {
           return parseInt(acc) + parseInt(currz);
         });
 
-        console.log(totalJumlah + Math.floor(totalJumlahMenit / 60));
-
-        console.log(totalJumlahMenit % 60);
-
-        // if (early.length < 1 || hours.length < 1) {
-        //   return false;
-        // }
-        // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
-        //   return false;
-        // }
         if (early.length === 1) {
           let jumlahEarly = early.reduce((acc, curr) => {
             return acc + curr;
@@ -710,19 +707,6 @@ class TesEksport extends React.Component {
             minutesEarly: minutesEarly,
           });
 
-          // early.reduce((acc, curr) => {
-          //   console.log(!acc);
-          //   console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
-          //   console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-          //   const sisaJamConcat = [...this.state.sisaJam];
-          //   sisaJamConcat.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-          //   const minutesEarly = [...this.state.minutesEarly];
-          //   minutesEarly.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-          //   this.setState({
-          //     sisaJam: sisaJamConcat,
-          //     minutesEarly: minutesEarly
-          //   });
-          // }, 0);
         } else if (early.length > 1) {
           let jumlahEarly = early.reduce((acc, curr) => {
             return acc + curr;
@@ -737,19 +721,6 @@ class TesEksport extends React.Component {
             minutesEarly: minutesEarly,
           });
 
-          // early.reduce((acc, curr) => {
-          //   console.log(!acc);
-          //   console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
-          //   console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-          //   const sisaJamConcat = [...this.state.sisaJam];
-          //   sisaJamConcat.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-          //   const minutesEarly = [...this.state.minutesEarly];
-          //   minutesEarly.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-          //   this.setState({
-          //     sisaJam: sisaJamConcat,
-          //     minutesEarly: minutesEarly
-          //   });
-          // });
         } else {
           this.setState({ minutesEarly: 0, sisaJam: 0 });
         }
@@ -769,25 +740,6 @@ class TesEksport extends React.Component {
             jamEarly: jamEarly,
           });
 
-          // hours
-          //   .filter((val) => {
-          //     if (val === '') {
-          //       return false;
-          //     }
-          //     return true;
-          //   })
-          //   .reduce((acc, curr) => {
-          //     console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
-          //     const jamEarly = [...this.state.jamEarly];
-          //     jamEarly.splice(
-          //       totalData,
-          //       0,
-          //       parseInt(acc) + parseInt(curr) + this.state.sisaJam[totalData]
-          //     );
-          //     this.setState({
-          //       jamEarly: jamEarly
-          //     });
-          //   }, 0);
         } else if (hours.length > 1) {
           let totalHours = hours.reduce((acc, curr) => {
             return acc + curr;
@@ -803,30 +755,11 @@ class TesEksport extends React.Component {
             jamEarly: jamEarly,
           });
 
-          // hours
-          //   .filter((val) => {
-          //     if (val === '') {
-          //       return false;
-          //     }
-          //     return true;
-          //   })
-          //   .reduce((acc, curr) => {
-          //     console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
-          //     const jamEarly = [...this.state.jamEarly];
-          //     jamEarly.splice(
-          //       totalData,
-          //       0,
-          //       parseInt(acc) + parseInt(curr) + this.state.sisaJam[totalData]
-          //     );
-          //     this.setState({
-          //       jamEarly: jamEarly
-          //     });
-          //   });
+          
         } else {
           this.setState({ jamEarly: 0 });
         }
         // late Times
-        console.log("late times ", lateTimesHours);
         if (lateTimesMinute.length === 1) {
           let lateTimesMinutesSum = lateTimesMinute.reduce((acc, curr) => {
             return acc + curr;
@@ -1253,7 +1186,7 @@ class TesEksport extends React.Component {
 
   getDataAbsen = (e) => {
     e.preventDefault();
-    this.setState({ loading: true });
+    this.setState({ loading: true, });
     this.setState({
       absence: [],
       tableData: [],
@@ -1274,6 +1207,7 @@ class TesEksport extends React.Component {
     const { checkId } = this.state;
     const nullData = "DATA TIDAK DITEMUKAN";
     let totalData = 0;
+    let dataNotFound = 0;
 
     
     let sisaJamTotalMinutes2 = [];
@@ -1319,7 +1253,6 @@ class TesEksport extends React.Component {
       query
         .find()
         .then((x) => {
-          console.log("user", x);
           let early = [];
           let hours = [];
           let lateTimesMinute = [];
@@ -1328,6 +1261,17 @@ class TesEksport extends React.Component {
           let overtimeHours = [];
           let totalHours = [];
           let totalMinutes = [];
+
+          if(x.length < 1 ) {
+            early.push(0);
+            hours.push(0)
+            lateTimesMinute.push(0);
+            lateTimesHours.push(0);
+            overtimeMinutes.push(0);
+            overtimeHours.push(0);
+            totalMinutes.push(0);
+            totalHours.push(0);
+          }
 
           x.map((value, index) => {
             early.push(
@@ -1362,7 +1306,7 @@ class TesEksport extends React.Component {
                   .hours()
               : 0
               );
-            console.log("early departure", early);
+            
           });
           // late times map
           x.map((value, index) => {
@@ -1399,7 +1343,7 @@ class TesEksport extends React.Component {
                   .hours()
               : 0
             );
-            console.log("value late", lateTimesMinute);
+            
           });
 
           // overtime
@@ -1465,43 +1409,7 @@ class TesEksport extends React.Component {
                   )
                   .minutes()
               : 0
-            //   moment
-            // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-            // .subtract(
-            //   moment.duration(
-            //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-            //     "HH:mm"
-            //   )
-            // )
-            // .minutes()
-              // moment
-              //   .duration(
-              //     convertDate(value.get("absenKeluar"), "HH:mm"),
-              //     "HH:mm"
-              //   )
-              //   .subtract(
-              //     moment.duration(
-              //       convertDate(value.get("absenMasuk"), "HH:mm"),
-              //       "HH:mm"
-              //     )
-              //   )
-              //   .minutes()
-              // moment
-              //   .duration(
-              //     value.get('absenKeluar') === undefined
-              //       ? `00:00`
-              //       : convertDate(value.get('absenMasuk'), 'HH:mm'),
-              //     'HH:mm'
-              //   )
-              //   .subtract(
-              //     moment.duration(
-              //       value.get('absenMasuk') !== undefined
-              //         ? convertDate(value.get('absenMasuk'), 'HH:mm')
-              //         : `00:00`,
-              //       'HH:mm'
-              //     )
-              //   )
-              //   .minutes()
+            
             );
             totalHours.push(
               value.get("absenKeluar") !== undefined || value.get("earlyTimes") !== undefined || value.get("overtimeOut") !== undefined ?
@@ -1528,41 +1436,13 @@ class TesEksport extends React.Component {
                   )
                   .hours()
               : 0
-              // moment
-              // .duration(value.get("earlyTimes") !== undefined ? convertDate(value.get("earlyTimes"), "HH:mm") : value.get("overtimeOut") !== undefined ? convertDate(value.get("overtimeOut"), "HH:mm") : convertDate(value.get("absenKeluar"), "HH:mm"), "HH:mm")
-              // .subtract(
-              //   moment.duration(
-              //     value.get("lateTimes") !== undefined ? convertDate(value.get("lateTimes"), "HH:mm") : convertDate(value.get("absenMasuk"), "HH:mm"),
-              //     "HH:mm"
-              //   )
-              // )
-              // .hours()
-              // moment
-              //   .duration(
-              //     convertDate(value.get("absenKeluar"), "HH:mm"),
-              //     "HH:mm"
-              //   )
-              //   .subtract(
-              //     moment.duration(
-              //       convertDate(value.get("absenMasuk"), "HH:mm"),
-              //       "HH:mm"
-              //     )
-              //   )
-              //   .hours()
+      
             );
           });
-          console.log("total menit", totalMinutes);
-          console.log("total jam", totalHours);
-          console.log(lateTimesMinute);
-          console.log(lateTimesHours);
-          console.log(overtimeMinutes);
-          console.log(overtimeHours);
 
           let totalOvertime = hours.reduce((acc, curr) => {
             return acc + curr;
           }, 0);
-
-          console.log("total overtime", totalOvertime);
 
           let totalSum = 0;
 
@@ -1574,16 +1454,7 @@ class TesEksport extends React.Component {
             return parseInt(acc) + parseInt(currz);
           });
 
-          console.log(totalJumlah + Math.floor(totalJumlahMenit / 60));
-
-          console.log(totalJumlahMenit % 60);
-
-          // if (early.length < 1 || hours.length < 1) {
-          //   return false;
-          // }
-          // if (lateTimesMinute.length < 1 || lateTimesHours < 1) {
-          //   return false;
-          // }
+          
           if (early.length === 1) {
             let jumlahEarly = early.reduce((acc, curr) => {
               return acc + curr;
@@ -1598,19 +1469,6 @@ class TesEksport extends React.Component {
               minutesEarly: minutesEarly,
             });
 
-            // early.reduce((acc, curr) => {
-            //   console.log(!acc);
-            //   console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
-            //   console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const sisaJamConcat = [...this.state.sisaJam];
-            //   sisaJamConcat.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const minutesEarly = [...this.state.minutesEarly];
-            //   minutesEarly.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-            //   this.setState({
-            //     sisaJam: sisaJamConcat,
-            //     minutesEarly: minutesEarly
-            //   });
-            // }, 0);
           } else if (early.length > 1) {
             let jumlahEarly = early.reduce((acc, curr) => {
               return acc + curr;
@@ -1625,19 +1483,6 @@ class TesEksport extends React.Component {
               minutesEarly: minutesEarly,
             });
 
-            // early.reduce((acc, curr) => {
-            //   console.log(!acc);
-            //   console.log('minutes', (parseInt(acc) + parseInt(curr)) % 60);
-            //   console.log('sisaJam', Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const sisaJamConcat = [...this.state.sisaJam];
-            //   sisaJamConcat.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const minutesEarly = [...this.state.minutesEarly];
-            //   minutesEarly.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-            //   this.setState({
-            //     sisaJam: sisaJamConcat,
-            //     minutesEarly: minutesEarly
-            //   });
-            // });
           } else {
             this.setState({ minutesEarly: 0, sisaJam: 0 });
           }
@@ -1657,25 +1502,6 @@ class TesEksport extends React.Component {
               jamEarly: jamEarly,
             });
 
-            // hours
-            //   .filter((val) => {
-            //     if (val === '') {
-            //       return false;
-            //     }
-            //     return true;
-            //   })
-            //   .reduce((acc, curr) => {
-            //     console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
-            //     const jamEarly = [...this.state.jamEarly];
-            //     jamEarly.splice(
-            //       totalData,
-            //       0,
-            //       parseInt(acc) + parseInt(curr) + this.state.sisaJam[totalData]
-            //     );
-            //     this.setState({
-            //       jamEarly: jamEarly
-            //     });
-            //   }, 0);
           } else if (hours.length > 1) {
             let totalHours = hours.reduce((acc, curr) => {
               return acc + curr;
@@ -1691,30 +1517,10 @@ class TesEksport extends React.Component {
               jamEarly: jamEarly,
             });
 
-            // hours
-            //   .filter((val) => {
-            //     if (val === '') {
-            //       return false;
-            //     }
-            //     return true;
-            //   })
-            //   .reduce((acc, curr) => {
-            //     console.log('hours', parseInt(acc) + parseInt(curr) + this.state.sisaJam);
-            //     const jamEarly = [...this.state.jamEarly];
-            //     jamEarly.splice(
-            //       totalData,
-            //       0,
-            //       parseInt(acc) + parseInt(curr) + this.state.sisaJam[totalData]
-            //     );
-            //     this.setState({
-            //       jamEarly: jamEarly
-            //     });
-            //   });
           } else {
             this.setState({ jamEarly: 0 });
           }
           // late Times
-          console.log("late times ", lateTimesHours);
           if (lateTimesMinute.length === 1) {
             let lateTimesMinutesSum = lateTimesMinute.reduce((acc, curr) => {
               return acc + curr;
@@ -1733,18 +1539,7 @@ class TesEksport extends React.Component {
               minutesLate: minutesLate,
             });
 
-            // lateTimesMinute.reduce((acc, curr) => {
-            //   const sisaJamLate = [...this.state.sisaJamLate];
-            //   sisaJamLate.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const minutesLate = [...this.state.minutesLate];
-            //   minutesLate.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-            //   this.setState({
-            //     sisaJamLate: sisaJamLate,
-            //     minutesLate: minutesLate
-            //   });
-            //   console.log('sisa Jam Late', this.state.sisaJamLate);
-            //   console.log('menit Late', this.state.minutesLate);
-            // }, 0);
+            
           } else if (lateTimesMinute.length > 1) {
             let lateTimesMinutesSum = lateTimesMinute.reduce((acc, curr) => {
               return acc + curr;
@@ -1763,18 +1558,7 @@ class TesEksport extends React.Component {
               minutesLate: minutesLate,
             });
 
-            // lateTimesMinute.reduce((acc, curr) => {
-            //   const sisaJamLate = [...this.state.sisaJamLate];
-            //   sisaJamLate.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const minutesLate = [...this.state.minutesLate];
-            //   minutesLate.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-            //   this.setState({
-            //     sisaJamLate: sisaJamLate,
-            //     minutesLate: minutesLate
-            //   });
-            //   console.log('sisa Jam Late', this.state.sisaJamLate);
-            //   console.log('menit Late', this.state.minutesLate);
-            // });
+            
           } else {
             this.setState({
               sisaJamLate: 0,
@@ -1797,19 +1581,7 @@ class TesEksport extends React.Component {
               hoursLate: hoursLate,
             });
 
-            // lateTimesHours.reduce((acc, curr) => {
-            //   const hoursLate = [...this.state.hoursLate];
-            //   hoursLate.splice(
-            //     totalData,
-            //     0,
-            //     parseInt(acc) + parseInt(curr) + this.state.sisaJamLate[totalData]
-            //   );
-
-            //   this.setState({
-            //     hoursLate: hoursLate
-            //   });
-            //   console.log('jamLate', this.state.hoursLate);
-            // }, 0);
+            
           } else if (lateTimesHours.length > 1) {
             let lateTimesHoursSum = lateTimesHours.reduce((acc, curr) => {
               return acc + curr;
@@ -1825,23 +1597,11 @@ class TesEksport extends React.Component {
             this.setState({
               hoursLate: hoursLate,
             });
-            // lateTimesHours.reduce((acc, curr) => {
-            //   const hoursLate = [...this.state.hoursLate];
-            //   hoursLate.splice(
-            //     totalData,
-            //     0,
-            //     parseInt(acc) + parseInt(curr) + this.state.sisaJamLate[totalData]
-            //   );
-            //   this.setState({
-            //     hoursLate: hoursLate
-            //   });
-            //   console.log('jamLate', this.state.hoursLate);
-            // });
+            
           } else {
             this.setState({ hoursLate: 0 });
           }
 
-          console.log(overtimeMinutes);
           // overtime
           if (overtimeMinutes.length === 1) {
             let overtimeMinutesSum = overtimeMinutes.reduce((acc, curr) => {
@@ -1864,19 +1624,6 @@ class TesEksport extends React.Component {
               () => console.log(this.state.minutesOvertime)
             );
 
-            // overtimeMinutes.reduce((acc, curr) => {
-            //   const sisaJamOvertime = [...this.state.sisaJamOvertime];
-            //   sisaJamOvertime.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const minutesOvertime = [...this.state.minutesOvertime];
-            //   minutesOvertime.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-            //   this.setState(
-            //     {
-            //       sisaJamOvertime: sisaJamOvertime,
-            //       minutesOvertime: minutesOvertime
-            //     },
-            //     () => console.log(this.state.minutesOvertime)
-            //   );
-            // }, 0);
           } else if (overtimeMinutes.length > 1) {
             let overtimeMinutesSum = overtimeMinutes.reduce((acc, curr) => {
               return acc + curr;
@@ -1898,19 +1645,6 @@ class TesEksport extends React.Component {
               () => console.log(this.state.minutesOvertime)
             );
 
-            // overtimeMinutes.reduce((acc, curr) => {
-            //   const sisaJamOvertime = [...this.state.sisaJamOvertime];
-            //   sisaJamOvertime.splice(totalData, 0, Math.floor((parseInt(acc) + parseInt(curr)) / 60));
-            //   const minutesOvertime = [...this.state.minutesOvertime];
-            //   minutesOvertime.splice(totalData, 0, (parseInt(acc) + parseInt(curr)) % 60);
-            //   this.setState(
-            //     {
-            //       sisaJamOvertime: sisaJamOvertime,
-            //       minutesOvertime: minutesOvertime
-            //     },
-            //     () => console.log(this.state.minutesOvertime)
-            //   );
-            // });
           } else if (overtimeMinutes.length === 0) {
             this.setState({
               minutesOvertime: this.state.minutesOvertime.concat("0"),
@@ -1932,17 +1666,6 @@ class TesEksport extends React.Component {
               jamOvertime: jamOvertime,
             });
 
-            // overtimeHours.reduce((acc, curr) => {
-            //   const jamOvertime = [...this.state.jamOvertime];
-            //   jamOvertime.splice(
-            //     totalData,
-            //     0,
-            //     parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime[totalData]
-            //   );
-            //   this.setState({
-            //     jamOvertime: jamOvertime
-            //   });
-            // }, 0);
           } else if (overtimeHours.length > 1) {
             let overtimeHoursSum = overtimeHours.reduce((acc, curr) => {
               return acc + curr;
@@ -1958,17 +1681,6 @@ class TesEksport extends React.Component {
               jamOvertime: jamOvertime,
             });
 
-            // overtimeHours.reduce((acc, curr) => {
-            //   const jamOvertime = [...this.state.jamOvertime];
-            //   jamOvertime.splice(
-            //     totalData,
-            //     0,
-            //     parseInt(acc) + parseInt(curr) + this.state.sisaJamOvertime[totalData]
-            //   );
-            //   this.setState({
-            //     jamOvertime: jamOvertime
-            //   });
-            // });
           } else if (overtimeHours.length === 0) {
             this.setState({
               jamOvertime: this.state.jamOvertime.concat("0"),
@@ -2001,16 +1713,9 @@ class TesEksport extends React.Component {
                 minutesTotal: totalMinutes2,
               },
               () => {
-                console.log("sisa jam", this.state.sisaJamTotalMinutes);
-                console.log("menit total", this.state.minutesTotal);
+              
               }
             );
-
-            console.log("total minutes", totalMinutes);
-            console.log("total data", totalData);
-            console.log("sisa jam", this.state.sisaJamTotalMinutes);
-            console.log("sisa jam 2", sisaJamTotalMinutes2);
-            console.log("total minutes2", this.state.minutesTotal[totalData]);
           }
           if (totalMinutes.length > 1) {
             let totalJumlahMenit = totalMinutes.reduce((acc, currz) => {
@@ -2034,8 +1739,7 @@ class TesEksport extends React.Component {
                 minutesTotal: totalMinutes2,
               },
               () => {
-                console.log("sisa jam", this.state.sisaJamTotalMinutes);
-                console.log("menit total", this.state.minutesTotal);
+                
               }
             );
           } else {
@@ -2046,12 +1750,6 @@ class TesEksport extends React.Component {
           }
 
           if (totalHours.length === 1) {
-            console.log(totalHours);
-            console.log(
-              "sisa jam",
-              this.state.sisaJamTotalMinutes[totalData]
-            );
-            console.log("sisa jam 2", sisaJamTotalMinutes2[totalData]);
             let totalJumlah = totalHours.reduce((exe, croz) => {
               return exe + croz;
             });
@@ -2070,24 +1768,8 @@ class TesEksport extends React.Component {
             this.setState({
               jamTotal: jamTotal2,
             });
-
-            // console.log('jam total', this.state.jamTotal);
-
-            // totalHours.reduce((acc, curr) => {
-            //   const jamTotal = [...this.state.jamTotal];
-            //   jamTotal.splice(
-            //     totalData,
-            //     0,
-            //     parseInt(acc) + parseInt(curr) + this.state.sisaJamTotalMinutes[totalData]
-            //   );
-            //   this.setState({
-            //     jamTotal: jamTotal
-            //   });
-            // }, 0);
           }
           if (totalHours.length > 1) {
-            console.log(totalHours);
-            console.log("sisa jam 2", sisaJamTotalMinutes2[totalData]);
             let totalJumlah = totalHours.reduce((exe, croz) => {
               return exe + croz;
             }, 0);
@@ -2107,31 +1789,24 @@ class TesEksport extends React.Component {
               jamTotal: jamTotal2,
             });
 
-            // totalHours.reduce((acc, curr) => {
-            //   const jamTotal = [...this.state.jamTotal];
-            //   jamTotal.splice(
-            //     totalData,
-            //     0,
-            //     parseInt(acc) + parseInt(curr) + this.state.sisaJamTotalMinutes[totalData]
-            //   );
-            //   this.setState({
-            //     jamTotal: jamTotal
-            //   });
-            // });
+            
           } else if (totalHours.length === 0) {
             this.setState({
               jamTotal: 0,
             });
           }
+          
           let newArr = [...this.state.absence];
           newArr.splice(totalData, 0, x);
           let tableArr = [...this.state.tableData];
           tableArr.splice(totalData, 0, {
-            fileName: _.isEmpty(x[0])
-              ? this.state.fileData[totalData].fileName
+            fileName:  x[0] === undefined
+              // ? this.state.fileData[totalData].fileName
+              ? `Data ke ${totalData} Tidak Di Temukan`
               : x[0].get("fullname"),
             tableId: `ekspor${totalData}`,
           });
+        
           this.setState({
             absence: newArr,
             tableData: tableArr,
@@ -2154,11 +1829,12 @@ class TesEksport extends React.Component {
             jamTotal: jamTotal2,
             minutesTotal: totalMinutes2,
           });
-          console.log(true);
-          //return true;
+          
           totalData = totalData + 1;
-          if (totalData === checkId.length) {
-            this.setState({ loading: false });
+          
+          if (totalData == checkId.length) {
+            let subractDataNotFound = checkId.length - dataNotFound;
+            this.setState({ loading: false, dataNotFound: dataNotFound, subractDataNotFound: subractDataNotFound });
           }
         })
         .catch((err) => {
@@ -2234,12 +1910,11 @@ class TesEksport extends React.Component {
 
   progressValue = (e, totalData) => {
     e.preventDefault();
-    this.setState({progressExcel: true, totalExport: totalData});
+    this.setState({progressExcel: true, totalExport: totalData, loading: true});
 
     let countData = 0;
     return setInterval(() => {
       if(countData < totalData) {
-        console.log("count", countData);
         countData++;
         this.setState({progressCount: countData});
       }
@@ -2250,7 +1925,6 @@ class TesEksport extends React.Component {
     const {
       daftarStaff,
       daftarLevel,
-      daftarPosisi,
       loading,
       approvalMode,
       rejectMode,
@@ -2282,9 +1956,9 @@ class TesEksport extends React.Component {
                   {x.get("level")}
                 </option>
               ))
-            : this.state.daftarPosisi.map((x, i) => (
-                <option key={i} value={x.get("position")}>
-                  {x.get("position")}
+            : this.state.deptList.map((x, i) => (
+                <option key={i} value={x.get("deptName")}>
+                  {x.get("deptName")}
                 </option>
               ))}
         </Input>
@@ -2311,7 +1985,6 @@ class TesEksport extends React.Component {
       </FormGroup>
     );
 
-    console.log(this.state.jamTotal);
 
     return (
       <React.Fragment>
@@ -2464,7 +2137,7 @@ class TesEksport extends React.Component {
                           <td>{prop.get("nik")}</td>
                           <td>{prop.get("fullname")}</td>
                           <td>{prop.get("level")}</td>
-                          <td>{prop.get("posisi")}</td>
+                          <td>{prop.get("department")}</td>
                           {/* <td>
                             <Button
                               id="t1"
@@ -3131,18 +2804,18 @@ class TesEksport extends React.Component {
                     </tbody>
                   </Table>
                 ))}
-                <Pagination
+                {/* <Pagination
                   activePage={this.state.page}
                   itemsCountPerPage={this.state.resPerPage}
                   totalItemsCount={this.state.totalData}
                   pageRangeDisplayed={5}
-                  onChange={(pageNumber) => this.state.searchValue !== '' ? this.handleFilter(pageNumber) : this.getData(pageNumber)}
+                  onChange={(pageNumber) => this.getData(pageNumber)}
                   innerClass="pagination justify-content-end p-4"
                   itemClass="page-item mt-2"
                   linkClass="page-link"
                   prevPageText="<"
                   nextPageText=">"
-                />
+                /> */}
               </Card>
             </div>
           </Row>
@@ -3163,7 +2836,7 @@ class TesEksport extends React.Component {
             <div className="progress-wrapper">
               <div className="progress-info">
                 <div className="progress-label">
-                  <span>{this.state.totalExport} data berhasil di export, {this.state.checkId.length - this.state.totalExport} data tidak di temukan</span>
+                  <span>{this.state.totalExport} data berhasil di export, {this.state.dataNotFound} data tidak di temukan</span>
                 </div>
                 <div className="progress-percentage">
                   <span>{this.state.checkId.length}</span>
@@ -3338,7 +3011,7 @@ class TesEksport extends React.Component {
                 </div>
               </Form>
               <div className="modal-footer">
-                {this.state.tableData.length > 0 ? (
+                {this.state.tableData.length === this.state.checkId.length ? (
                   <Button
                   color="secondary"
                   data-dismiss="modal"
@@ -3352,7 +3025,7 @@ class TesEksport extends React.Component {
                   </Button>
                 ) : ("")}
                 <Row>
-                  {this.state.tableData.length > 0 ? (
+                  {this.state.tableData.length === this.state.checkId.length ? (
                     <a onClick={(e) => this.progressValue(e, this.state.tableData.length)}>
                       <ReactHTMLTableToExcel
                         id="test-table-xls-button"
@@ -3364,9 +3037,7 @@ class TesEksport extends React.Component {
                         buttonText="Data siap di export"
                       />
                     </a>
-                  ) : (
-                    ""
-                  )}
+                  ) : ""}
                 </Row>
               </div>
             </div>

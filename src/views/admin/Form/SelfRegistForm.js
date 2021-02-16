@@ -623,6 +623,7 @@ class SelfRegistForm extends React.Component {
     query.get(idUser).then((row) => {
       row.set("imei", this.state.imei);
       row.set("nik", nik.toUpperCase());
+      row.set("fotoWajah", this.state.fotoWajahObj);
       row.save(null, { useMasterKey: true }).then((data) => {
         const SelfRegist = Parse.Object.extend("SelfRegist");
         const query = new Parse.Query(SelfRegist);

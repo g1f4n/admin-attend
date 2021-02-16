@@ -176,7 +176,7 @@ class Index extends React.Component {
       daftarRequest: [],
       daftarLeader: [],
       dataAbsen: [],
-      resPerPage: 20,
+      resPerPage: 10,
       late: [],
       avgLat: 0,
       avgLng: 0,
@@ -307,6 +307,8 @@ class Index extends React.Component {
   getLeaderStaff = () => {
     this.setState({ loading: true });
 
+    const {resPerPage} = this.state;
+
     const Absence = Parse.Object.extend('Absence');
     const query = new Parse.Query(Absence);
 
@@ -324,10 +326,9 @@ class Index extends React.Component {
     query.matchesQuery("user", hierarkiQuery);
     query.include('user');
     query
-      .find()
+      .findAll()
       .then((x) => {
         x.map((y) => (y.select = false));
-        console.log(x);
         this.setState({ dataAbsen: x });
       })
       .catch((err) => {
@@ -358,17 +359,15 @@ class Index extends React.Component {
     query.limit(resPerPage);
     query.withCount();
 
-    // query.greaterThanOrEqualTo('createdAt', start.toDate());
-    // query.lessThan('createdAt', finish.toDate());
+    query.greaterThanOrEqualTo('createdAt', start.toDate());
+    query.lessThan('createdAt', finish.toDate());
     query.matchesQuery("user", hierarkiQuery);
     query.include('user');
     query
       .find()
       .then((x) => {
-        x.map((y) => (y.select = false));
-        // console.log(x);
-        // console.log("totalData", x.count);
-        this.setState({ dataAbsen: x, totalData:x.count });
+        x.results.map((y) => (y.select = false));
+        this.setState({ dataAbsen: x.results, totalData:x.count, loading: false });
       })
       .catch((err) => {
         console.log(err);
@@ -632,14 +631,14 @@ class Index extends React.Component {
                           />
                         </td>
                       </tr>
-                    ) : this.state.dataAbsen.concat(this.state.late).length < 1 ? (
+                    ) : this.state.dataAbsen.length < 1 ? (
                       <tr>
                         <td colSpan={3} style={{ textAlign: 'center' }}>
                           No data found...
                         </td>
                       </tr>
                     ) : (
-                      this.state.dataAbsen.concat(this.state.late).map((prop, key) => (
+                      this.state.dataAbsen.map((prop, key) => (
                         <tr
                           onClick={() => {
                             this.setCenterMaps(prop.get('latitude'), prop.get('longitude'));
@@ -665,18 +664,6 @@ class Index extends React.Component {
                     )}
                   </tbody>
                 </Table>
-                {/* <Pagination
-                  activePage={this.state.page}
-                  itemsCountPerPage={this.state.resPerPage}
-                  totalItemsCount={this.state.totalData}
-                  pageRangeDisplayed={5}
-                  onChange={(pageNumber) => this.getLeaderStaffFilter(pageNumber)}
-                  innerClass="pagination justify-content-end p-4"
-                  itemClass="page-item mt-2"
-                  linkClass="page-link"
-                  prevPageText="<"
-                  nextPageText=">"
-                /> */}
               </Card>
             </Col>
           </Row>

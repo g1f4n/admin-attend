@@ -22,11 +22,11 @@ module.exports = {
   SERVER_URL: "https://parseapi.back4app.com/",
 };
 
-// db attend testing VI
+// db Backup db attend deploy
 // module.exports = {
-//   APPLICATION_ID: "cP30FxLqf3QgDtaeccmzjznhS7XEsv00uyzeqQQu",
-//   JAVASCRIPT_KEY: "VjcKqKdHNLJkmcYH1pMV6aslO3RX35vrkaqPysod",
-//   MASTER_KEY: "ETC46J2lepoxjh45RUy5p7THF4YYTA1uXLXqoCpz",
+//   APPLICATION_ID: "Vamw6m9I6vPaDOCfKQsyHvZTdaOH7qAN0d446fNi",
+//   JAVASCRIPT_KEY: "pMUc5u9cucv75Ug4lxbpOKwRo916fKZeEIMD2dyo",
+//   MASTER_KEY: "apwQUf6PmSYKoav7aaBEqwsSx7yXXfqvKehmGGL1",
 //   SERVER_URL: "https://parseapi.back4app.com/",
 // };
 
