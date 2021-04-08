@@ -417,7 +417,7 @@ class FormRegister extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo("roles", "leader" || "Leader");
+    query.equalTo("roles", "team leader" || "Team Leader");
 
     query
       .find({ useMasterKey: true })

@@ -60,7 +60,7 @@ class Header extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.notContainedIn('roles', ['admin', 'leader', 'supervisor', 'manager', 'head', 'gm']);
+    query.notContainedIn('roles', ['admin', 'team leader', 'supervisor', 'deputy manager', 'business head', 'manager', 'head', 'gm']);
 
     query
       .count()
@@ -84,7 +84,7 @@ class Header extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.equalTo('roles', 'leader' || 'Leader');
+    query.equalTo('roles', 'team leader' || 'Team Leader');
 
     query
       .count()

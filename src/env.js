@@ -24,9 +24,9 @@ module.exports = {
 
 // db Backup db attend deploy
 // module.exports = {
-//   APPLICATION_ID: "Vamw6m9I6vPaDOCfKQsyHvZTdaOH7qAN0d446fNi",
-//   JAVASCRIPT_KEY: "pMUc5u9cucv75Ug4lxbpOKwRo916fKZeEIMD2dyo",
-//   MASTER_KEY: "apwQUf6PmSYKoav7aaBEqwsSx7yXXfqvKehmGGL1",
+//   APPLICATION_ID: "scs0So3M6r9mVBMZaI3lGA4EeofVqYgcuW66RXfw",
+//   JAVASCRIPT_KEY: "xIjsSP2SRnuxvVK6VX1AXiyKZY1Z3RbL3hymA8lL",
+//   MASTER_KEY: "81Nfo308V5ORiVuFIs4UDB6MYniBYG04wB73slRs",
 //   SERVER_URL: "https://parseapi.back4app.com/",
 // };
 
