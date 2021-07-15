@@ -241,13 +241,13 @@ class Terlambat extends React.Component {
     status = this.state.status
   ) => {
     switch (userRole) {
-      case 'leader':
+      case 'team leader':
         this.queryEarlyLeavesByLevel('leaderIdNew', ['staff'], startDate, filterType, status);
         break;
       case 'supervisor':
         this.queryEarlyLeavesByLevel(
           'supervisorID',
-          ['staff', 'leader'],
+          ['staff', 'team leader'],
           startDate,
           filterType,
           status
@@ -256,7 +256,7 @@ class Terlambat extends React.Component {
       case 'manager':
         this.queryEarlyLeavesByLevel(
           'managerID',
-          ['staff', 'leader', 'supervisor'],
+          ['staff', 'team leader', 'supervisor'],
           startDate,
           filterType,
           status
@@ -265,7 +265,7 @@ class Terlambat extends React.Component {
       case 'head':
         this.queryEarlyLeavesByLevel(
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager'],
+          ['staff', 'team leader', 'supervisor', 'manager'],
           startDate,
           filterType,
           status
@@ -274,7 +274,7 @@ class Terlambat extends React.Component {
       case 'gm':
         this.queryEarlyLeavesByLevel(
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager', 'head'],
+          ['staff', 'team leader', 'supervisor', 'manager', 'head'],
           startDate,
           filterType,
           status

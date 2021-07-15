@@ -229,7 +229,7 @@ class Profile extends React.Component {
           });
         break;
 
-      case 'leader':
+      case 'team leader':
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
         leaderQuery.matches('fullname', searchValue, 'i');
@@ -262,7 +262,7 @@ class Profile extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.notContainedIn('roles', ['admin', 'leader', 'Admin', 'Leader']);
+    query.notContainedIn('roles', ['admin', 'team leader', 'Admin', 'Team Leader']);
     query.skip(resPerPage * pageNumber - resPerPage);
     query.limit(resPerPage);
     query.withCount();
@@ -335,7 +335,7 @@ class Profile extends React.Component {
           });
         break;
 
-      case 'leader':
+      case 'team leader':
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
         leaderQuery.matches('fullname', searchValue, 'i');

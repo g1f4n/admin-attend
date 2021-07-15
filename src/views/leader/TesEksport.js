@@ -223,7 +223,7 @@ class TesEksport extends React.Component {
           });
         break;
 
-      case "leader":
+      case "team leader":
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
         leaderQuery.matches("fullname", searchValue, "i");
@@ -254,19 +254,19 @@ class TesEksport extends React.Component {
     this.setState({ loadingFilter: true });
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryStaffByLevel("leaderIdNew", ["staff"], pageNumber);
         break;
       case "supervisor":
-        this.queryStaffByLevel("supervisorID", ["staff", "leader"], pageNumber);
+        this.queryStaffByLevel("supervisorID", ["staff", "team leader"], pageNumber);
         break;
       case "manager":
-        this.queryStaffByLevel("managerID", ["staff", "leader", "supervisor"], pageNumber);
+        this.queryStaffByLevel("managerID", ["staff", "team leader", "supervisor"], pageNumber);
         break;
       case "head":
         this.queryStaffByLevel("headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
         ]);
@@ -274,7 +274,7 @@ class TesEksport extends React.Component {
       case "gm":
         this.queryStaffByLevel("headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
           "head",
@@ -294,7 +294,7 @@ class TesEksport extends React.Component {
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    query.notContainedIn("roles", ["admin", "leader", "Admin", "Leader"]);
+    query.notContainedIn("roles", ["admin", "team leader", "Admin", "Team Leader"]);
     query.skip(resPerPage * pageNumber - resPerPage);
     query.limit(resPerPage);
     query.withCount();
@@ -371,7 +371,7 @@ class TesEksport extends React.Component {
           });
         break;
 
-      case "leader":
+      case "team leader":
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
         leaderQuery.matches("fullname", searchValue, "i");
@@ -613,7 +613,7 @@ class TesEksport extends React.Component {
           });
         break;
 
-      case "leader":
+      case "team leader":
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
         leaderQuery.matches("fullname", searchValue, "i");

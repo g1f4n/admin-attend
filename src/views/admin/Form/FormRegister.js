@@ -372,7 +372,7 @@ class FormRegister extends React.Component {
           });
         break;
 
-      case "leader":
+      case "team leader":
         const leader = new Parse.User();
         const leaderQuery = new Parse.Query(leader);
         leaderQuery.matches("fullname", searchValue, "i");
@@ -512,7 +512,7 @@ class FormRegister extends React.Component {
     });
     const formData = new FormData();
     formData.append("knax", e.target.files[0]);
-    Axios.post("http://52.77.8.120:4000/api/face-check", formData, {
+    Axios.post("http://103.130.194.174:4000/api/face-check", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -567,7 +567,7 @@ class FormRegister extends React.Component {
     
     const formData = new FormData();
     formData.append("data", data);
-    Axios.post("http://52.77.8.120:3005/api/updateUserData", formData, {
+    Axios.post("http://103.130.194.174:3005/api/updateUserData", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

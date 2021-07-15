@@ -269,7 +269,7 @@ class Cuti extends React.Component {
     status = this.state.status
   ) => {
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryLateByLevel(
           "leaderIdNew",
           ["staff"],
@@ -281,7 +281,7 @@ class Cuti extends React.Component {
       case "supervisor":
         this.queryLateByLevel(
           "supervisorID",
-          ["staff", "leader"],
+          ["staff", "team leader"],
           startDate,
           filterType,
           status
@@ -290,7 +290,7 @@ class Cuti extends React.Component {
       case "manager":
         this.queryLateByLevel(
           "managerID",
-          ["staff", "leader", "supervisor"],
+          ["staff", "team leader", "supervisor"],
           startDate,
           filterType,
           status
@@ -299,7 +299,7 @@ class Cuti extends React.Component {
       case "head":
         this.queryLateByLevel(
           "headID",
-          ["staff", "leader", "supervisor", "manager"],
+          ["staff", "team leader", "supervisor", "manager"],
           startDate,
           filterType,
           status
@@ -308,7 +308,7 @@ class Cuti extends React.Component {
       case "gm":
         this.queryLateByLevel(
           "headID",
-          ["staff", "leader", "supervisor", "manager", "head"],
+          ["staff", "team leader", "supervisor", "manager", "head"],
           startDate,
           filterType,
           status
@@ -411,7 +411,7 @@ class Cuti extends React.Component {
       className: "_User",
       objectId: getLeaderId(),
     });
-    query.notContainedIn("roles", ["admin", "Admin", "Leader", "leader"]);
+    query.notContainedIn("roles", ["admin", "Admin", "Team Leader", "team leader"]);
     query
       .find()
       .then((x) => {

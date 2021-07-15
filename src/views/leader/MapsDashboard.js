@@ -297,19 +297,19 @@ class MapsDashboard extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryAbsenByLevel("leaderIdNew", ["staff"]);
         break;
       case "supervisor":
-        this.queryAbsenByLevel("supervisorID", ["staff", "leader"]);
+        this.queryAbsenByLevel("supervisorID", ["staff", "team leader"]);
         break;
       case "manager":
-        this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"]);
+        this.queryAbsenByLevel("managerID", ["staff", "team leader", "supervisor"]);
         break;
       case "head":
         this.queryAbsenByLevel("headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
         ]);
@@ -317,7 +317,7 @@ class MapsDashboard extends React.Component {
       case "gm":
         this.queryAbsenByLevel("headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
           "head",
@@ -334,7 +334,7 @@ class MapsDashboard extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         const hierarki = new Parse.User();
         const hierarkiQuery = new Parse.Query(hierarki);
         hierarkiQuery.containedIn("roles", ["staff", "Staff"]);
@@ -404,7 +404,7 @@ class MapsDashboard extends React.Component {
       className: "_User",
       objectId: getLeaderId(),
     });
-    query.notContainedIn("roles", ["admin", "Admin", "Leader", "leader"]);
+    query.notContainedIn("roles", ["admin", "Admin", "Team Leader", "team leader"]);
     // query.equalTo("status", 3);
     query.greaterThanOrEqualTo("createdAt", start.toDate());
     query.lessThan("createdAt", finish.toDate());
@@ -445,7 +445,7 @@ class MapsDashboard extends React.Component {
     // query.equalTo("objectId", "CstZklBz6l");
     query.greaterThanOrEqualTo("createdAt", start.toDate());
     query.lessThan("createdAt", finish.toDate());
-    query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
+    query.notContainedIn("roles", ["admin", "Admin", "team leader", "Team Leader"]);
     // query.include("EarlyLeave");
     query.include("Late");
     query.include("user");

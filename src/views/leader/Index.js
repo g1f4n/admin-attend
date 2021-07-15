@@ -160,19 +160,19 @@ class Index extends React.Component {
 
   getDaftarStaffByLevel = (pageNumber, userRole = getUserRole()) => {
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryStaffByLevel(pageNumber, "leaderIdNew", ["staff"]);
         break;
       case "supervisor":
-        this.queryStaffByLevel(pageNumber, "supervisorID", ["staff", "leader"]);
+        this.queryStaffByLevel(pageNumber, "supervisorID", ["staff", "team leader"]);
         break;
       case "manager":
-        this.queryStaffByLevel(pageNumber, "managerID", ["staff", "leader", "supervisor"]);
+        this.queryStaffByLevel(pageNumber, "managerID", ["staff", "team leader", "supervisor"]);
         break;
       case "head":
         this.queryStaffByLevel(pageNumber, "headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
         ]);
@@ -180,7 +180,7 @@ class Index extends React.Component {
       case "gm":
         this.queryStaffByLevel(pageNumber, "headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
           "head",
@@ -246,19 +246,19 @@ class Index extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryAbsenByLevel(pageNumber, "leaderIdNew", ["staff"]);
         break;
       case "supervisor":
-        this.queryAbsenByLevel(pageNumber, "supervisorID", ["staff", "leader"]);
+        this.queryAbsenByLevel(pageNumber, "supervisorID", ["staff", "team leader"]);
         break;
       case "manager":
-        this.queryAbsenByLevel(pageNumber, "managerID", ["staff", "leader", "supervisor"]);
+        this.queryAbsenByLevel(pageNumber, "managerID", ["staff", "team leader", "supervisor"]);
         break;
       case "head":
         this.queryAbsenByLevel(pageNumber, "headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
         ]);
@@ -266,7 +266,7 @@ class Index extends React.Component {
       case "gm":
         this.queryAbsenByLevel(pageNumber, "headID", [
           "staff",
-          "leader",
+          "team leader",
           "supervisor",
           "manager",
           "head",
@@ -283,7 +283,7 @@ class Index extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         const hierarki = new Parse.User();
         const hierarkiQuery = new Parse.Query(hierarki);
         hierarkiQuery.containedIn("roles", ["staff", "Staff"]);
@@ -397,7 +397,7 @@ class Index extends React.Component {
     query.greaterThanOrEqualTo("createdAt", start.toDate());
     query.lessThan("createdAt", finish.toDate());
     query.include("user");
-    query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
+    query.notContainedIn("roles", ["admin", "Admin", "team leader", "Team Leader"]);
     query
       .find()
       .then((x) => {
@@ -429,7 +429,7 @@ class Index extends React.Component {
     query.greaterThanOrEqualTo("createdAt", start.toDate());
     query.lessThan("createdAt", finish.toDate());
     query.include("user");
-    query.notContainedIn("roles", ["admin", "Admin", "leader", "Leader"]);
+    query.notContainedIn("roles", ["admin", "Admin", "team leader", "Team Leader"]);
     query
       .find()
       .then((x) => {

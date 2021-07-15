@@ -91,20 +91,20 @@ class Profile extends React.Component {
     //const userRole = getUserRole();
 
     switch (userRole) {
-      case 'leader':
+      case 'team leader':
         this.queryStaffByLevel(pageNumber, 'leaderIdNew', ['staff']);
         break;
       case 'supervisor':
-        this.queryStaffByLevel(pageNumber, 'supervisorID', ['staff', 'leader']);
+        this.queryStaffByLevel(pageNumber, 'supervisorID', ['staff', 'team leader']);
         break;
       case 'manager':
-        this.queryStaffByLevel(pageNumber, 'managerID', ['staff', 'leader', 'supervisor']);
+        this.queryStaffByLevel(pageNumber, 'managerID', ['staff', 'team leader', 'supervisor']);
         break;
       case 'head':
-        this.queryStaffByLevel(pageNumber, 'headID', ['staff', 'leader', 'supervisor', 'manager']);
+        this.queryStaffByLevel(pageNumber, 'headID', ['staff', 'team leader', 'supervisor', 'manager']);
         break;
       case 'gm':
-        this.queryStaffByLevel(pageNumber, 'headID', ['staff', 'leader', 'supervisor', 'manager', 'head']);
+        this.queryStaffByLevel(pageNumber, 'headID', ['staff', 'team leader', 'supervisor', 'manager', 'head']);
         break;
 
       default:

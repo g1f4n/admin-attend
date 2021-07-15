@@ -204,7 +204,7 @@ class PulangCepat extends React.Component {
     status = this.state.status
   ) => {
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryEarlyLeavesByLevel(
           "leaderIdNew",
           ["staff"],
@@ -216,7 +216,7 @@ class PulangCepat extends React.Component {
       case "supervisor":
         this.queryEarlyLeavesByLevel(
           "supervisorID",
-          ["staff", "leader"],
+          ["staff", "team leader"],
           startDate,
           filterType,
           status
@@ -225,7 +225,7 @@ class PulangCepat extends React.Component {
       case "manager":
         this.queryEarlyLeavesByLevel(
           "managerID",
-          ["staff", "leader", "supervisor"],
+          ["staff", "team leader", "supervisor"],
           startDate,
           filterType,
           status
@@ -234,7 +234,7 @@ class PulangCepat extends React.Component {
       case "head":
         this.queryEarlyLeavesByLevel(
           "headID",
-          ["staff", "leader", "supervisor", "manager"],
+          ["staff", "team leader", "supervisor", "manager"],
           startDate,
           filterType,
           status
@@ -243,7 +243,7 @@ class PulangCepat extends React.Component {
       case "gm":
         this.queryEarlyLeavesByLevel(
           "headID",
-          ["staff", "leader", "supervisor", "manager", "head"],
+          ["staff", "team leader", "supervisor", "manager", "head"],
           startDate,
           filterType,
           status
@@ -276,7 +276,7 @@ class PulangCepat extends React.Component {
     query.equalTo("approvalEarly", 3);
     query.greaterThanOrEqualTo("createdAt", start.toDate());
     query.lessThan("createdAt", finish.toDate());
-    query.notContainedIn("roles", ["admin", "Admin", "Leader", "leader"]);
+    query.notContainedIn("roles", ["admin", "Admin", "Team Leader", "team leader"]);
     query
       .find()
       .then((x) => {

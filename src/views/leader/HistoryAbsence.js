@@ -224,7 +224,7 @@ class HistoryAbsence extends React.Component {
 
   getDataLeveByLevel = (startDate = 'today', userRole = getUserRole(), filterType = 'day') => {
     switch (userRole) {
-        case "leader":
+        case "team leader":
           this.queryLeaveByLevel(
             "leaderIdNew",
             ["staff"],
@@ -235,7 +235,7 @@ class HistoryAbsence extends React.Component {
         case "supervisor":
           this.queryLeaveByLevel(
             "supervisorID",
-            ["staff", "leader"],
+            ["staff", "team leader"],
             startDate,
             filterType
           );
@@ -243,7 +243,7 @@ class HistoryAbsence extends React.Component {
         case "manager":
           this.queryLeaveByLevel(
             "managerID",
-            ["staff", "leader", "supervisor"],
+            ["staff", "team leader", "supervisor"],
             startDate,
             filterType
           );
@@ -251,7 +251,7 @@ class HistoryAbsence extends React.Component {
         case "head":
           this.queryLeaveByLevel(
             "headID",
-            ["staff", "leader", "supervisor", "manager"],
+            ["staff", "team leader", "supervisor", "manager"],
             startDate,
             filterType
           );
@@ -259,7 +259,7 @@ class HistoryAbsence extends React.Component {
         case "gm":
           this.queryLeaveByLevel(
             "headID",
-            ["staff", "leader", "supervisor", "manager", "head"],
+            ["staff", "team leader", "supervisor", "manager", "head"],
             startDate,
             filterType
           );
@@ -278,17 +278,17 @@ class HistoryAbsence extends React.Component {
     console.log("startDate2", filterType);
 
     switch (userRole) {
-      case 'leader':
+      case 'team leader':
         this.queryAbsenByLevel(pageNumber, 'leaderIdNew', ['staff'], startDate, filterType);
         break;
       case 'supervisor':
-        this.queryAbsenByLevel(pageNumber, 'supervisorID', ['staff', 'leader'], startDate, filterType);
+        this.queryAbsenByLevel(pageNumber, 'supervisorID', ['staff', 'team leader'], startDate, filterType);
         break;
       case 'manager':
         this.queryAbsenByLevel(
           pageNumber,
           'managerID',
-          ['staff', 'leader', 'supervisor'],
+          ['staff', 'team leader', 'supervisor'],
           startDate,
           filterType
         );
@@ -297,7 +297,7 @@ class HistoryAbsence extends React.Component {
         this.queryAbsenByLevel(
           pageNumber,
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager'],
+          ['staff', 'team leader', 'supervisor', 'manager'],
           startDate,
           filterType
         );
@@ -306,7 +306,7 @@ class HistoryAbsence extends React.Component {
         this.queryAbsenByLevel(
           pageNumber,
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager', 'head'],
+          ['staff', 'team leader', 'supervisor', 'manager', 'head'],
           startDate,
           filterType
         );
@@ -428,7 +428,7 @@ class HistoryAbsence extends React.Component {
     query.ascending('absenMasuk');
     query.greaterThanOrEqualTo('createdAt', start.toDate());
     query.lessThan('createdAt', finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.notContainedIn('roles', ['admin', 'Admin', 'team leader', 'Team Leader']);
     query.include('user');
     query
       .find()

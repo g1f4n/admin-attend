@@ -341,19 +341,19 @@ class Maps extends React.Component {
 		const hierarkiQuery = new Parse.Query(hierarki);
 		hierarkiQuery.get(id).then((roles) => {
 			switch (roles.get("roles")) {
-				case "leader":
+				case "team leader":
 				  this.queryAbsenByLevel("leaderIdNew", ["staff", "Staff"], id);
 				  break;
 				case "supervisor":
-				  this.queryAbsenByLevel("supervisorID", ["staff", "leader"], id);
+				  this.queryAbsenByLevel("supervisorID", ["staff", "team leader"], id);
 				  break;
 				case "manager":
-				  this.queryAbsenByLevel("managerID", ["staff", "leader", "supervisor"], id);
+				  this.queryAbsenByLevel("managerID", ["staff", "team leader", "supervisor"], id);
 				  break;
 				case "head":
 				  this.queryAbsenByLevel("headID", [
 					"staff",
-					"leader",
+					"team leader",
 					"supervisor",
 					"manager",
 				  ], id);
@@ -361,7 +361,7 @@ class Maps extends React.Component {
 				case "gm":
 				  this.queryAbsenByLevel("headID", [
 					"staff",
-					"leader",
+					"team leader",
 					"supervisor",
 					"manager",
 					"head",

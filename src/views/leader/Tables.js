@@ -130,16 +130,16 @@ class Tables extends React.Component {
     //const userRole = getUserRole();
 
     switch (userRole) {
-      case 'leader':
+      case 'team leader':
         this.queryAbsenByLevel('leaderIdNew', ['staff'], startDate, filterType);
         break;
       case 'supervisor':
-        this.queryAbsenByLevel('supervisorID', ['staff', 'leader'], startDate, filterType);
+        this.queryAbsenByLevel('supervisorID', ['staff', 'team leader'], startDate, filterType);
         break;
       case 'manager':
         this.queryAbsenByLevel(
           'managerID',
-          ['staff', 'leader', 'supervisor'],
+          ['staff', 'team leader', 'supervisor'],
           startDate,
           filterType
         );
@@ -147,7 +147,7 @@ class Tables extends React.Component {
       case 'head':
         this.queryAbsenByLevel(
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager'],
+          ['staff', 'team leader', 'supervisor', 'manager'],
           startDate,
           filterType
         );
@@ -155,7 +155,7 @@ class Tables extends React.Component {
       case 'gm':
         this.queryAbsenByLevel(
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager', 'head'],
+          ['staff', 'team leader', 'supervisor', 'manager', 'head'],
           startDate,
           filterType
         );
@@ -277,7 +277,7 @@ class Tables extends React.Component {
     query.ascending('absenMasuk');
     query.greaterThanOrEqualTo('createdAt', start.toDate());
     query.lessThan('createdAt', finish.toDate());
-    query.notContainedIn('roles', ['admin', 'Admin', 'leader', 'Leader']);
+    query.notContainedIn('roles', ['admin', 'Admin', 'team leader', 'Team Leader']);
     query.include('user');
     query
       .find()

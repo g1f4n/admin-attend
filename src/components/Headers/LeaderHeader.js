@@ -86,22 +86,22 @@ class LeaderHeader extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalStaff("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalStaff("supervisorID", ["staff", "leader"]);
+        this.queryTotalStaff("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalStaff("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalStaff("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalStaff("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalStaff("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalStaff("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -109,7 +109,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalStaff("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",
@@ -266,22 +266,22 @@ class LeaderHeader extends React.Component {
     //   objectId: getLeaderId()
     // });
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalAbsen("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalAbsen("supervisorID", ["staff", "leader"]);
+        this.queryTotalAbsen("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalAbsen("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalAbsen("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalAbsen("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalAbsen("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalAbsen("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -289,7 +289,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalAbsen("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",
@@ -356,22 +356,22 @@ class LeaderHeader extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalTerlambat("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalTerlambat("supervisorID", ["staff", "leader"]);
+        this.queryTotalTerlambat("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalTerlambat("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalTerlambat("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalTerlambat("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalTerlambat("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalTerlambat("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -379,7 +379,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalTerlambat("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",
@@ -433,22 +433,22 @@ class LeaderHeader extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalIzin("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalIzin("supervisorID", ["staff", "leader"]);
+        this.queryTotalIzin("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalIzin("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalIzin("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalIzin("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalIzin("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalIzin("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -456,7 +456,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalIzin("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",
@@ -536,22 +536,22 @@ class LeaderHeader extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalSakit("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalSakit("supervisorID", ["staff", "leader"]);
+        this.queryTotalSakit("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalSakit("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalSakit("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalSakit("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalSakit("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalSakit("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -559,7 +559,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalSakit("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",
@@ -662,22 +662,22 @@ class LeaderHeader extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalOvertime("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalOvertime("supervisorID", ["staff", "leader"]);
+        this.queryTotalOvertime("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalOvertime("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalOvertime("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalOvertime("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalOvertime("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalOvertime("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -685,7 +685,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalOvertime("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",
@@ -767,22 +767,22 @@ class LeaderHeader extends React.Component {
     const userRole = getUserRole();
 
     switch (userRole) {
-      case "leader":
+      case "team leader":
         this.queryTotalLeave("leaderIdNew", ["staff"])
         break;
       case "supervisor":
-        this.queryTotalLeave("supervisorID", ["staff", "leader"]);
+        this.queryTotalLeave("supervisorID", ["staff", "team leader"]);
         break;
       case "deputy manager":
-        this.queryTotalLeave("deputyManagerID", ["staff", "leader", "supervisor"]);
+        this.queryTotalLeave("deputyManagerID", ["staff", "team leader", "supervisor"]);
         break;
       case "manager":
-        this.queryTotalLeave("managerID", ["staff", "leader", "supervisor", "deputy manager"]);
+        this.queryTotalLeave("managerID", ["staff", "team leader", "supervisor", "deputy manager"]);
         break;
       case "head":
         this.queryTotalLeave("headID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         ]);
@@ -790,7 +790,7 @@ class LeaderHeader extends React.Component {
       case "gm":
         this.queryTotalLeave("gmID", [
         "staff",
-        "leader",
+        "team leader",
         "supervisor",
         "manager",
         "head",

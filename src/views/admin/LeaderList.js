@@ -314,7 +314,7 @@ class LeaderList extends React.Component {
 					});
 				break;
 
-			case 'leader':
+			case 'team leader':
 				const leader = new Parse.User();
 				const leaderQuery = new Parse.Query(leader);
 				leaderQuery.matches('fullname', searchValue, 'i');

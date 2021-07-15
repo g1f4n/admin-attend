@@ -237,16 +237,16 @@ class Lembur extends React.Component {
     status = this.state.status
   ) => {
     switch (userRole) {
-      case 'leader':
+      case 'team leader':
         this.queryLateByLevel('leaderIdNew', ['staff'], startDate, filterType, status);
         break;
       case 'supervisor':
-        this.queryLateByLevel('supervisorID', ['staff', 'leader'], startDate, filterType, status);
+        this.queryLateByLevel('supervisorID', ['staff', 'team leader'], startDate, filterType, status);
         break;
       case 'manager':
         this.queryLateByLevel(
           'managerID',
-          ['staff', 'leader', 'supervisor'],
+          ['staff', 'team leader', 'supervisor'],
           startDate,
           filterType,
           status
@@ -255,7 +255,7 @@ class Lembur extends React.Component {
       case 'head':
         this.queryLateByLevel(
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager'],
+          ['staff', 'team leader', 'supervisor', 'manager'],
           startDate,
           filterType,
           status
@@ -264,7 +264,7 @@ class Lembur extends React.Component {
       case 'gm':
         this.queryLateByLevel(
           'headID',
-          ['staff', 'leader', 'supervisor', 'manager', 'head'],
+          ['staff', 'team leader', 'supervisor', 'manager', 'head'],
           startDate,
           filterType,
           status
