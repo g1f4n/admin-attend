@@ -120,6 +120,7 @@ class EditForm extends React.Component {
       jamKeluar: 0,
       dept: [],
       deptName: "",
+      listConfigServerFaceCheck: [],
     };
   }
 
@@ -141,6 +142,7 @@ class EditForm extends React.Component {
     this.getTipe();
     //this.getShifting();
     this.getPoint();
+    this.getConfigServerFaceCheck();
     //this.testRelasi();
   }
 
@@ -510,7 +512,22 @@ class EditForm extends React.Component {
       });
   };
 
-  hans = () => {};
+  getConfigServerFaceCheck = () => {
+    this.setState({ loading: true });
+    const ConfigServer = new Parse.Object.extend('ConfigServer');
+    const query = new Parse.Query(ConfigServer);
+
+    query.equalTo('name', "faceCheck");
+    query
+      .first()
+      .then((x) => {
+        this.setState({ listConfigServerFaceCheck: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  }
 
   handleFace = (e) => {
     this.setState({
@@ -518,9 +535,14 @@ class EditForm extends React.Component {
       statusReco: 0,
       fotoWajah: e.target.files[0],
     });
+
+    const server = this.state.listConfigServerFaceCheck;
+    let ipAddress = server.attributes.ipAddress;
+    let endpoint = server.attributes.endpoint;
+
     const formData = new FormData();
     formData.append("knax", e.target.files[0]);
-    Axios.post("http://103.130.194.174:4000/api/face-check", formData, {
+    Axios.post(ipAddress + endpoint, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

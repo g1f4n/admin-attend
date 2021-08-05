@@ -129,6 +129,8 @@ class SelfRegistForm extends React.Component {
       photoMode: false,
       dept: [],
       deptName: "",
+      listConfigServerFaceCheck: [],
+      listConfigServerReminder: [],
     };
   }
 
@@ -151,6 +153,8 @@ class SelfRegistForm extends React.Component {
     this.getTipe();
     //this.getShifting();
     this.getPoint();
+    this.getConfigServerFaceCheck();
+    this.getConfigServerReminder();
     // emailjs.init("user_h2fWwDoztgEPcKNQ9vadt");
     emailjs.init("user_pmowrGg5rvVezxSJbFWXv");
     //this.testRelasi();
@@ -522,7 +526,39 @@ class SelfRegistForm extends React.Component {
       });
   };
 
-  hans = () => {};
+  getConfigServerFaceCheck = () => {
+    this.setState({ loading: true });
+    const ConfigServer = new Parse.Object.extend('ConfigServer');
+    const query = new Parse.Query(ConfigServer);
+
+    query.equalTo('name', "faceCheck");
+    query
+      .first()
+      .then((x) => {
+        this.setState({ listConfigServerFaceCheck: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  }
+
+  getConfigServerReminder = () => {
+    this.setState({ loading: true });
+    const ConfigServer = new Parse.Object.extend('ConfigServer');
+    const query = new Parse.Query(ConfigServer);
+
+    query.equalTo('name', "reminderNotification");
+    query
+      .first()
+      .then((x) => {
+        this.setState({ listConfigServerReminder: x, loading: false });
+      })
+      .catch((err) => {
+        alert(err.message);
+        this.setState({ loading: false });
+      });
+  };
 
   handleFace = (e) => {
     this.setState({
@@ -530,9 +566,14 @@ class SelfRegistForm extends React.Component {
       statusReco: 0,
       fotoWajah: e.target.files[0],
     });
+
+    const server = this.state.listConfigServerFaceCheck;
+    let ipAddress = server.attributes.ipAddress;
+    let endpoint = server.attributes.endpoint;
+
     const formData = new FormData();
     formData.append("knax", e.target.files[0]);
-    Axios.post("http://103.130.194.174:4000/api/face-check", formData, {
+    Axios.post(ipAddress + endpoint, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -599,10 +640,14 @@ class SelfRegistForm extends React.Component {
   handleTextFile = (req) => {
     let user = req;
     let data = JSON.stringify(user, null, 2);
+
+    const server = this.state.listConfigServerReminder;
+    let ipAddress = server.attributes.ipAddress;
+    let endpoint = server.attributes.endpoint;
     
     const formData = new FormData();
     formData.append("data", data);
-    Axios.post("http://103.130.194.174:3005/api/updateUserData", formData, {
+    Axios.post(ipAddress + endpoint, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

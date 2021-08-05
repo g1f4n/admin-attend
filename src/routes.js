@@ -39,6 +39,7 @@ import TesEksport from 'views/admin/TesEksport';
 import FormRegister from 'views/admin/Form/FormRegister';
 import EditForm from 'views/admin/Form/EditForm';
 import SelfRegistForm from 'views/admin/Form/SelfRegistForm';
+import ConfigServer from 'views/admin/ConfigServer';
 
 var routes = [
   {
@@ -46,6 +47,13 @@ var routes = [
     name: 'Dashboard',
     icon: 'ni ni-tv-2 text-primary',
     component: Indexz,
+    layout: '/admin'
+  },
+  {
+    path: '/config-server',
+    name: 'Server Setting',
+    icon: 'ni ni-tv-2 text-danger',
+    component: ConfigServer,
     layout: '/admin'
   },
   {
